@@ -9,18 +9,16 @@ import os
 import math
 import numpy as np
 
-# Riusa ParamSpace dal modulo esistente per coerenza
+# Reuse ParamSpace from existing module for consistency
 from cube_hpo import ParamSpace
 
 
 @dataclass
 class QuadCube:
     # Surrogate model cache (2D quadratic on PC1-PC2)
-    #Qui creo una scatola dove terrò il “modellino di prova” già pronto, così non devo rifarlo ogni volta. È come avere un disegno già stampato invece di rifarlo a mano ogni volta
     surrogate_2d: Optional[Dict[str, Any]] = field(default=None, init=False)
 
-    #Metodo che adatta una funzione quadratica sulle prime due componenti principali (PC1 e PC2)
-    def fit_surrogate(self, min_points: int = 8) -> None: #Prendo i dati che ho già misurato, li guardo da un’angolazione comoda (PCA) e ci disegno sopra una parabola 3D (tipo “colline” e “valli”) che approssima la zona vicina.
+    def fit_surrogate(self, min_points: int = 8) -> None: 
         """Fit a 2D quadratic surrogate on PC1-PC2 using local tested pairs.
 
         Stores ridge solution along with the inverse design matrix to enable
@@ -32,9 +30,9 @@ class QuadCube:
             return
         d = len(self.bounds)
         # Use local PCA axes for projection
-        R, mu, _, ok = self._principal_axes()  # Calcola pca locale matrice di rotazione verso le nuove coordinate (PC1, PC2, ...)
+        R, mu, _, ok = self._principal_axes()
         X = np.array([p for (p, s) in pairs], dtype=float)
-        y = np.array([s for (p, s) in pairs], dtype=float)  # Metto in una lista le ricette che ho provato (X) e in un’altra il voto che gli ho dato (y)
+        y = np.array([s for (p, s) in pairs], dtype=float) 
         T = (R.T @ (X.T - mu.reshape(-1, 1))).T  # shape (n, d)
         t1 = T[:, 0]
         t2 = T[:, 1] if d > 1 else np.zeros_like(t1)
@@ -46,13 +44,13 @@ class QuadCube:
         A = Phi.T @ Phi + ridge_alpha * np.eye(6)
         b = Phi.T @ y
         try:
-            w = np.linalg.solve(A, b)  # Trovo i numeri che fanno combaciare la mia parabola con i punti misurati.
+            w = np.linalg.solve(A, b)
         except Exception:
             self.surrogate_2d = None
             return
         # Pre-compute (Phi^T Phi + alpha I)^-1 for predictive variance
         try:
-            A_inv = np.linalg.inv(A)  # Mi salvo un calcolo magico che userò più tardi per sapere “quanto sono sicuro” delle mie previsioni.
+            A_inv = np.linalg.inv(A) 
         except Exception:
             A_inv = None
         # Residual variance as uncertainty estimate
@@ -74,40 +72,39 @@ class QuadCube:
         }
 
     def predict_surrogate(self, x_prime: np.ndarray) -> Tuple[float, float]:
-        """Predict mean and std at x_prime (in prime coords) using 2D quadratic surrogate.
+        """Predict mean and std at x_prime (prime coords) using the 2D quadratic surrogate.
 
-        Uses ridge-regression predictive variance: Var[ŷ(x)] ≈ σ² · (φ(x)^T A_inv φ(x) + 1),
-        where A_inv = (Φ^T Φ + αI)^-1 saved during fitting and σ² is residual variance.
-        If A_inv is unavailable, falls back to constant σ.
+        Variance uses the ridge-regression approximation: Var[ŷ(x)] ≈ σ² · (φ(x)^T A_inv φ(x) + 1),
+        where A_inv = (Φ^T Φ + αI)^-1 and σ² is the residual variance. Falls back to constant σ if A_inv is missing.
         """
         if self.surrogate_2d is None:
             return 0.0, 1.0
         t1 = x_prime[0]
-        t2 = x_prime[1] if len(x_prime) > 1 else 0.0 #Estrae le coordinate locali: PC1 = t1, PC2 = t2
-        Phi = np.array([1.0, t1, t2, 0.5 * t1 ** 2, 0.5 * t2 ** 2, t1 * t2]) #Creo i sei ingredienti per calcolare l’altezza della mia “collina” nel punto richiesto.
-        y_hat = float(self.surrogate_2d['w'] @ Phi) #Predizione media: prodotto scalare
+        t2 = x_prime[1] if len(x_prime) > 1 else 0.0
+        Phi = np.array([1.0, t1, t2, 0.5 * t1 ** 2, 0.5 * t2 ** 2, t1 * t2])
+        y_hat = float(self.surrogate_2d['w'] @ Phi)
         sigma2 = float(self.surrogate_2d.get('sigma2', 1.0))
-        A_inv = self.surrogate_2d.get('A_inv', None) #Recupera la varianza residua del fit e l’inversa regolarizzata per la varianza predittiva. Prendo quanto “rumore” c’era nei dati e la chiave matematica che mi serve per stimare l’incertezza punto per punto
+        A_inv = self.surrogate_2d.get('A_inv', None)
         if A_inv is None:
-            sigma = float(np.sqrt(max(sigma2, 1e-12))) # Se non ho l’inversa, torno a una incertezza fissa
+            sigma = float(np.sqrt(max(sigma2, 1e-12)))
             return y_hat, sigma
         # predictive variance term v = φ^T A_inv φ
         try:
-            v = float(Phi @ (A_inv @ Phi)) #Calcolo “quanto è lontano/strano” questo punto rispetto a dove ho dati: più è fuori strada, più aumento l’incertezza
+            v = float(Phi @ (A_inv @ Phi))
             v = max(v, 0.0)
         except Exception:
             v = 0.0
         # Include +1 to approximate target variance (not just mean prediction variance)
         var_pred = sigma2 * (v + 1.0)
-        sigma = float(np.sqrt(max(var_pred, 1e-12))) #Prendo l’incertezza di base e ci sommo quanta ne aggiunge il fatto che il punto è “scomodo”. Alla fine ti do la barra d’errore
+        sigma = float(np.sqrt(max(var_pred, 1e-12)))
         return y_hat, sigma
     bounds: List[Tuple[float, float]]  # in local (prime) coordinates, typically symmetric around 0
     parent: Optional["QuadCube"] = None
-    children: List["QuadCube"] = field(default_factory=list) #Ogni “cella” è un cubetto in un sistema di assi comodo. I cubetti possono avere un genitore e dei figli, come una cartella con sottocartelle
+    children: List["QuadCube"] = field(default_factory=list)
 
     # local frame
     R: Optional[np.ndarray] = None  # shape (d, d)
-    mu: Optional[np.ndarray] = None  # shape (d,) #mu dice dov’è il centro del cubetto nel mondo reale; R dice come sono ruotati gli assi del cubetto rispetto a quelli normali.
+    mu: Optional[np.ndarray] = None  # shape (d,)
 
     # statistics
     n_trials: int = 0
@@ -116,9 +113,7 @@ class QuadCube:
     best_score: float = -np.inf
     mean_score: float = 0.0
     var_score: float = 0.0
-    #Quanti esperimenti ho fatto qui? Com’è andata in media? Qual è stato il migliore? Tengo anche qualche appunto rapido per decidere se continuare o fermarmi presto.
     # region params
-    #Manopole per decidere quando una cella è promettente o quando è ora di dividerla/abbandonarla. Tipo regole della casa per l’esplorazione.
     prior_var: float = 1.0
     q_threshold: float = 0.0
     early_quantile_p: float = 0.65
@@ -128,75 +123,61 @@ class QuadCube:
     early_below_count: int = 0
 
     # geometry helpers
-    #Se non ho ancora deciso come sono ruotati gli assi, li tengo dritti. Se non so dov’è il centro, provo a mettere qualcosa di sensato (al centro del quadrato standard) finché qualcuno non me lo imposta meglio
     def _ensure_frame(self) -> None:
         d = len(self.bounds)
         if self.R is None:
             self.R = np.eye(d)
         if self.mu is None:
-            # center from parent mapping if possible, else origin
-            # If bounds are in local coords and typically symmetric around 0, center is mu
+            # Center from parent mapping if possible; else default to center of [0,1]^d
             if self.parent is not None and self.parent.mu is not None and self.parent.R is not None:
-                # assume this cube was created with proper mu; keep as is
                 self.mu = np.zeros(d)  # will be overridden immediately by constructors
             else:
-                # default center at midpoint of original [0,1]^d
                 self.mu = np.full(d, 0.5, dtype=float)
-    #Tolgo il “punto centrale” e ruoto il sistema per vedere il punto con gli “occhiali giusti” (le nuove assi)
     def to_prime(self, x: np.ndarray) -> np.ndarray:
         self._ensure_frame()
         return (self.R.T @ (x - self.mu)).astype(float)
-    #Rimetto la rotazione com’era e riaggiungo il centro: torno nel mondo “vero”.
     def to_original(self, x_prime: np.ndarray) -> np.ndarray:
         self._ensure_frame()
         x = (self.mu + self.R @ x_prime).astype(float)
-        # Debug assert: punti sempre dentro [0,1]
+        # Debug assert: ensure point is in [0,1]
         if hasattr(self, '_debug_assert_bounds') and self._debug_assert_bounds:
             if np.any(x < -1e-9) or np.any(x > 1.0 + 1e-9):
                 raise AssertionError(f"Point fuori bounds dopo mapping prime->original: {x}")
         return x
-    #Calcola il punto medio degli intervalli in x' È il centro del cubo nel frame locale
     def _center_prime(self) -> np.ndarray:
-        # mid-point in prime coords
+        # Mid-point in prime coords
         mids = np.array([(lo + hi) * 0.5 for (lo, hi) in self.bounds], dtype=float)
         return mids
-    #Calcola le larghezze degli intervalli in x' (distanza tra i limiti) per ogni dimensione. Quanto è largo il cubo su ogni asse?
     def _widths(self) -> np.ndarray:
         return np.array([hi - lo for (lo, hi) in self.bounds], dtype=float)
-    #Pesco a caso un punto dentro il cubetto locale, con la stessa probabilità ovunque.
     def sample_uniform_prime(self) -> np.ndarray:
         d = len(self.bounds)
         point = np.zeros(d, dtype=float)
         for i, (lo, hi) in enumerate(self.bounds):
             point[i] = np.random.uniform(lo, hi)
         return point
-    #Pesco un punto nel cubetto comodo e poi lo traduco nel mondo reale.
     def sample_uniform(self) -> np.ndarray:
-        # sample in prime, map to original
+        # Sample in prime coords then map to original
         x_prime = self.sample_uniform_prime()
         return self.to_original(x_prime)
-    #Segno da qualche parte i punti che ho provato davvero, così non me li dimentico
     def add_tested_point(self, point: np.ndarray) -> None:
-        # store original coordinates
+        # Store original coordinates of tested points
         if not hasattr(self, "_tested_points"):
             self._tested_points: List[np.ndarray] = []
         self._tested_points.append(np.array(point, dtype=float))
-    #Quando chiedo “che punti hai provato?”, o mi dai la lista oppure mi dici “nessuno”
     @property
     def _points_history(self) -> List[np.ndarray]:
         return getattr(self, "_tested_points", [])
-
-    """A ogni indizio “preliminare” aggiorno una soglia che mi dice se la zona promette. Se ho pochi indizi, mi fido un po’ di quello che pensa il genitore. 
-    Aggiorno anche quanto penso che i risultati possano variare. Poi ridisegno la mia collinetta se ho dati a sufficienza."""
     def update_early(self, early_score: float) -> None:
+        """Update early metrics, regional threshold, prior variance, and refresh surrogate."""
         self.scores_early.append(float(early_score))
         n = len(self.scores_early)
         if self.adaptive_early_quantile:
-            p = 0.6 + 0.2 * min(1.0, n / 20.0) #Se adaptive_early_quantile=True, p va da 0.6 a 0.8 fino ad un massimo di 20
+            p = 0.6 + 0.2 * min(1.0, n / 20.0)
         else:
-            p = self.early_quantile_p #altrimenti usa valore fisso
+            p = self.early_quantile_p
         if n >= 3:
-            self.q_threshold = float(np.quantile(self.scores_early, p)) # per pochi dati propaga dalla soglia del padre se disponibile
+            self.q_threshold = float(np.quantile(self.scores_early, p))
         else:
             if self.parent is not None and self.parent.q_threshold > 0:
                 self.q_threshold = 0.5 * float(self.parent.q_threshold) + 0.5 * float(self.q_threshold)
@@ -205,7 +186,8 @@ class QuadCube:
         # Refit surrogate after each update if enough data
         self.fit_surrogate()
 
-    def update_final(self, final_score: float) -> None: #Aggiorna statistiche finali: numero prove, lista degli score, media, varianza
+    def update_final(self, final_score: float) -> None:
+        """Update final metrics (n, scores, mean, var) and refresh surrogate."""
         self.n_trials += 1
         self.scores.append(float(final_score))
         self.mean_score = float(np.mean(self.scores))
@@ -215,7 +197,7 @@ class QuadCube:
         # Refit surrogate after each update if enough data
         self.fit_surrogate()
 
-    def leaf_score(self, mode: str = 'max') -> float: #Dimmi quanto è “buona” questa zona: preferisci il migliore risultato o la media? Se non ho risultati finali, guardo quelli provvisori; se non ho niente, dico che è pessima 
+    def leaf_score(self, mode: str = 'max') -> float:
         if self.scores:
             return float(np.max(self.scores) if mode == 'max' else np.mean(self.scores))
         pairs = getattr(self, "_tested_pairs", [])
@@ -228,9 +210,9 @@ class QuadCube:
         return float('-inf')
 
     def ucb(self, beta: float = 1.6, eps: float = 1e-8, lambda_geo: float = 0.0) -> float:
-        n_e = len(self.scores_early) #numero di prove fatte sul serio
-        n_eff = self.n_trials + 0.25 * n_e #numero di trials che valgono un quarto
-        if self.n_trials > 0:  #Se ho risultati veri, uso quelli. Se ne ho pochi, guardo quanto ballavano gli assaggi; se non ho quasi niente, mi affido a un’idea di massima
+        n_e = len(self.scores_early)
+        n_eff = self.n_trials + 0.25 * n_e
+        if self.n_trials > 0:
             mu = float(self.mean_score)
             if self.n_trials > 1:
                 var = float(self.var_score)
@@ -239,17 +221,16 @@ class QuadCube:
         else:
             mu = float(np.mean(self.scores_early)) if n_e > 0 else 0.0
             var = float(np.var(self.scores_early)) if n_e > 1 else float(self.prior_var)
-        if self.parent is not None and self.parent.n_trials > 0: #Se il genitore ha esperienza, lo ascolto per metà. È come chiedere consiglio a chi ha già visto la zona.
+        if self.parent is not None and self.parent.n_trials > 0:
             mu = 0.5 * float(self.parent.mean_score) + 0.5 * mu
             pv = float(self.parent.var_score) if self.parent.var_score > 0 else float(self.parent.prior_var)
             var = 0.5 * pv + 0.5 * var
-        if n_eff <= 0: #Calcola l’UCB base: media + margine d’incertezza. il margine scende con più dati
+        if n_eff <= 0:
             base = float(mu + beta * np.sqrt(var + self.prior_var))
-        else: #Più ho provato, più la mia barra d’errore si restringe. Metto sempre un pizzico di incertezza di fondo.
+        else:
             base = float(mu + beta * np.sqrt(var / (n_eff + eps) + self.prior_var))
-        # geometric exploration bonus: depends on cube diameter in prime coords
+        # Geometric exploration bonus: depends on cube diameter in prime coords
         w = self._widths() if hasattr(self, "bounds") else np.array([1.0])
-        #Bonus geometrico Incentiva l’esplorazione di celle grandi. Se il cubetto è grosso, vale la pena esplorarlo: gli do un extra per farlo sembrare più appetibile.
         diam = float(np.sqrt(np.sum(np.square(w))))
         return base + lambda_geo * diam
 
@@ -258,31 +239,24 @@ class QuadCube:
                      min_points: int = 10,
                      max_depth: Optional[int] = 4,
                      min_width: float = 1e-3,
-                     gamma: float = 0.02) -> str: #decide se e come dividere il cubo
-        #Regole: non spacco troppo in profondità, non spacco briciole, e non spacco se non ho abbastanza prove o il guadagno è risibile
-        # stop per profondità/ampiezza
+                     gamma: float = 0.02) -> str:
+        # Split policy: limit depth/width; require sufficient evidence or variance reduction
         if max_depth is not None and self.depth >= max_depth:
             return 'none'
-        #se hai raggiunto la profondità massima o se tutte le dimensioni sono più strette di min_width, non dividere
         widths = [hi - lo for (lo, hi) in self.bounds]
         if all(w < min_width for w in widths):
             return 'none'
-        # evita esplosione precoce
-        #Anti-esplosione: se non hai abbastanza trial finali e nemmeno abbastanza punti storici, non dividere. Non ho visto abbastanza: non ha senso spaccare la zona ancora.
+        # Avoid early explosion: require minimum final trials or points
         if self.n_trials < min_trials and len(self._points_history) < min_points:
             return 'none'
         d = len(self.bounds)
         if d == 1:
             return 'binary'
-        # prefer quad if we have enough points for PCA/quadratic
+        # Prefer quad if we have enough points for PCA/quadratic
         npts = len(self._points_history)
-        #Se ho dati sufficienti, faccio un taglio più fine in quattro; se no, taglio in due per stare sul semplice
         split_type = 'quad' if npts >= max(10, min_points) else 'binary'
 
-        # Info-gain: split solo se riduzione varianza residua > gamma
-        # Solo se surrogato disponibile e almeno 2 figli
-        #Applica un criterio di information gain basato sulla varianza residua del surrogato: richiede un surrogato con almeno 12 punti
-        #Faccio una prova mentale: se taglio, i pezzi nuovi mi riducono abbastanza l’incertezza? Se il guadagno è piccolo, non spacco; se è decente, procedo col tipo di taglio deciso prima.
+        # Variance-reduction gate via surrogate (requires surrogate with sufficient data)
         if self.surrogate_2d is not None and self.surrogate_2d['n'] >= 12:
             var_parent = float(self.surrogate_2d['sigma2'])
             # Simula split
@@ -303,7 +277,6 @@ class QuadCube:
         # Simula split2 e fitta surrogato su ciascun figlio
         d = len(self.bounds)
         widths = self._widths()
-        # prende il frame PCA locale (R, mu). Calcola il punto di taglio lungo l’asse ax con _quad_cut_along_axis
         ax = int(np.argmax(widths))
         R, mu, _, ok = self._principal_axes()
         cut = self._quad_cut_along_axis(ax, R, mu)
@@ -313,7 +286,6 @@ class QuadCube:
         pairs = getattr(self, "_tested_pairs", [])
         if not pairs:
             return []
-        #recupera i punti testati X e i loro punteggi y, poi li proietta in coordinate prime T
         X = np.array([p for (p, s) in pairs], dtype=float)
         y = np.array([s for (p, s) in pairs], dtype=float)
         T = (R.T @ (X.T - mu.reshape(-1, 1))).T
@@ -322,12 +294,9 @@ class QuadCube:
         #assegno ogni punto alla metà sinistra o destra.
         for mask in [mask_left, ~mask_left]:
             idx = np.where(mask)[0]
-            #se nella metà ci sono due briciole, non provo a disegnare una parabola: guardo solo quanto ballano i voti, o do un valore standard
             if len(idx) < 4:
                 children.append({'n': len(idx), 'var': float(np.var(y[idx])) if len(idx) > 1 else 1.0})
                 continue
-            #se ci sono abbastanza punti: costruisce le feature quadratiche in (PC1, PC2), fitta una ridge locale nel figlio, calcola i residui e la loro varianza come stima d’incertezza del figlio
-            #quando ho abbastanza assaggi in quella metà, ci disegno la mia collinetta locale e vedo quanto i punti se ne discostano
             t1 = T[idx, 0]
             t2 = T[idx, 1] if d > 1 else np.zeros_like(t1)
             Phi = np.stack([
@@ -351,7 +320,6 @@ class QuadCube:
         d = len(self.bounds)
         widths = self._widths()
         R, mu, _, ok = self._principal_axes()
-        # se la PCA è ok usa PC1 (0) e PC2 (1, o 0 se 1D) come assi di taglio
         if ok:
             ax_i, ax_j = 0, 1 if d > 1 else 0
         else:
@@ -377,7 +345,6 @@ class QuadCube:
         X = np.array([p for (p, s) in pairs], dtype=float)
         y = np.array([s for (p, s) in pairs], dtype=float)
         T = (R.T @ (X.T - mu.reshape(-1, 1))).T
-        # definisce i due tagli: sinistra/destra lungo ax_i e sotto/sopra lungo ax_j
         left = T[:, ax_i] < cut_i
         bottom = T[:, ax_j] < cut_j
         children = []
@@ -409,30 +376,19 @@ class QuadCube:
                         min_points: int = 10,
                         anisotropy_threshold: float = 1.4,
                         depth_min: int = 1) -> Tuple[np.ndarray, np.ndarray, np.ndarray, bool]:
-        """Return (R, mu, eigvals, ok) where R columns are principal axes, mu is center from top-q% points.
-        ok indicates if PCA was applied (enough points and anisotropy high enough and depth >= depth_min).
-        """
-        """Restituisce:
+    """Return (R, mu, eigvals, ok).
 
-        R: matrice i cui vettori colonna sono gli assi principali (PCA).
-
-        mu: centro calcolato dai migliori punti (top q% per score).
-
-        eigvals: autovalori (varianze lungo PC).
-
-        ok: True se la PCA è stata applicata (abbastanza punti, anisotropia sufficiente, profondità sufficiente).
-
-        Usa solo i top q_good per stimare la PCA; serve a catturare la direzione “utile” dove i risultati sono migliori.
-        Cerchiamo gli “occhiali” migliori per guardare i dati: ruotiamo gli assi verso dove 
-        c'è più variazione nei migliori punti. Se la forma non ha direzioni preferite (tutto un po' uguale), non ha senso ruotare gli occhiali: restiamo com'eravamo
-        """
+    - R: principal axes (PCA) as column vectors.
+    - mu: center estimated from top q_good fraction by score.
+    - eigvals: variances along principal axes.
+    - ok: True if PCA is applicable (enough points, anisotropy threshold met, depth >= depth_min).
+    """
         d = len(self.bounds)
         # default: identity around current center in original space
         # current center in original coords using existing frame and bounds
         self._ensure_frame()
         # If mu is not meaningful yet, approximate by avg of seen points or keep current
         points_pairs = getattr(self, "_tested_pairs", [])
-        #Se la cella è troppo giovane (depth < depth_min) o ci sono pochi punti (< min_points), niente PCA: ritorna frame corrente (R, mu) e ok=False
         if self.depth < depth_min or len(points_pairs) < min_points:
             R = self.R.copy() if self.R is not None else np.eye(d)
             mu = self.mu.copy() if self.mu is not None else np.full(d, 0.5, dtype=float)
@@ -440,18 +396,15 @@ class QuadCube:
             return R, mu, eigvals, False
         pts = np.array([p for (p, s) in points_pairs], dtype=float)
         scs = np.array([s for (p, s) in points_pairs], dtype=float)
-        # select good points by score (descending)
-        #Seleziona i top k per score.
+    # select good points by score (descending)
         k = max(5, int(np.ceil(q_good * len(pts))))
         idx = np.argsort(scs)[::-1][:k]
         P = pts[idx]
-        #Centro in mu (media dei top) e calcola la covarianza.
         mu = P.mean(axis=0)
         Z = P - mu
         # covariance
         C = np.cov(Z.T) if Z.shape[0] > 1 else np.eye(d)
         # eigh returns ascending; we want descending
-        #Decomposizione agli autovalori/vettori: ordina in decrescente (PC1 = direzione di massima varianza).Prendo i punti migliori, li metto “allineati” al centro e scopro da che parte si allargano di più.
         evals, evecs = np.linalg.eigh(C)
         order = np.argsort(evals)[::-1]
         evals = evals[order]
@@ -470,17 +423,15 @@ class QuadCube:
                               R: np.ndarray,
                               mu: np.ndarray,
                               ridge_alpha: float = 1e-3) -> float:
-        """Choose a cut point along given prime axis using 1D quadratic fit over projections.
-        Falls back to midpoint if fit is poor or data insufficient.
-        Returns t_cut in prime coords, clipped to [lo, hi] for that axis.
-        """
-        #Guardiamo i risultati lungo una linea. Disegno una parabola e taglio nel punto dove la curva sembra “scendere di più” (il minimo). Se la parabola non viene bene, taglio a metà o vicino ai punti migliori.
+    """Choose a cut point along a prime axis via 1D quadratic fit over projections.
+    Falls back to midpoint (or median of top responses) if fit is poor or data are insufficient.
+    Returns t_cut in prime coords, clipped to [lo, hi] for that axis.
+    """
         pairs = getattr(self, "_tested_pairs", [])
         d = len(self.bounds)
         if len(pairs) < 6:
             lo, hi = self.bounds[axis_idx]
             return 0.5 * (lo + hi)
-        #Provo a disegnare la parabola. Se i conti non tornano, taglio in mezzo.
         X = np.array([p for (p, s) in pairs], dtype=float)
         y = np.array([s for (p, s) in pairs], dtype=float)
         # project to prime coordinates using provided (R, mu)
@@ -498,8 +449,7 @@ class QuadCube:
         except Exception:
             lo, hi = self.bounds[axis_idx]
             return 0.5 * (lo + hi)
-        # minimum of quadratic: t* = -b/c (if convex: c > 0)
-        #Se la parabola ha una valle, taglio nella valle; se no, taglio dove si concentrano i bocconi più buoni.
+    # minimum of quadratic: t* = -b/c (if convex: c > 0)
         if c_hat > 1e-8:
             t_star = -b_hat / c_hat
             lo, hi = self.bounds[axis_idx]
@@ -532,14 +482,12 @@ class QuadCube:
         return float(lo), float(hi)
 
     def split2(self, axis: Optional[int] = None) -> List["QuadCube"]:
-        # binary split along one prime axis (largest width by default)
+    # Binary split along one prime axis (largest width by default)
         d = len(self.bounds)
         self._ensure_frame()
         widths = self._widths()
-        #Taglio dove c’è più spazio (o dove mi dici tu)
         ax = int(np.argmax(widths)) if axis is None else int(axis)
-        # compute PCA axes and quadratic cut if possible
-        #Prova a usare PCA locale per decidere il punto di taglio (via _quad_cut_along_axis
+    # Compute PCA axes and quadratic cut if possible
         R_loc, mu_loc, _, ok = self._principal_axes()
         cut = self._quad_cut_along_axis(ax, R_loc if ok else self.R, mu_loc if ok else self.mu)
         lo, hi = self.bounds[ax]
@@ -549,15 +497,13 @@ class QuadCube:
         nb_right = list(self.bounds)
         nb_left[ax] = (lo, cut)
         nb_right[ax] = (cut, hi)
-        # compute child centers in prime coords
-        #Definisce i nuovi bounds in prime coords per i due figli e ne calcola centri e larghezze.
+        # Compute child centers in prime coords
         center_left_prime = np.array([(a + b) * 0.5 for (a, b) in nb_left], dtype=float)
         center_right_prime = np.array([(a + b) * 0.5 for (a, b) in nb_right], dtype=float)
         # widths for children
         w_left = np.array([b - a for (a, b) in nb_left], dtype=float)
         w_right = np.array([b - a for (a, b) in nb_right], dtype=float)
-        # build children: re-center prime boxes around 0 and set mu accordingly
-        #Ogni figlio ha il suo “mondo comodo” centrato; poi lo piazzo correttamente nel mondo reale.
+        # Build children: re-center prime boxes around 0 and set mu accordingly
         c1 = QuadCube(bounds=[(-wi/2.0, wi/2.0) for wi in w_left], parent=self,
                       early_quantile_p=self.early_quantile_p, adaptive_early_quantile=self.adaptive_early_quantile)
         c2 = QuadCube(bounds=[(-wi/2.0, wi/2.0) for wi in w_right], parent=self,
@@ -569,11 +515,10 @@ class QuadCube:
             ch.q_threshold = float(self.q_threshold)
             ch.depth = self.depth + 1
             ch._tested_points = []
-        # redistribute points/pairs
-        #Sposto ogni prova fatta finora nel figlio giusto (sinistra o destra) guardando dove cade rispetto al taglio
+        # Redistribute points/pairs
         points = np.array(self._points_history) if self._points_history else np.empty((0, len(self.bounds)))
         if points.size > 0:
-            # assign by parent frame & cut
+            # Assign by parent frame & cut
             T = ( (R_loc if ok else self.R).T @ (points.T - (mu_loc if ok else self.mu).reshape(-1,1)) ).T
             mask_left = T[:, ax] < cut
             for p, m in zip(points, mask_left):
@@ -587,7 +532,7 @@ class QuadCube:
         return self.children
 
     def split4(self) -> List["QuadCube"]:
-        # 4-way split using PCA local axes; cut-points from quadratic 1D fits (fallback to midpoints)
+    # 4-way split using PCA local axes; cut-points from quadratic 1D fits (fallback to midpoints)
         d = len(self.bounds)
         if d == 1:
             return self.split2(axis=0)
@@ -595,15 +540,13 @@ class QuadCube:
         widths = self._widths()
         # principal axes and local center
         R_loc, mu_loc, _, ok = self._principal_axes()
-        # choose two axes: first two components if ok, else widest two in prime frame
-        #Se la PCA è ok usa PC1 (0) e PC2 (1, o 0 se 1D) come assi di taglio
+    # choose two axes: first two components if ok, else widest two in prime frame
         if ok:
             ax_i, ax_j = 0, 1 if d > 1 else 0
         else:
             top2 = np.argsort(widths)[-2:]
             ax_i, ax_j = int(top2[0]), int(top2[1])
         # compute cutpoints
-        #Prova a usare PCA locale per decidere i punti di taglio (via _quad_cut_along_axis)
         if ok:
             cut_i = self._quad_cut_along_axis(ax_i, R_loc, mu_loc)
             cut_j = self._quad_cut_along_axis(ax_j, R_loc, mu_loc)
@@ -616,7 +559,6 @@ class QuadCube:
         cut_i = float(np.clip(cut_i, lo_i + 1e-12, hi_i - 1e-12))
         cut_j = float(np.clip(cut_j, lo_j + 1e-12, hi_j - 1e-12))
         # child prime bounds before re-centering
-        #Costruisce i quattro bounds (quadranti) in prime coords: (sinistra/destra) × (sotto/sopra)
         def make_bounds(quadrant: TypingTuple[bool, bool]) -> List[Tuple[float, float]]:
             bi = (lo_i, cut_i) if quadrant[0] else (cut_i, hi_i)
             bj = (lo_j, cut_j) if quadrant[1] else (cut_j, hi_j)
@@ -629,7 +571,6 @@ class QuadCube:
         b_q3 = make_bounds((True, False))
         b_q4 = make_bounds((False, False))
         # centers and widths for children
-        #Per ogni quadrante: calcola centro e larghezze, crea il figlio con bounds ricentrati attorno a 0, e mappa il centro in spazio originale: mu_child = mu_parent + R @ center_prime_quadrante
         centers_prime = [np.array([(a + b) * 0.5 for (a, b) in nb], dtype=float) for nb in (b_q1, b_q2, b_q3, b_q4)]
         widths_children = [np.array([b - a for (a, b) in nb], dtype=float) for nb in (b_q1, b_q2, b_q3, b_q4)]
         # instantiate children with recentered prime boxes
@@ -742,9 +683,9 @@ class QuadHPO:
             self._budget_in_objective_calls = bool(budget_in_objective_calls)
             self.maximize = bool(maximize)
             self.sign = 1.0 if self.maximize else -1.0
-            # alias richiesto
+            # public alias
             self.obj_calls = self.objective_calls
-            # Propaga flag di assert ai cube
+            # Propagate assert flag to cubes
             self._debug_assert_bounds = bool(debug_assert_bounds)
             self.root._debug_assert_bounds = bool(debug_assert_bounds)
 
@@ -771,7 +712,7 @@ class QuadHPO:
                     ])
             # No trial-level debug files in production
 
-            # Early-stop controls (coerenti con la versione equal)
+            # Early-stop controls
             self.early_min_points_for_stop: int = 5
             self.early_stop_patience: int = 1
             self.early_stop_margin: float = 0.0
@@ -1182,7 +1123,7 @@ class QuadHPO:
         return self.param_space.denormalize(x_norm)
 
     def _call_objective(self, objective_fn: Callable[[np.ndarray, int], Any], x: np.ndarray, epochs: int) -> TypingTuple[float, Optional[Any]]:
-        # Incrementa contatore globale chiamate objective (conteggia anche early e final & probes)
+    # Increment global objective-call counter (early, final, and probes included)
         self.objective_calls += 1
         self.obj_calls = self.objective_calls  # sync alias
         res = objective_fn(x, epochs=epochs)
@@ -1320,7 +1261,7 @@ class QuadHPO:
         # Capture prev best before final eval
         prev_best = float(self.best_score_global)
         s_final, artifact = self._call_objective(objective_fn, x_for_obj, epochs=self.full_epochs)
-        # Se non usiamo early, registriamo comunque il pair con il valore finale (per surrogate/storia)
+    # If early is disabled, still record the pair with final value (for surrogate/history)
         if not use_early:
             if not hasattr(cube, "_tested_pairs"):
                 cube._tested_pairs: List[TypingTuple[np.ndarray, float]] = []
@@ -1391,7 +1332,7 @@ class QuadHPO:
             self._safe_json(x_real) if x_real is not None else '',
             s_early, cube.q_threshold, False, s_final, self.best_score_global, len(self.leaf_cubes)
         ])
-        # Callback per-trial (fine trial)
+    # Per-trial callback
         if self.on_trial is not None:
             try:
                 self.on_trial({
@@ -1439,7 +1380,7 @@ class QuadHPO:
     def optimize(self, objective_fn: Callable[[np.ndarray, int], Any], budget: int) -> None:
         budget = int(budget)
         if self._budget_in_objective_calls:
-            # Loop finchè numero chiamate objective < budget
+            # Loop until objective-call budget is reached
             while self.objective_calls < budget:
                 cube = self.select_cube()
                 self.run_trial(cube, objective_fn)
