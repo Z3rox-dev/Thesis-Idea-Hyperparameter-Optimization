@@ -2,7 +2,7 @@
 
 ## Richiesta Originale (Problem Statement)
 
-"spiegami il teorema che lo split avviene in base all anisotropia calcolata con pca e avviene dove la funziona curva di piu"
+"spiegami il teorema che lo split avviene in base all anisotropia calcolata con pca e avviene dove la funzione curva di piu"
 
 **Traduzione**: Spiega il teorema secondo cui lo split avviene in base all'anisotropia calcolata con PCA e avviene dove la funzione curva di più.
 
