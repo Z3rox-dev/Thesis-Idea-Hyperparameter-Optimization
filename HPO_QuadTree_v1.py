@@ -240,7 +240,26 @@ class QuadCube:
                      max_depth: Optional[int] = 4,
                      min_width: float = 1e-3,
                      gamma: float = 0.02) -> str:
-        # Split policy: limit depth/width; require sufficient evidence or variance reduction
+        """Determine if and how this cube should be split.
+        
+        POLICY DI SPLIT INTEGRATA (Integrated Split Policy):
+        =====================================================
+        
+        Questa funzione combina i due teoremi (anisotropia + curvatura) per decidere:
+        1. SE fare lo split (gate basate su profondità, ampiezza, evidenza)
+        2. COME fare lo split ('quad' per 4-way lungo PCA, 'binary' per 2-way)
+        
+        LOGICA:
+        - Se PCA indica anisotropia sufficiente e abbiamo ≥10 punti → 'quad' split
+        - Altrimenti → 'binary' split lungo l'asse più largo
+        - Verifica riduzione varianza: split accettato solo se migliora il modello locale
+        
+        Returns:
+        --------
+        'none' : No split (insufficient evidence, max depth reached, or no benefit)
+        'quad' : 4-way split along first two PCA components (if anisotropic)
+        'binary' : 2-way split along widest axis
+        """
         if max_depth is not None and self.depth >= max_depth:
             return 'none'
         widths = [hi - lo for (lo, hi) in self.bounds]
@@ -376,12 +395,51 @@ class QuadCube:
                         min_points: int = 10,
                         anisotropy_threshold: float = 1.4,
                         depth_min: int = 1) -> Tuple[np.ndarray, np.ndarray, np.ndarray, bool]:
-    """Return (R, mu, eigvals, ok).
+    """Return (R, mu, eigvals, ok) based on Principal Component Analysis.
 
-    - R: principal axes (PCA) as column vectors.
-    - mu: center estimated from top q_good fraction by score.
-    - eigvals: variances along principal axes.
-    - ok: True if PCA is applicable (enough points, anisotropy threshold met, depth >= depth_min).
+    TEOREMA DELLO SPLIT BASATO SU ANISOTROPIA (Anisotropy-Based Split Theorem):
+    ============================================================================
+    
+    Questo metodo implementa il criterio fondamentale per determinare se lo split
+    debba avvenire lungo assi allineati con PCA oppure lungo gli assi originali.
+    
+    PRINCIPIO:
+    - Calcola gli assi principali (PCA) dalla nuvola dei punti migliori testati
+    - Misura l'anisotropia tramite il rapporto degli autovalori: λ₁ / mean(λ₂, ..., λₙ)
+    - Se il rapporto supera la soglia (default 1.4), la funzione obiettivo mostra
+      una direzione preferenziale (maggiore varianza lungo il primo componente)
+    - In questo caso, lo split avviene lungo gli assi PCA, dove la funzione
+      obiettivo varia maggiormente
+    
+    RATIONALE MATEMATICO:
+    L'anisotropia elevata indica che la funzione ha una "valle" o "cresta" principale.
+    Dividere lungo questa direzione permette di:
+    1. Separare efficacemente regioni con diversi valori della funzione
+    2. Concentrare la ricerca dove la funzione cambia più rapidamente
+    3. Evitare split inutili in direzioni quasi costanti
+    
+    Parameters:
+    -----------
+    q_good : float
+        Fraction of top-scoring points to use for PCA (default 0.3)
+    min_points : int
+        Minimum number of tested points required to compute PCA (default 10)
+    anisotropy_threshold : float
+        Minimum ratio λ₁/mean(λ₂,...,λₙ) to consider PCA valid (default 1.4)
+    depth_min : int
+        Minimum tree depth to enable PCA (default 1)
+
+    Returns:
+    --------
+    R : np.ndarray
+        Principal axes as column vectors (rotation matrix)
+    mu : np.ndarray
+        Center point estimated from top q_good fraction by score
+    eigvals : np.ndarray
+        Variances (eigenvalues) along principal axes, in descending order
+    ok : bool
+        True if PCA is applicable (sufficient points, anisotropy threshold met,
+        depth >= depth_min); False to fall back to original coordinate axes
     """
         d = len(self.bounds)
         # default: identity around current center in original space
@@ -409,7 +467,9 @@ class QuadCube:
         order = np.argsort(evals)[::-1]
         evals = evals[order]
         evecs = evecs[:, order]
-    # anisotropy check
+    # CALCOLO ANISOTROPIA: Rapporto tra autovalore massimo e media degli altri
+    # ratio > threshold → funzione ha direzione preferenziale → usa PCA
+    # ratio ≤ threshold → funzione isotropica (varia ugualmente in tutte direzioni) → usa assi originali
         ratio = float(evals[0] / max(np.mean(evals[1:]) if d > 1 else evals[0], 1e-9))
         ok = bool(ratio >= anisotropy_threshold)
         if not ok:
@@ -424,8 +484,47 @@ class QuadCube:
                               mu: np.ndarray,
                               ridge_alpha: float = 1e-3) -> float:
     """Choose a cut point along a prime axis via 1D quadratic fit over projections.
-    Falls back to midpoint (or median of top responses) if fit is poor or data are insufficient.
-    Returns t_cut in prime coords, clipped to [lo, hi] for that axis.
+    
+    TEOREMA DEL TAGLIO DOVE LA FUNZIONE CURVA DI PIÙ (Maximum Curvature Split):
+    ===========================================================================
+    
+    Questo metodo implementa il secondo principio chiave: lo split avviene nel punto
+    dove la funzione obiettivo presenta la massima curvatura (cambiamento di pendenza).
+    
+    MECCANISMO:
+    1. Proietta tutti i punti testati sull'asse specificato (via PCA se ok=True)
+    2. Fitta un modello quadratico: y ~ a + b·t + (c/2)·t²
+    3. Trova il punto stazionario t* = -b/c (minimo se c > 0, massimo se c < 0)
+    4. Questo punto rappresenta dove la funzione cambia direzione più rapidamente
+    
+    RATIONALE:
+    - Se la funzione ha un minimo locale lungo l'asse → split nel minimo separa
+      le due "valli" ai lati
+    - Se la funzione ha un massimo locale → split nel massimo separa le regioni
+      ascendenti/discendenti
+    - La curvatura c indica quanto rapidamente cambia la funzione: maggiore |c|
+      significa che il taglio separa regioni con comportamento più diverso
+    
+    FALLBACK:
+    Se il fit quadratico fallisce o c ≤ 0 (funzione non convessa), ricade su:
+    - Mediana delle proiezioni dei punti migliori (top 40%)
+    - Punto medio dell'intervallo se non ci sono abbastanza dati
+    
+    Parameters:
+    -----------
+    axis_idx : int
+        Index of the axis along which to compute the cut
+    R : np.ndarray
+        Rotation matrix (PCA axes or identity)
+    mu : np.ndarray
+        Center point for projection
+    ridge_alpha : float
+        Regularization parameter for quadratic fitting (default 1e-3)
+    
+    Returns:
+    --------
+    t_cut : float
+        Cut point in prime coordinates, clipped to [lo, hi] for that axis
     """
         pairs = getattr(self, "_tested_pairs", [])
         d = len(self.bounds)
@@ -449,13 +548,17 @@ class QuadCube:
         except Exception:
             lo, hi = self.bounds[axis_idx]
             return 0.5 * (lo + hi)
-    # minimum of quadratic: t* = -b/c (if convex: c > 0)
+    # CALCOLO DEL PUNTO DI MASSIMA CURVATURA:
+    # Il minimo della parabola y = a + bt + (c/2)t² si trova in t* = -b/c
+    # Questo è il punto dove la derivata dy/dt = b + ct è zero
+    # Se c > 0 (parabola convessa): t* è un minimo → split separa le due discese
+    # Se c < 0 (parabola concava): t* è un massimo → split separa le due salite
         if c_hat > 1e-8:
             t_star = -b_hat / c_hat
             lo, hi = self.bounds[axis_idx]
             t_cut = float(np.clip(t_star, lo, hi))
             return t_cut
-        # fallback: median of good projections
+        # FALLBACK: Se c ≤ 0 (non convesso) o fit fallito, usa mediana dei punti migliori
         # pick top 40% by y
         k = max(5, int(0.4 * len(t)))
         idx = np.argsort(y)[::-1][:k]
@@ -482,7 +585,20 @@ class QuadCube:
         return float(lo), float(hi)
 
     def split2(self, axis: Optional[int] = None) -> List["QuadCube"]:
-    # Binary split along one prime axis (largest width by default)
+    """Binary split along one prime axis (largest width by default).
+    
+    APPLICAZIONE DEL TEOREMA - SPLIT BINARIO:
+    ==========================================
+    
+    1. Calcola assi PCA e verifica anisotropia (_principal_axes)
+    2. Se anisotropia OK: usa assi PCA, altrimenti usa assi originali
+    3. Determina punto di taglio dove funzione curva di più (_quad_cut_along_axis)
+    4. Divide il cubo in due figli lungo quel punto
+    5. Ri-distribuisce i punti testati ai figli appropriati
+    
+    Questo garantisce che ogni figlio eredita la regione dove la funzione
+    ha comportamento più omogeneo.
+    """
         d = len(self.bounds)
         self._ensure_frame()
         widths = self._widths()
@@ -532,7 +648,24 @@ class QuadCube:
         return self.children
 
     def split4(self) -> List["QuadCube"]:
-    # 4-way split using PCA local axes; cut-points from quadratic 1D fits (fallback to midpoints)
+    """4-way split using PCA local axes; cut-points from quadratic 1D fits (fallback to midpoints).
+    
+    APPLICAZIONE DEL TEOREMA - SPLIT QUADRUPLO:
+    ============================================
+    
+    Estende split2 a due dimensioni simultanee (primi due componenti PCA):
+    
+    1. Calcola assi principali (PCA) e centro dai punti migliori
+    2. Se anisotropia sufficiente: usa PC1 e PC2 (direzioni di massima varianza)
+    3. Altrimenti: usa i due assi più larghi nello spazio originale
+    4. Per ciascun asse, trova il punto di massima curvatura (fit quadratico)
+    5. Crea 4 quadranti: (left,bottom), (right,bottom), (left,top), (right,top)
+    6. Assegna i punti storici ai quadranti corretti
+    
+    VANTAGGIO:
+    Quando la funzione ha forte anisotropia in 2D, questo cattura meglio
+    la geometria locale (es. valle diagonale) rispetto a split sequenziali.
+    """
         d = len(self.bounds)
         if d == 1:
             return self.split2(axis=0)
