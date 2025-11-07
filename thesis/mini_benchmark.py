@@ -7,9 +7,6 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import numpy as np
 
-# Local import of curvature optimizer
-from hpo_curvature import QuadHPO
-
 # Optional dependencies
 try:
     import optuna
