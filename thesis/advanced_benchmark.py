@@ -1,10 +1,10 @@
-
 from __future__ import annotations
 
 import argparse
 import time
 import os
 from datetime import datetime
+import csv
 from dataclasses import dataclass
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
@@ -56,6 +56,52 @@ def map_to_domain(x_norm: np.ndarray, bounds: List[Tuple[float, float]]) -> np.n
     return lo + x_norm * (hi - lo)
 
 
+def format_hparams(fun_name: str, x_norm: np.ndarray) -> str:
+    """Return a concise, human-readable string with x_norm and mapped hyperparams.
+
+    Supports both the legacy 3-D search space and the extended 8-D space.
+    """
+    x_norm = np.asarray(x_norm, dtype=float)
+    try:
+        x_str = np.array2string(x_norm, precision=3, separator=',')
+    except Exception:
+        x_str = str(list(map(float, x_norm)))
+
+    if fun_name == 'resnet18_cifar10':
+        if len(x_norm) >= 8:
+            # Extended 8D space: lr, momentum, weight_decay, batch_size, step_size, gamma, label_smoothing, mixup_alpha
+            bounds = [
+                (-4, -1),      # log10 lr
+                (0.8, 0.99),   # momentum
+                (-6, -2),      # log10 weight decay
+                (64, 256),     # batch size
+                (2, 8),        # StepLR step_size (epochs)
+                (0.85, 0.99),  # gamma (StepLR)
+                (0.0, 0.2),    # label smoothing
+                (0.0, 1.0),    # mixup alpha (0 disables)
+            ]
+            hp_raw = map_to_domain(x_norm[:8], bounds)
+            lr = 10 ** float(hp_raw[0])
+            momentum = float(hp_raw[1])
+            weight_decay = 10 ** float(hp_raw[2])
+            batch_size = int(max(64, min(256, round(float(hp_raw[3]) / 32) * 32)))
+            step_size = int(round(float(hp_raw[4])))
+            gamma = float(hp_raw[5])
+            label_smoothing = float(hp_raw[6])
+            mixup_alpha = float(hp_raw[7])
+            return (f"x={x_str} | hp: lr={lr:.2e}, mom={momentum:.3f}, wd={weight_decay:.1e}, batch={batch_size}, "
+                    f"step={step_size}, gamma={gamma:.3f}, ls={label_smoothing:.3f}, mixup={mixup_alpha:.2f}")
+        else:
+            bounds = [(-4, -1), (0.8, 0.99), (64, 256)]
+            hp_raw = map_to_domain(x_norm[:3], bounds)
+            lr = 10 ** float(hp_raw[0])
+            momentum = float(hp_raw[1])
+            batch_size = int(max(64, min(256, round(float(hp_raw[2]) / 32) * 32)))
+            return f"x={x_str} | hp: lr={lr:.2e}, momentum={momentum:.3f}, batch={batch_size}"
+
+    return f"x={x_str}"
+
+
 # ------------------------------ ML benchmark -------------------------------
 
 # Global dataset cache to avoid re-downloading
@@ -95,17 +141,49 @@ def resnet18_cifar10(x_norm: np.ndarray, use_gpu: bool, trial_seed: int = 97) ->
         torch.backends.cuda.matmul.allow_tf32 = False  # Bit-exact reproducibility
         torch.backends.cudnn.allow_tf32 = False
 
-    bounds = [
-        (-4, -1),       # log10(learning_rate): 10^-4 to 10^-1
-        (0.8, 0.99),    # momentum
-        (512, 1024),    # batch_size - Max safe with 64MB shm + 4-6 workers
-    ]
-    hp_raw = map_to_domain(x_norm, bounds)
-    hp = {
-        'lr': 10**hp_raw[0],  # Correct log-uniform mapping: 10^[-4, -1] = [1e-4, 1e-1]
-        'momentum': hp_raw[1],
-        'batch_size': int(max(512, min(1024, round(hp_raw[2] / 32) * 32))),  # GPU-friendly multiples of 32
-    }
+    # Determine whether we're in 3D or 8D mode based on length of x_norm
+    extended = len(x_norm) >= 8
+    if extended:
+        # Extended space: lr, momentum, weight_decay, batch_size, step_size, gamma, label_smoothing, mixup_alpha
+        bounds = [
+            (-4, -1),      # log10 lr
+            (0.8, 0.99),   # momentum
+            (-6, -2),      # log10 weight decay
+            (64, 256),     # batch size
+            (2, 8),        # StepLR step size (epochs)
+            (0.85, 0.99),  # gamma
+            (0.0, 0.2),    # label smoothing
+            (0.0, 1.0),    # mixup alpha
+        ]
+        hp_raw = map_to_domain(x_norm[:8], bounds)
+        hp = {
+            'lr': 10 ** hp_raw[0],
+            'momentum': hp_raw[1],
+            'weight_decay': 10 ** hp_raw[2],
+            'batch_size': int(max(64, min(256, round(hp_raw[3] / 32) * 32))),
+            'step_size': int(round(hp_raw[4])),
+            'gamma': hp_raw[5],
+            'label_smoothing': hp_raw[6],
+            'mixup_alpha': hp_raw[7],
+        }
+    else:
+        bounds = [
+            (-4, -1),       # log10(learning_rate): 10^-4 to 10^-1
+            (0.8, 0.99),    # momentum
+            (64, 256),      # batch_size
+        ]
+        hp_raw = map_to_domain(x_norm[:3], bounds)
+        hp = {
+            'lr': 10 ** hp_raw[0],
+            'momentum': hp_raw[1],
+            'batch_size': int(max(64, min(256, round(hp_raw[2] / 32) * 32))),
+            # Defaults for extended hparams (inactive)
+            'weight_decay': 0.0,
+            'step_size': 5,
+            'gamma': 0.95,
+            'label_smoothing': 0.0,
+            'mixup_alpha': 0.0,
+        }
 
     # ============== DATASET: Load once and cache ==============
     global _CIFAR10_CACHE
@@ -186,13 +264,15 @@ def resnet18_cifar10(x_norm: np.ndarray, use_gpu: bool, trial_seed: int = 97) ->
     if use_gpu and torch.cuda.is_available():
         model = model.to(memory_format=torch.channels_last)
     
-    criterion = nn.CrossEntropyLoss()
+    criterion = nn.CrossEntropyLoss(label_smoothing=hp['label_smoothing'])
     optimizer = optim.SGD(
-        model.parameters(), 
-        lr=hp['lr'], 
-        momentum=hp['momentum'], 
-        foreach=True  # Fused optimizer for speed
+        model.parameters(),
+        lr=hp['lr'],
+        momentum=hp['momentum'],
+        weight_decay=hp['weight_decay'],
+        foreach=True
     )
+    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=hp['step_size'], gamma=hp['gamma']) if extended else None
 
     # Mixed Precision Training with AMP
     use_amp = use_gpu and torch.cuda.is_available()
@@ -211,18 +291,44 @@ def resnet18_cifar10(x_norm: np.ndarray, use_gpu: bool, trial_seed: int = 97) ->
             
             optimizer.zero_grad(set_to_none=True)  # Faster than zero_grad()
             
-            if use_amp:
-                with torch.amp.autocast(device_type='cuda'):
+            # Optional mixup augmentation in loss computation
+            if extended and hp['mixup_alpha'] > 0.0:
+                lam = np.random.beta(hp['mixup_alpha'], hp['mixup_alpha'])
+                batch_size = inputs.size(0)
+                index = torch.randperm(batch_size, device=device)
+                mixed_inputs = lam * inputs + (1 - lam) * inputs[index, :]
+                targets_a, targets_b = labels, labels[index]
+
+                if use_amp:
+                    with torch.amp.autocast(device_type='cuda'):
+                        outputs = model(mixed_inputs)
+                        loss = lam * criterion(outputs, targets_a) + (1 - lam) * criterion(outputs, targets_b)
+                    scaler.scale(loss).backward()
+                    scaler.step(optimizer)
+                    scaler.update()
+                else:
+                    outputs = model(mixed_inputs)
+                    loss = lam * criterion(outputs, targets_a) + (1 - lam) * criterion(outputs, targets_b)
+                    loss.backward()
+                    optimizer.step()
+            else:
+                if use_amp:
+                    with torch.amp.autocast(device_type='cuda'):
+                        outputs = model(inputs)
+                        loss = criterion(outputs, labels)
+                    scaler.scale(loss).backward()
+                    scaler.step(optimizer)
+                    scaler.update()
+                else:
                     outputs = model(inputs)
                     loss = criterion(outputs, labels)
-                scaler.scale(loss).backward()
-                scaler.step(optimizer)
-                scaler.update()
-            else:
-                outputs = model(inputs)
-                loss = criterion(outputs, labels)
-                loss.backward()
-                optimizer.step()
+                    loss.backward()
+                    optimizer.step()
+
+        if scheduler is not None:
+            scheduler.step()
+
+    # Mixup is applied inline inside training; nothing special to do post-training.
 
     # ============== VALIDATION: Evaluate on validation split (NOT test) ==============
     model.eval()
@@ -267,7 +373,8 @@ def resnet18_cifar10(x_norm: np.ndarray, use_gpu: bool, trial_seed: int = 97) ->
 
 
 ML_FUNS: Dict[str, Tuple[Callable[[np.ndarray, bool, int], Dict[str, float]], int]] = {
-    'resnet18_cifar10': (resnet18_cifar10, 3),
+    # Default now set to 8-D (extended). Can be overridden via --hp-dim.
+    'resnet18_cifar10': (resnet18_cifar10, 8),
 }
 
 
@@ -298,13 +405,42 @@ def evaluate_on_test_set(x_norm: np.ndarray, use_gpu: bool, seed: int = 99999) -
         torch.backends.cuda.matmul.allow_tf32 = False
         torch.backends.cudnn.allow_tf32 = False
     
-    bounds = [(-4, -1), (0.8, 0.99), (512, 1024)]
-    hp_raw = map_to_domain(x_norm, bounds)
-    hp = {
-        'lr': 10**hp_raw[0],
-        'momentum': hp_raw[1],
-        'batch_size': int(max(512, min(1024, round(hp_raw[2] / 32) * 32))),  # GPU-friendly multiples of 32
-    }
+    extended = len(x_norm) >= 8
+    if extended:
+        bounds = [
+            (-4, -1),      # log10 lr
+            (0.8, 0.99),   # momentum
+            (-6, -2),      # log10 weight decay
+            (64, 256),     # batch size
+            (2, 8),        # step size
+            (0.85, 0.99),  # gamma
+            (0.0, 0.2),    # label smoothing
+            (0.0, 1.0),    # mixup alpha
+        ]
+        hp_raw = map_to_domain(x_norm[:8], bounds)
+        hp = {
+            'lr': 10 ** hp_raw[0],
+            'momentum': hp_raw[1],
+            'weight_decay': 10 ** hp_raw[2],
+            'batch_size': int(max(64, min(256, round(hp_raw[3] / 32) * 32))),
+            'step_size': int(round(hp_raw[4])),
+            'gamma': hp_raw[5],
+            'label_smoothing': hp_raw[6],
+            'mixup_alpha': hp_raw[7],
+        }
+    else:
+        bounds = [(-4, -1), (0.8, 0.99), (64, 256)]
+        hp_raw = map_to_domain(x_norm[:3], bounds)
+        hp = {
+            'lr': 10 ** hp_raw[0],
+            'momentum': hp_raw[1],
+            'batch_size': int(max(64, min(256, round(hp_raw[2] / 32) * 32))),
+            'weight_decay': 0.0,
+            'step_size': 5,
+            'gamma': 0.95,
+            'label_smoothing': 0.0,
+            'mixup_alpha': 0.0,
+        }
     
     # Use FULL train set (45k) + val set (5k) = 50k for final training
     global _CIFAR10_CACHE
@@ -359,8 +495,9 @@ def evaluate_on_test_set(x_norm: np.ndarray, use_gpu: bool, seed: int = 99999) -
     if use_gpu and torch.cuda.is_available():
         model = model.to(memory_format=torch.channels_last)
     
-    criterion = nn.CrossEntropyLoss()
-    optimizer = optim.SGD(model.parameters(), lr=hp['lr'], momentum=hp['momentum'], foreach=True)
+    criterion = nn.CrossEntropyLoss(label_smoothing=hp['label_smoothing'])
+    optimizer = optim.SGD(model.parameters(), lr=hp['lr'], momentum=hp['momentum'], weight_decay=hp['weight_decay'], foreach=True)
+    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=hp['step_size'], gamma=hp['gamma']) if extended else None
     use_amp = use_gpu and torch.cuda.is_available()
     scaler = torch.amp.GradScaler('cuda') if use_amp else None
     
@@ -385,6 +522,12 @@ def evaluate_on_test_set(x_norm: np.ndarray, use_gpu: bool, seed: int = 99999) -
                 loss = criterion(outputs, labels)
                 loss.backward()
                 optimizer.step()
+
+
+        if scheduler is not None:
+            scheduler.step()
+
+    # No EMA in new space
     
     # Evaluate on TRUE test set
     model.eval()
@@ -423,8 +566,14 @@ def evaluate_on_test_set(x_norm: np.ndarray, use_gpu: bool, seed: int = 99999) -
 # ------------------------------ optimization --------------------------------
 
 def run_optimizer(
-    optimizer: str, fun_name: str, seed: int, budget: int, use_gpu: bool, verbose: bool = False
-) -> Dict[str, float]:
+    optimizer: str,
+    fun_name: str,
+    seed: int,
+    budget: int,
+    use_gpu: bool,
+    verbose: bool = False,
+    trial_logger: Optional[Callable[[str], None]] = None,
+) -> Tuple[Dict[str, float], Optional[np.ndarray]]:
     func, dim = ML_FUNS[fun_name]
     bounds = [(0.0, 1.0)] * dim
     maximize = True
@@ -440,73 +589,105 @@ def run_optimizer(
 
     if optimizer == 'curvature':
         hpo = QuadHPO(bounds=bounds, maximize=maximize, rng_seed=seed)
-        
         # Track best metrics
         best_metrics = {'accuracy': -np.inf, 'precision': 0.0, 'recall': 0.0, 'f1': 0.0}
-        
+        best_x_norm: Optional[np.ndarray] = None
+
         def wrapped_objective(x_norm: np.ndarray, epochs: int = 1) -> float:
             """Objective wrapper called by QuadHPO for each trial.
 
             When `verbose` is True we print a per-trial summary similar to Optuna's trial logs.
             """
-            nonlocal best_metrics
+            nonlocal best_metrics, best_x_norm
             t0 = time.time()
             metrics = objective_wrapper(x_norm)
             elapsed = time.time() - t0
             # Update best
             if metrics['accuracy'] > best_metrics['accuracy']:
                 best_metrics = metrics.copy()
+                best_x_norm = np.array(x_norm, dtype=float)
 
-            # Print per-trial log if requested. QuadHPO increments `trial_id` before calling
-            # the objective, so we can read it for a trial index.
             try:
                 trial_idx = int(hpo.trial_id)
             except Exception:
                 trial_idx = -1
 
             if verbose:
-                # emulate the per-trial line used elsewhere in the script
-                print(
+                hp_desc = format_hparams(fun_name, x_norm)
+                msg = (
                     f"{fun_name:20s} | seed {seed:2d} | curv trial {trial_idx:3d} | "
                     f"acc: {metrics['accuracy']:.4f} | prec: {metrics['precision']:.4f} | "
-                    f"rec: {metrics['recall']:.4f} | f1: {metrics['f1']:.4f} | t: {elapsed:.1f}s"
+                    f"rec: {metrics['recall']:.4f} | f1: {metrics['f1']:.4f} | t: {elapsed:.1f}s | {hp_desc}"
                 )
-
+                if trial_logger is not None:
+                    trial_logger(msg)
+                else:
+                    print(msg)
             return metrics['accuracy']
-        
+
         hpo.optimize(wrapped_objective, budget=budget)
-        return best_metrics
+        return best_metrics, best_x_norm
 
     elif optimizer == 'optuna':
         if not OPTUNA_AVAILABLE:
-            return {'accuracy': float('nan'), 'precision': float('nan'), 'recall': float('nan'), 'f1': float('nan')}
+            return ({'accuracy': float('nan'), 'precision': float('nan'), 'recall': float('nan'), 'f1': float('nan')}, None)
         
         best_metrics = {'accuracy': -np.inf, 'precision': 0.0, 'recall': 0.0, 'f1': 0.0}
+        best_x_norm: Optional[np.ndarray] = None
         
         def objective_optuna(trial: optuna.trial.Trial) -> float:
-            nonlocal best_metrics
+            nonlocal best_metrics, best_x_norm
             x_norm = np.array([trial.suggest_float(f"x{i}", 0.0, 1.0) for i in range(dim)])
+            t0 = time.time()
             metrics = objective_wrapper(x_norm)
+            elapsed = time.time() - t0
             if metrics['accuracy'] > best_metrics['accuracy']:
                 best_metrics = metrics.copy()
+                best_x_norm = np.array(x_norm, dtype=float)
+            if verbose:
+                hp_desc = format_hparams(fun_name, x_norm)
+                msg = (
+                    f"{fun_name:20s} | seed {seed:2d} | optuna trial {trial.number:3d} | "
+                    f"acc: {metrics['accuracy']:.4f} | prec: {metrics['precision']:.4f} | "
+                    f"rec: {metrics['recall']:.4f} | f1: {metrics['f1']:.4f} | t: {elapsed:.1f}s | {hp_desc}"
+                )
+                if trial_logger is not None:
+                    trial_logger(msg)
+                else:
+                    print(msg)
             return metrics['accuracy']
         
-        sampler = optuna.samplers.TPESampler(seed=seed)
+        sampler = optuna.samplers.TPESampler(seed=seed, multivariate=True) #multivariate on off
         study = optuna.create_study(direction='maximize' if maximize else 'minimize', sampler=sampler)
         study.optimize(objective_optuna, n_trials=budget, show_progress_bar=False)
-        return best_metrics
+        return best_metrics, best_x_norm
 
     elif optimizer == 'random':
         rng = np.random.default_rng(seed)
         best_metrics = {'accuracy': -np.inf, 'precision': 0.0, 'recall': 0.0, 'f1': 0.0}
+        best_x_norm: Optional[np.ndarray] = None
         
-        for _ in range(budget):
+        for i in range(budget):
             x_norm = rng.random(dim)
+            t0 = time.time()
             metrics = objective_wrapper(x_norm)
+            elapsed = time.time() - t0
             if metrics['accuracy'] > best_metrics['accuracy']:
                 best_metrics = metrics.copy()
+                best_x_norm = np.array(x_norm, dtype=float)
+            if verbose:
+                hp_desc = format_hparams(fun_name, x_norm)
+                msg = (
+                    f"{fun_name:20s} | seed {seed:2d} | rand trial {i+1:3d} | "
+                    f"acc: {metrics['accuracy']:.4f} | prec: {metrics['precision']:.4f} | "
+                    f"rec: {metrics['recall']:.4f} | f1: {metrics['f1']:.4f} | t: {elapsed:.1f}s | {hp_desc}"
+                )
+                if trial_logger is not None:
+                    trial_logger(msg)
+                else:
+                    print(msg)
         
-        return best_metrics
+        return best_metrics, best_x_norm
 
     else:
         raise ValueError(f"Unknown optimizer: {optimizer}")
@@ -523,6 +704,8 @@ def main():
     parser.add_argument('--gpu', action='store_true', help='Use GPU if available')
     parser.add_argument('--verbose', action='store_true', help='Print per-seed details')
     parser.add_argument('--output', type=str, default=None, help='Output file path (default: tests/benchmark_results_TIMESTAMP.txt)')
+    parser.add_argument('--test-topk', type=int, default=10, help='Evaluate top-K validation winners on the true test set')
+    parser.add_argument('--hp-dim', type=int, default=8, choices=[3, 8], help='Hyperparameter search dimensionality (default: 8)')
     args = parser.parse_args()
 
     seeds = [int(s) for s in args.seeds.split(',') if s.strip()]
@@ -566,6 +749,10 @@ def main():
         print('ERROR: Optuna requested but not available. Install with: pip install optuna')
         return
 
+    # Override search dimensionality if requested
+    if 'resnet18_cifar10' in names:
+        ML_FUNS['resnet18_cifar10'] = (resnet18_cifar10, args.hp_dim)
+
     # Open output file
     with open(output_file, 'w') as log_file:
         # Write header to file
@@ -578,6 +765,7 @@ def main():
         print_and_log(f'GPU requested: {args.gpu}', log_file)
         print_and_log(f'Functions: {", ".join(names)}', log_file)
         print_and_log(f'Methods: {", ".join(methods)}', log_file)
+        print_and_log(f'HP dimension: {ML_FUNS.get("resnet18_cifar10", (None, None))[1]}', log_file)
         print_and_log('=' * 120, log_file)
         print_and_log('', log_file)
 
@@ -593,31 +781,49 @@ def main():
                     'time': []
                 }
 
+        winners: List[Dict[str, Any]] = []  # collect per-run bests
         for name in names:
             for seed in seeds:
                 for method in methods:
                     t0 = time.time()
                     method_map = {'curv': 'curvature', 'opt': 'optuna', 'optuna': 'optuna', 'rand': 'random', 'random': 'random'}
-                    if method not in method_map: continue
-
-                    metrics = run_optimizer(method_map[method], name, seed, args.budget, args.gpu, args.verbose)
+                    if method not in method_map:
+                        continue
+                    metrics, best_x = run_optimizer(
+                        method_map[method],
+                        name,
+                        seed,
+                        args.budget,
+                        args.gpu,
+                        args.verbose,
+                        trial_logger=lambda s: print_and_log(s, log_file),
+                    )
                     elapsed = time.time() - t0
-                    
+
                     results[name][method]['accuracy'].append(metrics['accuracy'])
                     results[name][method]['precision'].append(metrics['precision'])
                     results[name][method]['recall'].append(metrics['recall'])
                     results[name][method]['f1'].append(metrics['f1'])
                     results[name][method]['time'].append(elapsed)
-                    
+
+                    winners.append({
+                        'function': name,
+                        'method': method,
+                        'seed': seed,
+                        'val_metrics': metrics,
+                        'x_norm': best_x,
+                        'elapsed': elapsed
+                    })
+
                     if args.verbose:
                         msg = (f"{name:20s} | seed {seed:2d} | {method:8s} | "
-                              f"acc: {metrics['accuracy']:.4f} | prec: {metrics['precision']:.4f} | "
-                              f"rec: {metrics['recall']:.4f} | f1: {metrics['f1']:.4f} | t: {elapsed:.1f}s")
+                               f"acc: {metrics['accuracy']:.4f} | prec: {metrics['precision']:.4f} | "
+                               f"rec: {metrics['recall']:.4f} | f1: {metrics['f1']:.4f} | t: {elapsed:.1f}s")
                         print_and_log(msg, log_file)
 
         # --- Enhanced Results Table ---
         print_and_log('\n' + '=' * 120, log_file)
-        print_and_log('COMPREHENSIVE BENCHMARK RESULTS - ResNet-18 on CIFAR-10', log_file)
+        print_and_log('COMPREHENSIVE BENCHMARK RESULTS (VALIDATION SPLIT ONLY) - ResNet-18 on CIFAR-10', log_file)
         print_and_log('=' * 120, log_file)
         
         for name in names:
@@ -702,8 +908,67 @@ def main():
                         improvement = ((best_acc - mean_val) / mean_val * 100) if mean_val > 0 else 0
                         print_and_log(f"  → {best_method.upper()} vs {method.upper()}: {improvement:+.2f}% improvement", log_file)
 
+        # --- Per-method Top-5 evaluation on TEST ---
         print_and_log('\n' + '=' * 120, log_file)
-        print_and_log(f"Benchmark Configuration: Budget={args.budget} trials/method | Seeds={seeds} | GPU={'Enabled' if args.gpu else 'Disabled'}", log_file)
+        per_method_k = 5
+        print_and_log(f'PER-METHOD TOP-{per_method_k} TEST EVALUATION', log_file)
+        print_and_log('=' * 120, log_file)
+
+        # Sort winners globally once by validation accuracy
+        winners_sorted = sorted(winners, key=lambda w: w['val_metrics']['accuracy'], reverse=True)
+
+        per_method_results: Dict[str, Dict[str, float]] = {}
+
+        for method in methods:
+            method_winners = [w for w in winners_sorted if w['method'] == method]
+            if not method_winners:
+                continue
+
+            method_topk = method_winners[:per_method_k]
+            print_and_log(f"\nMethod: {method}", log_file)
+            print_and_log('-' * 120, log_file)
+
+            header_pm = f"{'Rank':<5} {'Function':<20} {'Seed':<6} {'ValAcc':<8} | {'TestAcc':<8} {'TestPrec':<9} {'TestRec':<8} {'TestF1':<8}"
+            print_and_log(header_pm, log_file)
+            print_and_log('-' * len(header_pm), log_file)
+
+            test_accs: List[float] = []
+            for idx, win in enumerate(method_topk, start=1):
+                x_norm = win['x_norm']
+                test_metrics = {'accuracy': np.nan, 'precision': np.nan, 'recall': np.nan, 'f1': np.nan}
+                if x_norm is not None:
+                    try:
+                        test_metrics = evaluate_on_test_set(x_norm, args.gpu, seed=win['seed'] + 777)
+                    except Exception as e:
+                        print_and_log(f"Warning: per-method test eval failed for method {method}, rank {idx} ({e})", log_file)
+
+                test_acc = float(test_metrics['accuracy']) if not np.isnan(test_metrics['accuracy']) else np.nan
+                test_accs.append(test_acc)
+
+                line_pm = (f"{idx:<5} {win['function']:<20} {win['seed']:<6d} "
+                           f"{win['val_metrics']['accuracy']:<8.4f} | "
+                           f"{test_metrics['accuracy']:<8.4f} {test_metrics['precision']:<9.4f} "
+                           f"{test_metrics['recall']:<8.4f} {test_metrics['f1']:<8.4f}")
+                print_and_log(line_pm, log_file)
+
+            test_arr_pm = np.array([x for x in test_accs if not np.isnan(x)], dtype=float)
+            if test_arr_pm.size > 0:
+                mean_acc = float(np.nanmean(test_arr_pm))
+                std_acc = float(np.nanstd(test_arr_pm))
+                per_method_results[method] = {'mean_test_acc': mean_acc, 'std_test_acc': std_acc}
+                print_and_log(f"Summary {method}: mean test acc over Top-{test_arr_pm.size} = {mean_acc:.4f} ± {std_acc:.4f}", log_file)
+
+        if per_method_results:
+            print_and_log('\n' + '#' * 120, log_file)
+            print_and_log('PER-METHOD TOP-5 TEST SUMMARY', log_file)
+            print_and_log('#' * 120, log_file)
+            for method, stats in per_method_results.items():
+                msg = (f"{method:10s} | mean test acc (Top-{per_method_k}): "
+                       f"{stats['mean_test_acc']:.4f} ± {stats['std_test_acc']:.4f}")
+                print_and_log(msg, log_file)
+
+        print_and_log('\n' + '=' * 120, log_file)
+        print_and_log(f"Benchmark Configuration: Budget={args.budget} trials/method | Seeds={seeds} | GPU={'Enabled' if args.gpu else 'Disabled'} | TopPerMethod={per_method_k}", log_file)
         print_and_log('=' * 120, log_file)
     
     print(f"\nResults saved to: {output_file}")

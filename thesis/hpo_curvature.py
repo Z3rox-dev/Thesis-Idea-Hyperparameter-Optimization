@@ -24,14 +24,20 @@ class ParamSpace:
 class QuadCube:
     # Surrogate model cache (2D quadratic on PC1-PC2)
     surrogate_2d: Optional[Dict[str, Any]] = field(default=None, init=False)
+    
+    # Centralized surrogate hyperparameters
+    ridge_alpha: float = field(default=1e-3, init=False)
+    surrogate_min_points: int = field(default=8, init=False)
 
     #Metodo che adatta una funzione quadratica sulle prime due componenti principali (PC1 e PC2)
-    def fit_surrogate(self, min_points: int = 8) -> None: #Prendo i dati che ho già misurato, li guardo da un’angolazione comoda (PCA) e ci disegno sopra una parabola (tipo “colline” e “valli”) che approssima la zona vicina.
+    def fit_surrogate(self, min_points: Optional[int] = None) -> None: #Prendo i dati che ho già misurato, li guardo da un’angolazione comoda (PCA) e ci disegno sopra una parabola (tipo “colline” e “valli”) che approssima la zona vicina.
         """Fit a 2D quadratic surrogate on PC1-PC2 using local tested pairs.
 
         Stores ridge solution along with the inverse design matrix to enable
         input-dependent predictive variance at inference time.
         """
+        if min_points is None:
+            min_points = self.surrogate_min_points
         pairs = getattr(self, "_tested_pairs", [])
         if len(pairs) < min_points:
             self.surrogate_2d = None
@@ -48,8 +54,7 @@ class QuadCube:
         Phi = np.stack([
             np.ones_like(t1), t1, t2, 0.5 * t1 ** 2, 0.5 * t2 ** 2, t1 * t2
         ], axis=1)
-        ridge_alpha = 1e-3
-        A = Phi.T @ Phi + ridge_alpha * np.eye(6)
+        A = Phi.T @ Phi + self.ridge_alpha * np.eye(6)
         b = Phi.T @ y
         try:
             w = np.linalg.solve(A, b)  # Trovo i numeri che fanno combaciare la mia parabola con i punti misurati.
@@ -188,6 +193,7 @@ class QuadCube:
     prior_var: float = 1.0
     stale_steps: int = 0
     depth: int = 0
+    birth_trial: int = field(default=0, init=False)  # Trial number when this cube was created
     # early stopping removed
 
     # geometry helpers
@@ -311,11 +317,15 @@ class QuadCube:
 
     def should_split(self,
                      min_trials: int = 5,
-                     min_points: int = 10,
+                     min_points: Optional[int] = None,
                      max_depth: Optional[int] = 4,
                      min_width: float = 1e-3,
                      gamma: float = 0.02) -> str: #decide se e come dividere il cubo
         #Regole: non spacco troppo in profondità, non spacco briciole, e non spacco se non ho abbastanza prove o il guadagno è risibile
+        # Use centralized surrogate_min_points if not overridden
+        if min_points is None:
+            min_points = self.surrogate_min_points
+        
         # stop per profondità/ampiezza
         if max_depth is not None and self.depth >= max_depth:
             return 'none'
@@ -333,7 +343,7 @@ class QuadCube:
         # prefer quad if we have enough points for PCA/quadratic
         npts = len(self._points_history)
         #Se ho dati sufficienti, faccio un taglio più fine in quattro; se no, taglio in due per stare sul semplice
-        split_type = 'quad' if npts >= max(10, min_points) else 'binary'
+        split_type = 'quad' if npts >= min_points else 'binary'
 
         # Curvature gating: don't split in flat regions
         S = self._curvature_scores()
@@ -344,7 +354,7 @@ class QuadCube:
         # Solo se surrogato disponibile e almeno 2 figli
         #Applica un criterio di information gain basato sulla varianza residua del surrogato: richiede un surrogato con almeno 12 punti
         #Faccio una prova mentale: se taglio, i pezzi nuovi mi riducono abbastanza l’incertezza? Se il guadagno è piccolo, non spacco; se è decente, procedo col tipo di taglio deciso prima.
-        if self.surrogate_2d is not None and self.surrogate_2d['n'] >= 12:
+        if self.surrogate_2d is not None and self.surrogate_2d['n'] >= self.surrogate_min_points:
             var_parent = float(self.surrogate_2d['sigma2'])
             # Simula split
             if split_type == 'quad':
@@ -400,8 +410,8 @@ class QuadCube:
             Phi = np.stack([
                 np.ones_like(t1), t1, t2, 0.5 * t1 ** 2, 0.5 * t2 ** 2, t1 * t2
             ], axis=1)
-            ridge_alpha = 1e-3
-            A = Phi.T @ Phi + ridge_alpha * np.eye(6)
+            # ridge_alpha = 1e-3 # Now using self.ridge_alpha
+            A = Phi.T @ Phi + self.ridge_alpha * np.eye(6)
             b = Phi.T @ y[idx]
             try:
                 w = np.linalg.solve(A, b)
@@ -473,8 +483,8 @@ class QuadCube:
             Phi = np.stack([
                 np.ones_like(t1), t1, t2, 0.5 * t1 ** 2, 0.5 * t2 ** 2, t1 * t2
             ], axis=1)
-            ridge_alpha = 1e-3
-            A = Phi.T @ Phi + ridge_alpha * np.eye(6)
+            # ridge_alpha = 1e-3 # Now using self.ridge_alpha
+            A = Phi.T @ Phi + self.ridge_alpha * np.eye(6)
             b = Phi.T @ y[idx]
             try:
                 w = np.linalg.solve(A, b)
@@ -497,7 +507,7 @@ class QuadCube:
 
     def _principal_axes(self,
                         q_good: float = 0.3,
-                        min_points: int = 10,
+                        min_points: Optional[int] = None,
                         anisotropy_threshold: float = 1.4,
                         depth_min: int = 1) -> Tuple[np.ndarray, np.ndarray, np.ndarray, bool]:
         """Return (R, mu, eigvals, ok) where R columns are principal axes.
@@ -508,6 +518,10 @@ class QuadCube:
         - Mixes a uniform component so every point has non-zero influence.
         - Applies an anisotropy check; if weak or insufficient data, keep current frame.
         """
+        # Use centralized surrogate_min_points if not overridden
+        if min_points is None:
+            min_points = self.surrogate_min_points
+            
         d = len(self.bounds)
         # default: identity around current center in original space
         # current center in original coords using existing frame and bounds
@@ -567,11 +581,11 @@ class QuadCube:
     def _quad_cut_along_axis(self,
                               axis_idx: int,
                               R: np.ndarray,
-                              mu: np.ndarray,
-                              ridge_alpha: float = 1e-3) -> float:
+                              mu: np.ndarray) -> float:
         """Choose a cut point along given prime axis using 1D quadratic fit over projections.
         Falls back to midpoint if fit is poor or data insufficient.
         Returns t_cut in prime coords, clipped to [lo, hi] for that axis.
+        Uses self.ridge_alpha for regularization.
         """
         #Guardiamo i risultati lungo una linea. Disegno una parabola e taglio nel punto dove la curva sembra “scendere di più” (il minimo). Se la parabola non viene bene, taglio a metà o vicino ai punti migliori.
         pairs = getattr(self, "_tested_pairs", [])
@@ -589,7 +603,7 @@ class QuadCube:
         Phi = np.stack([np.ones_like(t), t, 0.5 * t * t], axis=1)
         # ridge solve: (Phi^T Phi + alpha I) w = Phi^T y
         A = Phi.T @ Phi
-        A += ridge_alpha * np.eye(3)
+        A += self.ridge_alpha * np.eye(3)
         b = Phi.T @ y
         try:
             w = np.linalg.solve(A, b)
@@ -686,6 +700,9 @@ class QuadCube:
             ch.prior_var = float(self.prior_var)
             ch.depth = self.depth + 1
             ch._tested_points = []
+            # Inherit surrogate hyperparameters
+            ch.ridge_alpha = self.ridge_alpha
+            ch.surrogate_min_points = self.surrogate_min_points
             for attr, default in [
                 ('pca_softmax_tau', 0.6),
                 ('pca_mix_uniform', 0.25),
@@ -723,7 +740,10 @@ class QuadCube:
             R_use = np.eye(d)
         if mu_use is None:
             mu_use = np.full(d, 0.5, dtype=float)
-        # Parent box expressed as conservative axis-aligned bounds in chosen frame
+        
+        # Parent box expressed in chosen frame
+        # KEY FIX: When ok=False, R_use == self.R, so M = I and spans_use = widths_parent
+        # This ensures frame consistency: axes chosen and bounds are in the SAME frame
         M = (R_use.T @ self.R) if self.R is not None else R_use.T
         A = np.abs(M)
         spans_use = A @ widths_parent
@@ -737,12 +757,14 @@ class QuadCube:
             ax_i = int(order[0])
             ax_j = int(order[1] if len(order) > 1 else order[0])
         else:
-            # Fallback: choose two axes - first two components if PCA ok, else widest two
-            #Se la PCA è ok usa PC1 (0) e PC2 (1, o 0 se 1D) come assi di taglio
+            # Fallback: choose two axes consistently in R_use frame
+            # If PCA ok: use PC1 (0) and PC2 (1)
+            # If PCA failed: use widest two axes from spans_use (which equals widths_parent when R_use==self.R)
             if ok:
                 ax_i, ax_j = 0, 1 if d > 1 else 0
             else:
-                top2 = np.argsort(widths_parent)[-2:]
+                # KEY FIX: Use spans_use (not widths_parent) to stay in R_use frame
+                top2 = np.argsort(spans_use)[-2:]
                 ax_i, ax_j = int(top2[0]), int(top2[1])
         
         # compute cutpoints
@@ -786,6 +808,9 @@ class QuadCube:
             # q_threshold removed
             ch.depth = self.depth + 1
             ch._tested_points = []
+            # Inherit surrogate hyperparameters
+            ch.ridge_alpha = self.ridge_alpha
+            ch.surrogate_min_points = self.surrogate_min_points
             # propagate PCA weighting knobs
             for attr, default in [
                 ('pca_softmax_tau', 0.6),
@@ -858,14 +883,15 @@ class QuadHPO:
         self.gamma = 0.02             # UCB exploration coefficient
         self.stale_steps_max = 15     # Max iterations without improvement before prune
         self.delta_prune = 0.025      # Prune threshold
-        self.max_depth = 4            # Maximum tree depth
+        self.max_depth = 1            # Maximum tree depth
         self.min_width = 1e-3         # Minimum cube width
-        self.min_points = 10          # Minimum points for surrogate
+        self.min_points = 8           # Minimum points for surrogate (same as QuadCube.surrogate_min_points)
         self.min_leaves = 5           # Minimum leaf count
+        self.prune_grace_period = 3   # Min trials before a leaf can be pruned
         
         # PCA/Sampling constants
         self.pca_q_good = 0.3
-        self.pca_min_points = 7
+        self.pca_min_points = 8       # Use same as surrogate for consistency
         self.anisotropy_threshold = 1.4
         self.depth_min_for_pca = 1
         self.line_search_prob = 0.25
@@ -974,7 +1000,7 @@ class QuadHPO:
         # Use surrogate-based acquisition if available and reliable enough
         if (
             cube.surrogate_2d is not None
-            and cube.surrogate_2d.get('n', 0) >= 10
+            and cube.surrogate_2d.get('n', 0) >= cube.surrogate_min_points
             and cube.surrogate_2d.get('pca_ok', True)
             and cube.surrogate_2d.get('sigma2', 1.0) <= float(self.surr_sigma2_max)
             and cube.surrogate_2d.get('r2', 0.0) >= float(self.surr_r2_min)
@@ -1224,7 +1250,7 @@ class QuadHPO:
 
         # Use local surrogate quality if present to refine gates
         surr = getattr(cube, 'surrogate_2d', None)
-        if surr is not None and surr.get('n', 0) >= 8:
+        if surr is not None and surr.get('n', 0) >= cube.surrogate_min_points:
             r2 = float(surr.get('r2', 0.0))
             s2 = float(surr.get('sigma2', 1.0))
             # Tighten when model is good
@@ -1398,6 +1424,9 @@ class QuadHPO:
             children = cube.split4() if split_type == 'quad' else cube.split2()
             if children:
                 self.splits_count += 1
+                # Set birth_trial for all children
+                for child in children:
+                    child.birth_trial = self.trial_id
                 # Use identity check to avoid numpy array ambiguity
                 for i, c in enumerate(self.leaf_cubes):
                     if c is cube:
@@ -1449,6 +1478,12 @@ class QuadHPO:
         keep_thresh = best_signed - margin
         keep: List[QuadCube] = []
         for c in ranked:
+            # Grace period: don't prune leaves that are too young
+            age = self.trial_id - c.birth_trial
+            if age < self.prune_grace_period:
+                keep.append(c)
+                continue
+            
             vol = 1.0
             for lo, hi in c.bounds:
                 vol *= max(hi - lo, 0.0)
