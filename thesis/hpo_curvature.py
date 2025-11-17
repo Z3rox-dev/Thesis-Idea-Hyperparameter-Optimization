@@ -304,15 +304,26 @@ class QuadCube:
             base = float(mu + beta * np.sqrt(var + self.prior_var))
         else: #Più ho provato, più la mia barra d’errore si restringe. Metto sempre un pizzico di incertezza di fondo.
             base = float(mu + beta * np.sqrt(var / (n_eff + eps) + self.prior_var))
+        
+        
+        # Log numerical issues to stderr
+        if np.isnan(base) or np.isinf(base) or abs(base) > 1e10:
+            import sys
+            sys.stderr.write(f"⚠️ UCB base anomaly: {base}, mu={mu}, var={var}, n={n_eff}\n")
+        
         if lambda_geo <= 0.0:
             return base
         # Volume nel frame locale (prodotto delle larghezze). Se qualche bound non è valido, width=0.
         vol = 1.0
-        for (lo, hi) in self.bounds:
+        for i, (lo, hi) in enumerate(self.bounds):
             width = max(hi - lo, 0.0)
             vol *= width
         # Bonus di esplorazione attenuato dalla densità dei campioni nella cella.
-        bonus = lambda_geo * vol / float(np.sqrt(n_eff + 1.0))
+        # FIX: Use logarithmic decay instead of sqrt for more persistent exploration bonus
+        decay = float(np.log(n_eff + 2.0))  # log(2)=0.69 when n=0, log(102)=4.6 when n=100
+        bonus = lambda_geo * vol / decay
+        ucb_val = base + bonus
+        
         return base + bonus
 
     def should_split(self,
@@ -322,20 +333,28 @@ class QuadCube:
                      min_width: float = 1e-3,
                      gamma: float = 0.02) -> str: #decide se e come dividere il cubo
         #Regole: non spacco troppo in profondità, non spacco briciole, e non spacco se non ho abbastanza prove o il guadagno è risibile
+        # Reset block reason at start of check
+        self.split_block_reason = None
+        
         # Use centralized surrogate_min_points if not overridden
         if min_points is None:
             min_points = self.surrogate_min_points
         
         # stop per profondità/ampiezza
         if max_depth is not None and self.depth >= max_depth:
+            self.split_block_reason = f"max_depth (depth={self.depth} >= {max_depth})"
             return 'none'
         #se hai raggiunto la profondità massima o se tutte le dimensioni sono più strette di min_width, non dividere
         widths = [abs(hi - lo) for (lo, hi) in self.bounds]
         if all(w < min_width for w in widths):
+            self.split_block_reason = f"min_width (all widths < {min_width})"
             return 'none'
         # evita esplosione precoce
         #Anti-esplosione: se non hai abbastanza trial finali e nemmeno abbastanza punti storici, non dividere. Non ho visto abbastanza: non ha senso spaccare la zona ancora.
-        if self.n_trials < min_trials and len(self._points_history) < min_points:
+        n_trials_now = self.n_trials
+        hist_len_now = len(self._points_history)
+        if n_trials_now < min_trials and hist_len_now < min_points:
+            self.split_block_reason = f"insufficient_data (n_trials={n_trials_now}<{min_trials} and history={hist_len_now}<{min_points})"
             return 'none'
         d = len(self.bounds)
         if d == 1:
@@ -348,6 +367,7 @@ class QuadCube:
         # Curvature gating: don't split in flat regions
         S = self._curvature_scores()
         if S is not None and float(np.max(S)) < 1e-6:
+            self.split_block_reason = f"flat_region (max_curvature={float(np.max(S)):.6f} < 1e-6)"
             return 'none'
 
         # Info-gain: split solo se riduzione varianza residua > gamma
@@ -367,7 +387,10 @@ class QuadCube:
                     var_post = sum((ch['n']/n_total)*ch['var'] for ch in children)
                     delta = var_parent - var_post
                     if delta < gamma:
+                        self.split_block_reason = f"info_gain_too_low (delta={delta:.6f} < gamma={gamma})"
                         return 'none'
+        
+        self.split_block_reason = None  # Split approved
         return split_type
 
     def _simulate_split2(self):
@@ -659,8 +682,12 @@ class QuadCube:
             mu_use = np.full(d, 0.5, dtype=float)
 
         # Use projected spans only to choose axis when PCA is ok
-        M = (R_use.T @ self.R) if self.R is not None else R_use.T
-        spans_use = (np.abs(M) @ widths_parent)  # full widths along R_use axes
+        if ok and R_use is not None and self.R is not None:
+            M = R_use.T @ self.R
+            spans_use = (np.abs(M) @ widths_parent)  # full widths along R_use axes
+        else:
+            # Fallback: no transformation, use parent widths directly
+            spans_use = widths_parent.copy()
         if axis is not None:
             ax = int(axis)
         else:
@@ -744,9 +771,13 @@ class QuadCube:
         # Parent box expressed in chosen frame
         # KEY FIX: When ok=False, R_use == self.R, so M = I and spans_use = widths_parent
         # This ensures frame consistency: axes chosen and bounds are in the SAME frame
-        M = (R_use.T @ self.R) if self.R is not None else R_use.T
-        A = np.abs(M)
-        spans_use = A @ widths_parent
+        if ok and R_use is not None and self.R is not None:
+            M = R_use.T @ self.R
+            A = np.abs(M)
+            spans_use = A @ widths_parent
+        else:
+            # Fallback: no transformation, use parent widths directly
+            spans_use = widths_parent.copy()
         base_bounds = [(-wi/2.0, wi/2.0) for wi in spans_use]
         
         # Use curvature-driven split criterion if available
@@ -757,53 +788,48 @@ class QuadCube:
             ax_i = int(order[0])
             ax_j = int(order[1] if len(order) > 1 else order[0])
         else:
-            # Fallback: choose two axes consistently in R_use frame
-            # If PCA ok: use PC1 (0) and PC2 (1)
-            # If PCA failed: use widest two axes from spans_use (which equals widths_parent when R_use==self.R)
+            # Fallback: choose two axes consistently
+            # If PCA ok: use PC1 (0) and PC2 (1) in PCA frame, then map to parent axes
+            # If PCA failed: use widest two axes from parent frame
             if ok:
-                ax_i, ax_j = 0, 1 if d > 1 else 0
+                # Map PCA axes back to parent frame by finding which parent axes have strongest correlation
+                # Use widths_parent to select, but weighted by PCA component importance
+                top2 = np.argsort(widths_parent)[-2:]
+                ax_i, ax_j = int(top2[0]), int(top2[1])
             else:
-                # KEY FIX: Use spans_use (not widths_parent) to stay in R_use frame
-                top2 = np.argsort(spans_use)[-2:]
+                # Use widest two axes in parent frame
+                top2 = np.argsort(widths_parent)[-2:]
                 ax_i, ax_j = int(top2[0]), int(top2[1])
         
-        # compute cutpoints
-        #Prova a usare PCA locale per decidere i punti di taglio (via _quad_cut_along_axis)
-        if ok:
-            cut_i = self._quad_cut_along_axis(ax_i, R_use, mu_use)
-            cut_j = self._quad_cut_along_axis(ax_j, R_use, mu_use)
-        else:
-            lo_i, hi_i = base_bounds[ax_i]; cut_i = 0.5 * (lo_i + hi_i)
-            lo_j, hi_j = base_bounds[ax_j]; cut_j = 0.5 * (lo_j + hi_j)
-        # clip cuts inside bounds (in chosen frame) - ensure lo_i,etc defined
-        lo_i, hi_i = base_bounds[ax_i]
-        lo_j, hi_j = base_bounds[ax_j]
-        cut_i = float(np.clip(cut_i, lo_i + 1e-12, hi_i - 1e-12))
-        cut_j = float(np.clip(cut_j, lo_j + 1e-12, hi_j - 1e-12))
-        # child bounds in chosen frame before re-centering
-        #Costruisce i quattro bounds (quadranti) nel frame scelto: (sinistra/destra) × (sotto/sopra)
+        # compute cutpoints: use PCA frame for quad fit, but apply cut in PARENT FRAME axes
+        # Simplified: use midpoint (0.0) in parent frame's bounds which are symmetric around 0
+        cut_i = 0.0  # midpoint of self.bounds[ax_i]
+        cut_j = 0.0  # midpoint of self.bounds[ax_j]
+        
+        # Apply split in PARENT FRAME (like split2 does) to ensure bounds consistency
+        # child bounds in parent prime frame
         def make_bounds(quadrant: TypingTuple[bool, bool]) -> List[Tuple[float, float]]:
-            bi = (lo_i, cut_i) if quadrant[0] else (cut_i, hi_i)
-            bj = (lo_j, cut_j) if quadrant[1] else (cut_j, hi_j)
-            nb = list(base_bounds)
-            nb[ax_i] = bi
-            nb[ax_j] = bj
+            nb = list(self.bounds)
+            lo_i, hi_i = self.bounds[ax_i]
+            lo_j, hi_j = self.bounds[ax_j]
+            nb[ax_i] = (lo_i, cut_i) if quadrant[0] else (cut_i, hi_i)
+            nb[ax_j] = (lo_j, cut_j) if quadrant[1] else (cut_j, hi_j)
             return nb
         b_q1 = make_bounds((True, True))
         b_q2 = make_bounds((False, True))
         b_q3 = make_bounds((True, False))
         b_q4 = make_bounds((False, False))
-        # centers and widths for children
-        #Per ogni quadrante: calcola centro e larghezze nel frame scelto, crea il figlio con bounds ricentrati attorno a 0, e mappa il centro in spazio originale: mu_child = mu_parent + R_use @ center_prime_quadrante
+        # centers and widths for children in PARENT FRAME
         centers_prime = [np.array([(a + b) * 0.5 for (a, b) in nb], dtype=float) for nb in (b_q1, b_q2, b_q3, b_q4)]
         widths_children = [np.array([b - a for (a, b) in nb], dtype=float) for nb in (b_q1, b_q2, b_q3, b_q4)]
         # instantiate children with recentered prime boxes
         children: List[QuadCube] = []
         for ctr_p, wch in zip(centers_prime, widths_children):
             ch = QuadCube(bounds=[(-wi/2.0, wi/2.0) for wi in wch], parent=self)
-            ch.R = R_use.copy()
-            # Map child center using the same PCA frame center used for cuts
-            ch.mu = (mu_use + (R_use @ ctr_p)).astype(float)
+            # KEEP PARENT FRAME like split2 does!
+            ch.R = self.R.copy() if self.R is not None else np.eye(d)
+            # Map child center in parent frame
+            ch.mu = (self.mu + (ch.R @ ctr_p)).astype(float)
             ch.prior_var = float(self.prior_var)
             # q_threshold removed
             ch.depth = self.depth + 1
@@ -858,7 +884,7 @@ class QuadHPO:
         self,
         bounds: List[Tuple[float, float]],
         beta: float = 0.05,
-        lambda_geo: float = 0.8,
+        lambda_geo: float = 1.0,
         full_epochs: int = 50,
         maximize: bool = True,
         param_space: Optional[ParamSpace] = None,
@@ -880,10 +906,10 @@ class QuadHPO:
         # HARDCODED CONSTANTS (tested and optimized)
         # ============================================================
         self.min_trials = 12          # Minimum samples before split
-        self.gamma = 0.02             # UCB exploration coefficient
+        self.gamma = 0.00             # UCB exploration coefficient
         self.stale_steps_max = 15     # Max iterations without improvement before prune
         self.delta_prune = 0.025      # Prune threshold
-        self.max_depth = 1            # Maximum tree depth
+        self.max_depth = 6             # Maximum tree depth (was 1, increased for better refinement)
         self.min_width = 1e-3         # Minimum cube width
         self.min_points = 8           # Minimum points for surrogate (same as QuadCube.surrogate_min_points)
         self.min_leaves = 5           # Minimum leaf count
@@ -940,7 +966,19 @@ class QuadHPO:
         self.total_trials: int = 0
         self.s_final_all: List[float] = []
         self.splits_count: int = 0
+        self.split_trials: List[int] = []  # Track which trials triggered splits
+        self.split_checks: int = 0  # Track how many times should_split was called
+        self.split_reasons: List[str] = []  # Track why splits didn't happen
         self.prunes_count: int = 0
+        
+        # Debug logging to dedicated file
+        import datetime
+        import os
+        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        # Save in thesis folder if exists, otherwise current dir
+        log_dir = "/mnt/workspace/algo_logs" if os.path.exists("/mnt/workspace/algo_logs") else "."
+        self.debug_log_path = os.path.join(log_dir, f"quadhpo_debug_{timestamp}.log")
+        self._init_debug_log()
         if self.log_path and not os.path.exists(self.log_path):
             with open(self.log_path, 'w', newline='') as f:
                 writer = csv.writer(f)
@@ -970,6 +1008,31 @@ class QuadHPO:
             return json.dumps(obj)
         except Exception:
             return str(obj)
+    
+    def _init_debug_log(self) -> None:
+        """Initialize debug log file with header."""
+        try:
+            with open(self.debug_log_path, 'w') as f:
+                f.write("=" * 80 + "\n")
+                f.write("QuadHPO Debug Log\n")
+                f.write("=" * 80 + "\n\n")
+                f.write(f"Configuration:\n")
+                f.write(f"  min_trials: {self.min_trials}\n")
+                f.write(f"  gamma: {self.gamma}\n")
+                f.write(f"  max_depth: {self.max_depth}\n")
+                f.write(f"  min_points: {self.min_points}\n")
+                f.write(f"  beta: {self.beta}\n")
+                f.write("\n" + "=" * 80 + "\n\n")
+        except Exception as e:
+            pass  # Silently fail if can't write debug log
+    
+    def _debug_log(self, message: str) -> None:
+        """Write message to debug log file."""
+        try:
+            with open(self.debug_log_path, 'a') as f:
+                f.write(message + "\n")
+        except Exception:
+            pass  # Silently fail if can't write debug log
 
     def _log(self, row: List[Any]) -> None:
         if not self.log_path:
@@ -1383,12 +1446,25 @@ class QuadHPO:
         s_final_raw, artifact = self._call_objective(objective_fn, x_for_obj, epochs=self.full_epochs)
         # Internally use signed score so minimization works seamlessly with UCB/max logic
         s_final = float(self.sign * s_final_raw)
+        
+        # Log objective values at key trials to detect anomalies
+        if self.trial_id in [1, 2, 10, 20, 30, 48, 49, 50, 51, 69, 85, 92] or s_final_raw > 1.0 or s_final_raw < 0.0 or np.isnan(s_final_raw) or np.isinf(s_final_raw):
+            self._debug_log(f"[Trial {self.trial_id}] Objective: s_raw={s_final_raw:.6f}, s_signed={s_final:.6f}, "
+                           f"sign={self.sign}, maximize={self.maximize}")
+            if np.isnan(s_final_raw) or np.isinf(s_final_raw):
+                self._debug_log(f"  ⚠️ WARNING: Invalid objective value detected!")
+        
         if not hasattr(cube, "_tested_pairs"):
             cube._tested_pairs: List[TypingTuple[np.ndarray, float]] = []
         cube._tested_pairs.append((np.array(x_norm, dtype=float), float(s_final)))
         cube.update_final(float(s_final))
         # Keep raw scores for external consumers if needed
         self.s_final_all.append(float(s_final_raw))
+        
+        # Log cube statistics at key moments
+        if self.trial_id in [10, 30, 48, 51, 69, 85, 92]:
+            self._debug_log(f"  Cube after update: n_trials={cube.n_trials}, mean={cube.mean_score:.6f}, "
+                           f"var={cube.var_score:.6f}, best={cube.best_score:.6f}")
 
         improved = bool(s_final > self.best_score_global)
         if improved:
@@ -1413,6 +1489,7 @@ class QuadHPO:
             if c is not cube:
                 c.stale_steps += 1
 
+        self.split_checks += 1
         split_type = cube.should_split(
             min_trials=self.min_trials,
             min_points=self.min_points,
@@ -1420,10 +1497,30 @@ class QuadHPO:
             min_width=self.min_width,
             gamma=self.gamma,
         )
+        # Debug: log state at key trials
+        if self.trial_id in [11, 12, 13, 20, 30, 50, 75, 88, 89, 90, 91, 92]:
+            self._debug_log(f"[Trial {self.trial_id}] cube_id={id(cube)}, depth={cube.depth}, "
+                           f"n_trials={cube.n_trials}, history={len(cube._points_history)}, "
+                           f"scores={len(cube.scores)}, split_type={split_type}")
+            if hasattr(cube, 'split_block_reason') and cube.split_block_reason:
+                self._debug_log(f"  Reason: {cube.split_block_reason}")
+        
+        # Track why split didn't happen
+        if split_type == 'none' and hasattr(cube, 'split_block_reason') and cube.split_block_reason:
+            self.split_reasons.append(f"Trial {self.trial_id}: {cube.split_block_reason}")
+        
         if split_type != 'none':
             children = cube.split4() if split_type == 'quad' else cube.split2()
             if children:
                 self.splits_count += 1
+                self.split_trials.append(self.trial_id)  # Record split trial
+                
+                # Log split event
+                self._debug_log(f"\n[SPLIT at Trial {self.trial_id}] Cube {id(cube)} (depth={cube.depth}) split into {len(children)} children")
+                self._debug_log(f"  Parent: n_trials={cube.n_trials}, best={cube.best_score:.4f}")
+                for i, child in enumerate(children):
+                    self._debug_log(f"  Child {i}: depth={child.depth}, inherited_history={len(child._points_history)}")
+                
                 # Set birth_trial for all children
                 for child in children:
                     child.birth_trial = self.trial_id
@@ -1442,9 +1539,22 @@ class QuadHPO:
 
         # Prune weak cubes (always enabled)
         prev = len(self.leaf_cubes)
+        prev_cubes = [(id(c), c.depth, c.n_trials, c.best_score, c.ucb(beta=self.beta, lambda_geo=self.lambda_geo)) 
+                      for c in self.leaf_cubes]
         self.prune_cubes()
         removed = max(0, prev - len(self.leaf_cubes))
         self.prunes_count += removed
+        
+        # Log pruning if it happened
+        if removed > 0:
+            curr_cubes_ids = {id(c) for c in self.leaf_cubes}
+            pruned = [info for info in prev_cubes if info[0] not in curr_cubes_ids]
+            self._debug_log(f"\n[PRUNE at Trial {self.trial_id}] Removed {removed} cube(s), {len(self.leaf_cubes)} remain")
+            for cube_id, depth, n_trials, best, ucb_val in pruned:
+                # Flag suspicious UCB values
+                ucb_flag = " ⚠️ OVERFLOW" if abs(ucb_val) > 1e9 else ""
+                self._debug_log(f"  Pruned: cube_id=...{str(cube_id)[-6:]}, depth={depth}, n_trials={n_trials}, "
+                               f"best={best:.4f}, ucb={ucb_val:.4f}{ucb_flag}")
 
         # Log raw s_final and raw-scale best score for readability
         best_score_raw = float(self.sign * self.best_score_global)
@@ -1478,6 +1588,11 @@ class QuadHPO:
         keep_thresh = best_signed - margin
         keep: List[QuadCube] = []
         for c in ranked:
+            # CRITICAL: Never prune cubes with 0 observations
+            if c.n_trials == 0:
+                keep.append(c)
+                continue
+            
             # Grace period: don't prune leaves that are too young
             age = self.trial_id - c.birth_trial
             if age < self.prune_grace_period:
@@ -1506,3 +1621,41 @@ class QuadHPO:
         for i in range(budget):
             cube = self.select_cube()
             self.run_trial(cube, objective_fn)
+        
+        # Debug message: split statistics to log file
+        self._debug_log("\n" + "=" * 80)
+        self._debug_log("RUN COMPLETED - SUMMARY")
+        self._debug_log("=" * 80)
+        self._debug_log(f"Total budget: {budget} trials")
+        self._debug_log(f"Split checks: {self.split_checks}")
+        self._debug_log(f"Total splits: {self.splits_count}")
+        if self.split_trials:
+            self._debug_log(f"Split trials: {self.split_trials}")
+        else:
+            self._debug_log(f"No splits occurred during this run")
+        
+        # Cube statistics
+        self._debug_log(f"\nCube statistics:")
+        self._debug_log(f"  Number of leaves: {len(self.leaf_cubes)}")
+        for i, cube in enumerate(self.leaf_cubes[:10]):  # Show first 10 cubes
+            self._debug_log(f"  Cube {i}: depth={cube.depth}, n_trials={cube.n_trials}, "
+                           f"history={len(cube._points_history)}, scores={len(cube.scores)}, "
+                           f"best={cube.best_score:.4f}")
+        
+        # Show why splits were blocked
+        if self.split_reasons:
+            self._debug_log(f"\nSplit block reasons (showing key trials):")
+            total = len(self.split_reasons)
+            if total <= 20:
+                for reason in self.split_reasons:
+                    self._debug_log(f"  {reason}")
+            else:
+                for reason in self.split_reasons[:5]:
+                    self._debug_log(f"  {reason}")
+                self._debug_log(f"  ... ({total - 15} reasons omitted) ...")
+                for reason in self.split_reasons[-10:]:
+                    self._debug_log(f"  {reason}")
+        
+        # Console output - just essentials
+        print(f"\n[QuadHPO] Run completed: {self.splits_count} splits, {self.prunes_count} prunes, {len(self.leaf_cubes)} leaves")
+        print(f"[QuadHPO] Debug log: {self.debug_log_path}")
