@@ -310,9 +310,7 @@ class Cube:
             margin = max(abs(global_best), 1.0) * 0.5
             if self.best_score < global_best - margin:
                 return 'none'
-        # Force split: evita hoarding eccessivo di punti in un solo cubo
         if self.n_trials >= 3*min_split:
-            _log(f"[FORCE_SPLIT] d={self.depth} n={self.n_trials} >= 3*{min_split}")
             return 'quad' if len(self.bounds) > 1 else 'binary'
         S = self.curvature_scores()
         if S is not None and float(np.max(S)) < 1e-8:
@@ -522,22 +520,23 @@ class HPOptimizer:
         s = cube.surrogate
         sample_method = 'unknown'
         
-        # Ottimo surrogata: solo se R²>=0.85 e tutte curvature negative
+        # Ottimo surrogata se curvatura negativa
         if s and s['n'] >= 2*d+2 and s['r2'] >= 0.85 and s['mode'] == 'quad':
             w = s['w']
             all_neg = all(w[d+1+j] < -1e-9 for j in range(d))
             if all_neg:
-                t_opt = np.array([-w[1+j]/(2*w[d+1+j]) for j in range(d)])
+                t_opt = np.zeros(d)
+                for j in range(d):
+                    t_opt[j] = -w[1+j] / (2*w[d+1+j])
                 x_opt = s['mu'] + s['R'] @ t_opt
                 if self._in_bounds(x_opt):
-                    in_cube = True
                     for j in range(d):
                         lo, hi = cube.bounds[j]
                         u_j = (s['R'].T @ (x_opt - s['mu']))[j]
-                        if not (lo <= u_j <= hi):
-                            in_cube = False
-                            break
-                    if in_cube:
+                        if lo <= u_j <= hi:
+                            continue
+                        break
+                    else:
                         self._last_sample_method = 'quad_opt'
                         return self._clip(x_opt)
         
@@ -654,6 +653,23 @@ class HPOptimizer:
         beta = self._beta()
         return max(self.leaves, key=lambda c: c.ucb(beta, self.best_score))
 
+    def _backprop(self, leaf: Cube, score: float) -> None:
+        curr = leaf.parent
+        while curr:
+            curr.n_trials += 1
+            n = curr.n_trials
+            if n == 1:
+                curr.mean_score = score
+                curr.M2 = 0.0
+            else:
+                delta = score - curr.mean_score
+                curr.mean_score += delta/n
+                curr.M2 += delta*(score - curr.mean_score)
+            curr.var_score = curr.M2/(n-1) if n>1 else 0.0
+            if score > curr.best_score:
+                curr.best_score = score
+            curr = curr.parent
+
     def _prune(self) -> None:
         min_leaves = max(4, self.dim)
         if len(self.leaves) <= min_leaves:
@@ -728,6 +744,7 @@ class HPOptimizer:
                     _log(f"  TOP{idx+1}: d={d} n={n} ucb={ucb:.4f} mean={mean:.4f} var={var:.4f} best={best:.4f} {marker}")
             
             cube.update(score, x, self.dim)
+            self._backprop(cube, score)
             if score > self.best_score:
                 self.best_score = score
                 self.best_x = x.copy()
@@ -738,7 +755,7 @@ class HPOptimizer:
                 if mode != 'none':
                     children = cube.split(self.dim, mode)
                     self.leaves = [c for c in self.leaves if c is not cube] + children
-                    self._preferred = max(children, key=lambda c: c.ucb(self._beta(), self.best_score))
+                    self._preferred = max(children, key=lambda c: c.ucb(self._beta()))
                 if self.trial % 5 == 0:
                     self._prune()
         
