@@ -16,6 +16,7 @@ unit_tests
 thesis/*
 !thesis/hpo_curvature.py
 !thesis/hpo_main.py
+!thesis/hpo_v15_backup.py
 !thesis/hpo_minimal.py
 !thesis/mini_benchmark.py
 !thesis/advanced_benchmark.py

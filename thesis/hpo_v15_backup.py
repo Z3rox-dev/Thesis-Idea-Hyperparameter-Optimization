@@ -1,11 +1,12 @@
 """
-QuadHPO V21 - Directional Perturbation conservativa
+QuadHPO V15 - V10 con Local Search integrata
 
-V20 perdeva su poker perché la direzione era troppo aggressiva.
-Qui riduciamo:
-- Frequenza directional: 15% -> 10%
-- Step range: [-0.5, 1.5] -> [0, 1.0] (solo verso best, mai oltre)
-- Rumore ortogonale: 5% -> 3%
+Idea: usare V10 per esplorazione globale, poi fare local search 
+negli ultimi trial per raffinare.
+
+La strategia:
+- 80% del budget: esplorazione normale con V10
+- 20% del budget: local search attorno al best trovato
 
 Autore: Z3rox-dev
 Data: Novembre 2025
@@ -24,7 +25,6 @@ class Cube:
     n_trials: int = 0
     n_good: int = 0
     best_score: float = -np.inf
-    best_x: Optional[np.ndarray] = None
     _tested_pairs: List[Tuple[np.ndarray, float]] = field(default_factory=list)
     surrogate: Optional[dict] = field(default=None, init=False)
     depth: int = 0
@@ -34,6 +34,9 @@ class Cube:
     
     def center(self) -> np.ndarray:
         return np.array([(lo+hi)/2 for lo,hi in self.bounds], dtype=float)
+    
+    def volume(self) -> float:
+        return float(np.prod(self._widths()))
     
     def contains(self, x: np.ndarray) -> bool:
         for i, (lo, hi) in enumerate(self.bounds):
@@ -90,13 +93,70 @@ class Cube:
         resid = y - y_hat
         var_y = float(np.var(y)) if len(y)>1 else 1.0
         r2 = 1.0 - float(np.var(resid))/max(var_y,1e-12) if var_y>0 else 0.0
+        sigma2 = float(np.sum(resid**2)/max(1,len(y)-n_p))
         
         lam = 2.0*w[dim+1:] if mode=='quad' else np.zeros(dim)
         
+        opt_local = np.zeros(dim)
+        if mode == 'quad':
+            for i in range(dim):
+                a = w[dim+1+i]
+                b = w[1+i]
+                if abs(a) > 1e-8:
+                    t_opt = -b / (2*a)
+                    t_opt = np.clip(t_opt, -0.5, 0.5)
+                    opt_local[i] = center[i] + t_opt * widths[i]
+                else:
+                    opt_local[i] = center[i]
+        else:
+            opt_local = center.copy()
+        
+        for i in range(dim):
+            opt_local[i] = np.clip(opt_local[i], self.bounds[i][0], self.bounds[i][1])
+        
+        try:
+            A_inv = np.linalg.inv(A)
+        except:
+            A_inv = None
+        
         self.surrogate = {
             'w': w, 'center': center, 'widths': widths,
-            'r2': r2, 'lam': lam, 'mode': mode, 'n': len(pairs)
+            'sigma2': sigma2, 'r2': r2, 'lam': lam,
+            'A_inv': A_inv, 'mode': mode, 'n': len(pairs),
+            'opt_local': opt_local
         }
+
+    def predict(self, x: np.ndarray) -> Tuple[float, float]:
+        if self.surrogate is None:
+            return 0.0, 1.0
+        
+        d = len(x)
+        center = self.surrogate['center']
+        widths = self.surrogate['widths']
+        t = (x - center) / widths
+        
+        mode = self.surrogate['mode']
+        w = self.surrogate['w']
+        
+        if mode == 'lin':
+            Phi = np.concatenate([[1.0], t])
+        else:
+            Phi = np.concatenate([[1.0], t, t**2])
+        
+        y_hat = float(w @ Phi)
+        sigma2 = self.surrogate['sigma2']
+        A_inv = self.surrogate.get('A_inv')
+        
+        if A_inv is None:
+            return y_hat, math.sqrt(max(sigma2, 1e-12))
+        
+        v = max(0.0, float(Phi @ A_inv @ Phi))
+        return y_hat, math.sqrt(max(sigma2*(1+v), 1e-12))
+    
+    def get_local_optimum(self) -> Optional[np.ndarray]:
+        if self.surrogate is None:
+            return None
+        return self.surrogate.get('opt_local')
     
     def get_curvature_scores(self) -> Optional[np.ndarray]:
         if self.surrogate is None or self.surrogate.get('r2', 0) < 0.05:
@@ -139,6 +199,8 @@ class Cube:
             child.n_trials += 1
             if sc >= gamma:
                 child.n_good += 1
+            if sc > child.best_score:
+                child.best_score = sc
         
         for ch in [child_lo, child_hi]:
             ch.fit_surrogate(dim)
@@ -150,6 +212,10 @@ class HPOptimizer:
     def __init__(self, bounds: List[Tuple[float,float]], maximize: bool = False, 
                  seed: int = 42, gamma_quantile: float = 0.25,
                  local_search_ratio: float = 0.2):
+        """
+        Args:
+            local_search_ratio: frazione del budget per local search (default 20%)
+        """
         self.bounds = bounds
         self.dim = len(bounds)
         self.maximize = maximize
@@ -164,8 +230,6 @@ class HPOptimizer:
         self.y_all: List[float] = []
         self.best_y = -np.inf if maximize else np.inf
         self.best_x = None
-        self.second_best_x = None
-        self.second_best_y = -np.inf if maximize else np.inf
         self.gamma = 0.0
         
         self.global_widths = np.array([hi - lo for lo, hi in bounds])
@@ -180,26 +244,6 @@ class HPOptimizer:
         for leaf in self.leaves:
             leaf.n_good = sum(1 for _, s in leaf._tested_pairs if s >= self.gamma)
     
-    def _update_best(self, x: np.ndarray, y_raw: float):
-        if self.maximize:
-            if y_raw > self.best_y:
-                self.second_best_y = self.best_y
-                self.second_best_x = self.best_x
-                self.best_y = y_raw
-                self.best_x = x.copy()
-            elif y_raw > self.second_best_y:
-                self.second_best_y = y_raw
-                self.second_best_x = x.copy()
-        else:
-            if y_raw < self.best_y:
-                self.second_best_y = self.best_y
-                self.second_best_x = self.best_x
-                self.best_y = y_raw
-                self.best_x = x.copy()
-            elif y_raw < self.second_best_y:
-                self.second_best_y = y_raw
-                self.second_best_x = x.copy()
-    
     def _select_leaf(self) -> Cube:
         if not self.leaves:
             return self.root
@@ -207,12 +251,15 @@ class HPOptimizer:
         scores = []
         for c in self.leaves:
             ratio = c.good_ratio()
+            
             model_bonus = 0
             if c.surrogate is not None:
                 r2 = c.surrogate.get('r2', 0)
                 if r2 > 0.3:
                     model_bonus = 0.2 * r2
+            
             exploration = 0.3 / math.sqrt(1 + c.n_trials)
+            
             score = ratio + model_bonus + exploration
             scores.append(score)
         
@@ -223,53 +270,26 @@ class HPOptimizer:
         
         return self.rng.choice(self.leaves, p=probs)
     
-    def _clip_to_bounds(self, x: np.ndarray) -> np.ndarray:
-        return np.array([
-            np.clip(x[i], self.bounds[i][0], self.bounds[i][1])
-            for i in range(self.dim)
-        ])
-    
-    def _clip_to_cube(self, x: np.ndarray, cube: Cube) -> np.ndarray:
-        return np.array([
-            np.clip(x[i], cube.bounds[i][0], cube.bounds[i][1])
-            for i in range(self.dim)
-        ])
-    
-    def _directional_sample(self, cube: Cube) -> Optional[np.ndarray]:
-        """
-        Campiona nella direzione second_best -> best (conservativa).
-        """
-        if self.best_x is None or self.second_best_x is None:
-            return None
-        
-        direction = self.best_x - self.second_best_x
-        norm = np.linalg.norm(direction)
-        if norm < 1e-10:
-            return None
-        
-        # Step conservativo: [0, 1] -> interpola tra second e best
-        # Con piccola probabilità vai leggermente oltre best
-        step = self.rng.uniform(0.0, 1.2)
-        x = self.second_best_x + step * direction
-        
-        # Rumore ortogonale ridotto
-        noise = self.rng.normal(0, 0.03, self.dim) * self.global_widths
-        x = x + noise
-        
-        return self._clip_to_cube(x, cube)
-    
     def _sample_in_cube(self, cube: Cube) -> np.ndarray:
-        # 15% random
-        if self.rng.random() < 0.15:
+        # 20% random
+        if self.rng.random() < 0.2:
             return np.array([self.rng.uniform(lo, hi) for lo, hi in cube.bounds])
         
-        # 10% directional (ridotto da 15%)
-        if self.second_best_x is not None and self.rng.random() < 0.10:
-            x_dir = self._directional_sample(cube)
-            if x_dir is not None:
-                return x_dir
+        # Usa modello se buono
+        if cube.surrogate is not None and cube.surrogate.get('r2', 0) > 0.2:
+            opt_local = cube.get_local_optimum()
+            if opt_local is not None:
+                widths = cube._widths()
+                r2 = cube.surrogate.get('r2', 0)
+                noise_scale = 0.15 * (1 - 0.5*r2)
+                noise = self.rng.normal(0, noise_scale, self.dim) * widths
+                x = opt_local + noise
+                return np.array([
+                    np.clip(x[i], cube.bounds[i][0], cube.bounds[i][1])
+                    for i in range(self.dim)
+                ])
         
-        # V15 style: vicino ai buoni
+        # Campiona vicino ai buoni
         if cube.n_good >= 2:
             good_pts = [p for p, s in cube._tested_pairs if s >= self.gamma]
             if good_pts:
@@ -277,18 +297,31 @@ class HPOptimizer:
                 widths = cube._widths()
                 noise = self.rng.normal(0, 0.15, self.dim) * widths
                 x = ref + noise
-                return self._clip_to_cube(x, cube)
+                return np.array([
+                    np.clip(x[i], cube.bounds[i][0], cube.bounds[i][1])
+                    for i in range(self.dim)
+                ])
         
         return np.array([self.rng.uniform(lo, hi) for lo, hi in cube.bounds])
     
     def _local_search_sample(self, progress: float) -> np.ndarray:
+        """
+        Campiona vicino al best globale con raggio decrescente.
+        progress: 0.0 all'inizio della local search, 1.0 alla fine
+        """
         if self.best_x is None:
             return np.array([self.rng.uniform(lo, hi) for lo, hi in self.bounds])
         
+        # Raggio decresce da 10% a 2%
         radius = 0.10 * (1 - progress) + 0.02
+        
         noise = self.rng.normal(0, radius, self.dim) * self.global_widths
         x = self.best_x + noise
-        return self._clip_to_bounds(x)
+        
+        return np.array([
+            np.clip(x[i], self.bounds[i][0], self.bounds[i][1])
+            for i in range(self.dim)
+        ])
     
     def _should_split(self, cube: Cube) -> bool:
         if cube.n_trials < 10:
@@ -300,9 +333,11 @@ class HPOptimizer:
     def optimize(self, objective: Callable[[np.ndarray], float], 
                  budget: int = 100) -> Tuple[np.ndarray, float]:
         
+        # Dividi budget: esplorazione + local search
         exploration_budget = int(budget * (1 - self.local_search_ratio))
         local_search_budget = budget - exploration_budget
         
+        # Fase 1: Esplorazione con struttura ad albero
         for trial in range(exploration_budget):
             self._update_gamma()
             self._recount_good()
@@ -313,7 +348,14 @@ class HPOptimizer:
             y_raw = objective(x)
             y = y_raw if self.maximize else -y_raw
             
-            self._update_best(x, y_raw)
+            if self.maximize:
+                if y_raw > self.best_y:
+                    self.best_y = y_raw
+                    self.best_x = x.copy()
+            else:
+                if y_raw < self.best_y:
+                    self.best_y = y_raw
+                    self.best_x = x.copy()
             
             self.X_all.append(x.copy())
             self.y_all.append(y)
@@ -322,6 +364,8 @@ class HPOptimizer:
             cube.n_trials += 1
             if y >= self.gamma:
                 cube.n_good += 1
+            if y > cube.best_score:
+                cube.best_score = y
             
             cube.fit_surrogate(self.dim)
             
@@ -330,12 +374,21 @@ class HPOptimizer:
                 self.leaves.remove(cube)
                 self.leaves.extend(children)
         
+        # Fase 2: Local Search attorno al best
         for i in range(local_search_budget):
             progress = i / max(1, local_search_budget - 1)
             x = self._local_search_sample(progress)
             
             y_raw = objective(x)
-            self._update_best(x, y_raw)
+            
+            if self.maximize:
+                if y_raw > self.best_y:
+                    self.best_y = y_raw
+                    self.best_x = x.copy()
+            else:
+                if y_raw < self.best_y:
+                    self.best_y = y_raw
+                    self.best_x = x.copy()
         
         return self.best_x, self.best_y
 
@@ -344,8 +397,6 @@ if __name__ == "__main__":
     def sphere(x):
         return np.sum((x - 0.7)**2)
     
-    print("Test V21 (Conservative Directional) su Sphere 10D:")
-    for seed in [42, 123, 456]:
-        opt = HPOptimizer([(0, 1)]*10, maximize=False, seed=seed)
-        best_x, best_y = opt.optimize(sphere, budget=100)
-        print(f"  Seed {seed}: {best_y:.6f}")
+    opt = HPOptimizer([(0, 1), (0, 1)], maximize=False, seed=42)
+    best_x, best_y = opt.optimize(sphere, budget=50)
+    print(f"Best: x={best_x}, y={best_y:.6f}")
