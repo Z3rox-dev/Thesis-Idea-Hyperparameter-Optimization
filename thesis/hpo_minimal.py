@@ -114,9 +114,11 @@ class Cube:
         X = np.array([p for p,_ in pairs])
         y = np.array([s for _,s in pairs])
         T = (R.T @ (X.T - mu.reshape(-1,1))).T
-        # Floor proporzionale alla larghezza del cubo (non arbitrario)
+        # Floor proporzionale alla larghezza del cubo
+        # Aumentato a 10% per evitare esplosione coefficienti quando
+        # i punti sono concentrati su un asse
         widths = np.array([abs(hi-lo) for lo,hi in self.bounds])
-        t_std_floor = 0.01 * widths  # 1% della larghezza
+        t_std_floor = 0.1 * widths  # 10% della larghezza (era 1%)
         t_std = np.maximum(np.std(T, axis=0), t_std_floor)
         Ts = T / t_std
         alpha = 1e-3 * math.sqrt(d)
@@ -519,6 +521,43 @@ class HPOptimizer:
         pairs = cube._tested_pairs
         s = cube.surrogate
         sample_method = 'unknown'
+        
+        # ============================================================
+        # Gradient-based step 
+        # ============================================================
+        if s and s['n'] >= d+2 and s['r2'] >= 0.5 and np.random.rand() < 0.6:
+            w = s['w']
+            grad = w[1:d+1]  # Coefficienti lineari = gradiente al centro
+            grad_norm = np.linalg.norm(grad)
+            
+            # Se il gradiente è significativo, fai uno step nella direzione
+            if grad_norm > 0.02:
+                # Normalizza e scala per la larghezza del cubo
+                widths = cube._widths()
+                # Step size 10% della larghezza
+                base_step = 0.10
+                step_size = base_step * widths
+                direction = grad / grad_norm  # Direzione normalizzata
+                
+                # Step dal centro del cubo (o dal best point)
+                if pairs:
+                    best_pt, _ = max(pairs, key=lambda t: t[1])
+                    t_center = cube.to_prime(best_pt)
+                else:
+                    t_center = np.zeros(d)
+                
+                # Fai step nella direzione del gradiente (maximize -> stesso segno)
+                t_new = t_center + direction * step_size
+                
+                # Clamp ai bounds del cubo
+                for j in range(d):
+                    lo, hi = cube.bounds[j]
+                    t_new[j] = float(np.clip(t_new[j], lo, hi))
+                
+                x = cube.to_original(t_new)
+                if self._in_bounds(x):
+                    self._last_sample_method = 'gradient_step'
+                    return self._clip(x)
         
         # Ottimo surrogata se curvatura negativa
         if s and s['n'] >= 2*d+2 and s['r2'] >= 0.85 and s['mode'] == 'quad':
