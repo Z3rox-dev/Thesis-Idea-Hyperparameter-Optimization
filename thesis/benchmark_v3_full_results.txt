@@ -1,0 +1,61 @@
+================================================================================
+BENCHMARK V3 vs OPTUNA
+Trials: 100, Seeds: [0, 1, 2, 3, 4]
+================================================================================
+
+ADULT:
+  Seed 0: V3=0.14697, Optuna=0.14732 -> V3
+  Seed 1: V3=0.14791, Optuna=0.14793 -> V3
+  Seed 2: V3=0.14822, Optuna=0.14771 -> Optuna
+  Seed 3: V3=0.14812, Optuna=0.14805 -> Optuna
+  Seed 4: V3=0.14807, Optuna=0.14831 -> V3
+
+HIGGS:
+  Seed 0: V3=0.28247, Optuna=0.28243 -> Optuna
+  Seed 1: V3=0.28264, Optuna=0.28244 -> Optuna
+  Seed 2: V3=0.28146, Optuna=0.28039 -> Optuna
+  Seed 3: V3=0.28219, Optuna=0.27887 -> Optuna
+  Seed 4: V3=0.28082, Optuna=0.28006 -> Optuna
+
+LETTER:
+  Seed 0: V3=0.03526, Optuna=0.03431 -> Optuna
+  Seed 1: V3=0.05000, Optuna=0.03718 -> Optuna
+  Seed 2: V3=0.03580, Optuna=0.04077 -> V3
+  Seed 3: V3=0.05190, Optuna=0.03718 -> Optuna
+  Seed 4: V3=0.04344, Optuna=0.04109 -> Optuna
+
+MNIST:
+  Seed 0: V3=0.01726, Optuna=0.01651 -> Optuna
+  Seed 1: V3=0.01858, Optuna=0.01557 -> Optuna
+  Seed 2: V3=0.01654, Optuna=0.01569 -> Optuna
+  Seed 3: V3=0.01686, Optuna=0.01593 -> Optuna
+  Seed 4: V3=0.01793, Optuna=0.01634 -> Optuna
+
+OPTDIGITS:
+  Seed 0: V3=0.01706, Optuna=0.01545 -> Optuna
+  Seed 1: V3=0.01698, Optuna=0.01665 -> Optuna
+  Seed 2: V3=0.01593, Optuna=0.01689 -> V3
+  Seed 3: V3=0.01834, Optuna=0.01681 -> Optuna
+  Seed 4: V3=0.01649, Optuna=0.01609 -> Optuna
+
+POKER:
+  Seed 0: V3=0.00191, Optuna=0.00124 -> Optuna
+  Seed 1: V3=0.00176, Optuna=0.00431 -> V3
+  Seed 2: V3=0.00071, Optuna=0.00155 -> V3
+  Seed 3: V3=0.00166, Optuna=0.00067 -> Optuna
+  Seed 4: V3=0.00731, Optuna=0.00094 -> Optuna
+
+================================================================================
+RIEPILOGO
+================================================================================
+Dataset      |      V3 Mean |  Optuna Mean |  V3 Wins |   Winner
+----------------------------------------------------------------------
+adult        |      0.14786 |      0.14786 |    3/5   |       V3
+higgs        |      0.28192 |      0.28084 |    0/5   |   Optuna
+letter       |      0.04328 |      0.03810 |    1/5   |   Optuna
+mnist        |      0.01743 |      0.01601 |    0/5   |   Optuna
+optdigits    |      0.01696 |      0.01638 |    1/5   |   Optuna
+poker        |      0.00267 |      0.00174 |    2/5   |   Optuna
+----------------------------------------------------------------------
+TOTALE       |              |              |    7/30  |
+================================================================================
