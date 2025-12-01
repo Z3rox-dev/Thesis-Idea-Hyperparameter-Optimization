@@ -52,6 +52,7 @@ class Cube:
     M2: float = 0.0
     _tested_pairs: List[Tuple[np.ndarray, float]] = field(default_factory=list)
     surrogate: Optional[dict] = field(default=None, init=False)
+    _global_bounds: Optional[List[Tuple[float, float]]] = field(default=None, init=False)
     
     # Phase 2 additions
     phase: int = 1  # 1 = minimal style, 2 = main style
@@ -68,6 +69,56 @@ class Cube:
                 self.R = self.parent.R.copy()
             else:
                 self.mu = np.full(d, 0.5, dtype=float)
+
+    def global_bounds(self, domain: List[Tuple[float, float]]) -> List[Tuple[float, float]]:
+        """Compute axis-aligned bounding box in global coordinates, clipped to domain.
+        
+        This transforms the local rotated cube bounds to global coordinates and
+        returns the AABB (Axis-Aligned Bounding Box) clipped to the domain [0,1]^d.
+        """
+        if self._global_bounds is not None:
+            return self._global_bounds
+            
+        d = len(self.bounds)
+        self._ensure_frame()
+        
+        # Compute corners of local cube and transform to global
+        # For efficiency, use the fact that AABB of rotated box = |R| @ half_widths
+        half_widths = np.array([(hi-lo)/2 for lo, hi in self.bounds])
+        
+        # The extent in each global dimension is sum of |R_ij| * half_width_j
+        extents = np.abs(self.R) @ half_widths
+        
+        global_lo = self.mu - extents
+        global_hi = self.mu + extents
+        
+        # Clip to domain
+        self._global_bounds = []
+        for j in range(d):
+            lo = max(global_lo[j], domain[j][0])
+            hi = min(global_hi[j], domain[j][1])
+            # Ensure valid interval
+            if lo >= hi:
+                mid = (domain[j][0] + domain[j][1]) / 2
+                lo, hi = mid - 1e-6, mid + 1e-6
+            self._global_bounds.append((lo, hi))
+        
+        return self._global_bounds
+
+    def contains_global(self, x: np.ndarray, domain: List[Tuple[float, float]]) -> bool:
+        """Check if point x is inside this cube's global bounds (clipped to domain)."""
+        gb = self.global_bounds(domain)
+        for j, (lo, hi) in enumerate(gb):
+            if x[j] < lo - 1e-9 or x[j] > hi + 1e-9:
+                return False
+        return True
+
+    def sample_uniform_global(self, domain: List[Tuple[float, float]], rng=None) -> np.ndarray:
+        """Sample uniformly from the cube's global bounds (clipped to domain)."""
+        if rng is None:
+            rng = np.random
+        gb = self.global_bounds(domain)
+        return np.array([rng.uniform(lo, hi) for lo, hi in gb])
 
     def to_prime(self, x: np.ndarray) -> np.ndarray:
         self._ensure_frame()
@@ -766,38 +817,43 @@ class HPOptimizer:
         return float(np.clip(np.random.normal(mu, std), lo, hi))
 
     def _sample_phase1(self, cube: Cube) -> np.ndarray:
-        """Phase 1 sampling: EI + gradient (from minimal)"""
+        """Phase 1 sampling: EI + gradient (from minimal)
+        
+        Uses global bounds (AABB clipped to domain) for sampling to ensure
+        all generated points are within [0,1]^d.
+        """
         d = self.dim
         pairs = cube._tested_pairs
         s = cube.surrogate
+        gb = cube.global_bounds(self.bounds)  # Get AABB in global coords
         
-        # Gradient-based step
+        # Gradient-based step (in global coordinates)
         if s and s['n'] >= d+2 and s['r2'] >= 0.5 and np.random.rand() < 0.6:
             w = s['w']
             grad = w[1:d+1]
             grad_norm = np.linalg.norm(grad)
             
             if grad_norm > 0.02:
-                widths = cube._widths()
-                step_size = 0.10 * widths
+                # Use global bounds for step size
+                gb_widths = np.array([hi-lo for lo, hi in gb])
+                step_size = 0.10 * gb_widths
                 direction = grad / grad_norm
                 
                 if pairs:
                     best_pt, _ = max(pairs, key=lambda t: t[1])
-                    t_center = cube.to_prime(best_pt)
                 else:
-                    t_center = np.zeros(d)
+                    best_pt = np.array([(lo+hi)/2 for lo, hi in gb])
                 
-                t_new = t_center + direction * step_size
+                # Step in global coordinates
+                x_new = best_pt + direction * step_size
                 
+                # Clip to global bounds
                 for j in range(d):
-                    lo, hi = cube.bounds[j]
-                    t_new[j] = float(np.clip(t_new[j], lo, hi))
+                    x_new[j] = float(np.clip(x_new[j], gb[j][0], gb[j][1]))
                 
-                x = cube.to_original(t_new)
-                if self._in_bounds(x):
+                if self._in_bounds(x_new):
                     self._last_sample_method = 'p1_gradient'
-                    return self._clip(x)
+                    return x_new
         
         # Quadratic optimum
         if s and s['n'] >= 2*d+2 and s['r2'] >= 0.85 and s['mode'] == 'quad':
@@ -808,28 +864,30 @@ class HPOptimizer:
                 for j in range(d):
                     t_opt[j] = -w[1+j] / (2*w[d+1+j])
                 x_opt = s['mu'] + s['R'] @ t_opt
+                # Clip to global bounds
+                for j in range(d):
+                    x_opt[j] = float(np.clip(x_opt[j], gb[j][0], gb[j][1]))
                 if self._in_bounds(x_opt):
                     self._last_sample_method = 'p1_quad_opt'
-                    return self._clip(x_opt)
+                    return x_opt
         
-        # Perturbation around best
+        # Perturbation around best (in global coordinates)
         alpha = 0.4 / (1 + 0.05*cube.depth)
         if pairs and np.random.rand() < alpha:
             top_k = min(5, len(pairs))
             best_pts = sorted(pairs, key=lambda t: t[1], reverse=True)[:top_k]
             center, _ = best_pts[np.random.randint(len(best_pts))]
-            t_c = cube.to_prime(center)
-            t_new = np.zeros(d)
+            
+            gb_widths = np.array([hi-lo for lo, hi in gb])
+            x_new = np.zeros(d)
             for j in range(d):
-                lo, hi = cube.bounds[j]
-                wid = abs(hi-lo)
-                t_new[j] = self._trunc_norm(t_c[j], wid*0.1, lo, hi)
-            x = cube.to_original(t_new)
-            if self._in_bounds(x):
+                x_new[j] = self._trunc_norm(center[j], gb_widths[j]*0.1, gb[j][0], gb[j][1])
+            
+            if self._in_bounds(x_new):
                 self._last_sample_method = 'p1_perturb'
-                return self._clip(x)
+                return x_new
         
-        # EI with trust region
+        # EI with trust region (sample in global bounds)
         min_pts = d + 2
         if s and s['n'] >= min_pts and s['r2'] >= 0.25:
             R_s, mu_s = s['R'], s['mu']
@@ -853,27 +911,27 @@ class HPOptimizer:
             if pairs:
                 top_k = min(5, len(pairs))
                 best_pts = sorted(pairs, key=lambda t: t[1], reverse=True)[:top_k]
-                best_ts = [cube.to_prime(p) for p, _ in best_pts]
+                best_centers = [p for p, _ in best_pts]  # Global coords
             else:
-                best_ts = [np.zeros(d)]
+                best_centers = [np.array([(lo+hi)/2 for lo, hi in gb])]
+            
+            gb_widths = np.array([hi-lo for lo, hi in gb])
             
             for _ in range(M):
-                if np.random.rand() < 0.7 and best_ts:
-                    center = best_ts[np.random.randint(len(best_ts))]
+                if np.random.rand() < 0.7 and best_centers:
+                    center = best_centers[np.random.randint(len(best_centers))]
                 else:
-                    center = np.zeros(d)
+                    center = np.array([(lo+hi)/2 for lo, hi in gb])
                 
-                u = np.zeros(d)
+                # Sample in global coordinates
+                x = np.zeros(d)
                 for j in range(d):
-                    lo, hi = cube.bounds[j]
-                    scale = (hi-lo)*0.15 if np.any(center) else (hi-lo)*0.25
-                    u[j] = self._trunc_norm(center[j], scale, lo, hi)
-                x = cube.to_original(u)
+                    scale = gb_widths[j]*0.15 if np.any(center != (gb[j][0]+gb[j][1])/2) else gb_widths[j]*0.25
+                    x[j] = self._trunc_norm(center[j], scale, gb[j][0], gb[j][1])
+                
                 if not self._in_bounds(x):
-                    # Try bounce reflection before discarding
-                    x = self._reflect(x)
-                    if not self._in_bounds(x):
-                        continue
+                    continue
+                    
                 t = R_s.T @ (x - mu_s)
                 rho2 = float(t @ C_inv @ t)
                 if rho2 > rho_max2:
@@ -898,16 +956,20 @@ class HPOptimizer:
             if cands:
                 cands.sort(key=lambda t: t[0], reverse=True)
                 self._last_sample_method = 'p1_ei'
-                return self._clip(cands[0][1])
+                return cands[0][1]
         
         # Fallback uniform
         self._last_sample_method = 'p1_uniform'
         return self._sample_uniform(cube)
 
     def _sample_phase2(self, cube: Cube) -> np.ndarray:
-        """Phase 2 sampling: directional + good ratio (from main)"""
+        """Phase 2 sampling: directional + good ratio (from main)
+        
+        Uses global bounds (AABB clipped to domain) for sampling.
+        """
         d = self.dim
         pairs = cube._tested_pairs
+        gb = cube.global_bounds(self.bounds)  # Get AABB in global coords
         
         if len(pairs) < 2:
             return self._sample_uniform(cube)
@@ -917,17 +979,18 @@ class HPOptimizer:
         scores = np.array([s for _, s in pairs])
         good_mask = scores >= gamma_thresh
         good_count = np.sum(good_mask)
-        good_ratio = good_count / len(pairs) if len(pairs) > 0 else 0
         
         points = np.array([p for p, _ in pairs])
+        gb_widths = np.array([hi-lo for lo, hi in gb])
         
-        # Directional sampling toward good points
+        # Directional sampling toward good points (in GLOBAL coords)
         if good_count >= 2 and np.random.rand() < 0.7:
             good_points = points[good_mask]
             good_center = np.mean(good_points, axis=0)
             best_idx = np.argmax(scores)
             best_point = points[best_idx]
             
+            # Direction in GLOBAL coordinates
             direction = best_point - good_center
             dir_norm = np.linalg.norm(direction)
             if dir_norm > 1e-10:
@@ -936,67 +999,61 @@ class HPOptimizer:
                 direction = np.random.randn(d)
                 direction = direction / np.linalg.norm(direction)
             
-            # Convert to local coords
-            t_best = cube.to_prime(best_point)
-            widths = cube._widths()
-            scale = np.mean(widths) * 0.3
+            scale = np.mean(gb_widths) * 0.3
             
-            # Step along direction
+            # Step along direction in GLOBAL coords
             step = direction * np.random.uniform(0, scale)
             lateral_noise = np.random.randn(d) * scale * 0.1
             
-            x = best_point + step + lateral_noise
-            x = self._clip(x)
-            if self._in_bounds(x):
+            x_new = best_point + step + lateral_noise
+            
+            # Clip to global bounds
+            for j in range(d):
+                x_new[j] = float(np.clip(x_new[j], gb[j][0], gb[j][1]))
+            
+            if self._in_bounds(x_new):
                 self._last_sample_method = 'p2_directional'
-                return x
+                return x_new
         
-        # Local search around best
+        # Local search around best (in GLOBAL coords)
         if np.random.rand() < 0.2 and self.best_x is not None:
-            widths = cube._widths()
-            noise = np.random.randn(d) * 0.1 * widths
-            x = self.best_x + noise
-            x = self._clip(x)
-            if self._in_bounds(x):
+            noise = np.random.randn(d) * 0.1 * gb_widths
+            x_new = self.best_x + noise
+            
+            # Clip to global bounds
+            for j in range(d):
+                x_new[j] = float(np.clip(x_new[j], gb[j][0], gb[j][1]))
+            
+            if self._in_bounds(x_new):
                 self._last_sample_method = 'p2_local_search'
-                return x
+                return x_new
         
         # Fallback
         self._last_sample_method = 'p2_uniform'
         return self._sample_uniform(cube)
 
     def _sample(self, cube: Cube) -> np.ndarray:
-        """Sample based on cube phase, with dynamic fallback to Phase 2 if surrogate unhealthy"""
-        # Check if we should dynamically switch to Phase 2
-        use_phase2 = (cube.phase == 2)
+        """Sample based on cube phase
         
-        if cube.phase == 1:
-            sanity = cube.surrogate_sanity()
-            # Lower threshold: switch to Phase 2 if surrogate is getting unreliable
-            if not sanity['healthy'] or sanity['cond_A'] > 1e6:
-                use_phase2 = True
-                _log(f"  [DYNAMIC_P2] Cube d={cube.depth} unhealthy, using Phase 2 sampling. "
-                     f"cond={sanity['cond_A']:.1e} warnings={sanity['warnings']}")
+        Phase 1: Use sophisticated EI + gradient sampling
+        Phase 2: Use simpler directional + density sampling
         
-        if use_phase2:
+        Note: We removed dynamic switching because it was causing more harm than good.
+        The Phase 1 sampling with fallbacks handles unhealthy surrogates gracefully.
+        """
+        if cube.phase == 2:
             return self._sample_phase2(cube)
         else:
             return self._sample_phase1(cube)
 
     def _sample_uniform(self, cube: Cube) -> np.ndarray:
-        d = self.dim
-        for _ in range(10):
-            u = np.zeros(d)
-            for j in range(d):
-                lo, hi = cube.bounds[j]
-                u[j] = np.random.uniform(lo, hi)
-            x = cube.to_original(u)
-            if self._in_bounds(x):
-                return self._clip(x)
-        return self._clip(cube.to_original(np.zeros(d)))
+        """Sample uniformly from cube, using global bounds clipped to domain."""
+        # Use global bounds (AABB clipped to domain) for uniform sampling
+        # This ensures samples are always in [0,1]^d
+        return cube.sample_uniform_global(self.bounds)
 
     def _select(self) -> Cube:
-        """Select cube: UCB for Phase 1, density for Phase 2 cubes"""
+        """Select cube using UCB (Upper Confidence Bound)"""
         if self._preferred is not None:
             for c in self.leaves:
                 if c is self._preferred:
@@ -1006,32 +1063,6 @@ class HPOptimizer:
             self._preferred = None
         
         beta = self._beta()
-        
-        # Separate by phase
-        phase1 = [c for c in self.leaves if c.phase == 1]
-        phase2 = [c for c in self.leaves if c.phase == 2]
-        
-        # If we have Phase 2 cubes and passed threshold, prefer them
-        progress = self.trial / max(1, self.budget)
-        prefer_phase2 = progress > 0.3 and len(phase2) > 0
-        
-        if prefer_phase2 and np.random.rand() < 0.7:
-            # Select from Phase 2 using density
-            gamma_thresh = self._gamma_threshold()
-            scores = [(c, c.density_score(gamma_thresh) + 0.1*c.ucb(beta, self.best_score)) for c in phase2]
-            scores.sort(key=lambda x: x[1], reverse=True)
-            
-            # Softmax selection from top 5
-            top_k = min(5, len(scores))
-            top_scores = np.array([s[1] for s in scores[:top_k]])
-            if top_scores.max() > top_scores.min():
-                top_scores = (top_scores - top_scores.min()) / (top_scores.max() - top_scores.min() + 1e-9)
-            probs = np.exp(top_scores / 0.3)
-            probs = probs / probs.sum()
-            idx = np.random.choice(top_k, p=probs)
-            return scores[idx][0]
-        
-        # Default: UCB selection across all leaves
         return max(self.leaves, key=lambda c: c.ucb(beta, self.best_score))
 
     def _backprop(self, leaf: Cube, score: float) -> None:
