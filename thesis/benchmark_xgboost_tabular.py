@@ -12,6 +12,7 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 import numpy as np
 
 from hpo_curvature import QuadHPO
+from hpo_adaptive import QuadHPO as QuadHPO_Adaptive
 
 try:
     import optuna
@@ -340,6 +341,56 @@ def evaluate_on_test_set(x_norm: np.ndarray, use_gpu: bool, seed: int = 99999) -
     return {"accuracy": accuracy, "precision": precision, "recall": recall, "f1": f1}
 
 
+# -------------------------- debugging utilities -----------------------------
+
+
+def debug_max_depth_effect(logger: Optional[Callable[[str], None]] = None) -> None:
+    """Debug helper to inspect how max_depth affects the trained model."""
+    def log(msg: str) -> None:
+        if logger is not None:
+            logger(msg)
+        else:
+            print(msg)
+    
+    if not (XGBOOST_AVAILABLE and SKLEARN_AVAILABLE):
+        log("XGBoost and scikit-learn are required for --debug-max-depth.")
+        return
+
+    X_train, y_train, X_val, y_val, _, _ = get_tabular_data()
+    n_features = X_train.shape[1]
+
+    # Fixed normalized vector used as a base point in hyperparameter space.
+    x_norm = np.full(20, 0.5, dtype=float)
+
+    log("=" * 78)
+    log("DEBUG: Effect of max_depth on XGBoost trees (train on train, eval on val)")
+    log("=" * 78)
+
+    for depth in [1, 2, 3, 4, 5]:
+        cfg = build_xgb_config(x_norm=x_norm, use_gpu=False, seed=0)
+        cfg.max_depth = depth
+
+        pipeline = build_xgb_pipeline(cfg, n_features=n_features)
+        pipeline.fit(X_train, y_train)
+        y_pred = pipeline.predict(X_val)
+        val_acc = float(accuracy_score(y_val, y_pred))
+
+        model = pipeline.named_steps["xgb"]
+        booster = model.get_booster()
+        dump = booster.get_dump()
+        n_trees = len(dump)
+
+        if dump:
+            first_tree_lines = "\n".join(dump[0].splitlines()[:10])
+        else:
+            first_tree_lines = "<empty booster dump>"
+
+        log(f"max_depth={depth}, val_acc={val_acc:.4f}, n_trees={n_trees}")
+        log("booster_dump_first_tree:")
+        log(first_tree_lines)
+        log("-" * 78)
+
+
 # ------------------------------ optimization --------------------------------
 
 
@@ -387,6 +438,45 @@ def run_optimizer(
                 hp_desc = format_hparams(fun_name, x_norm)
                 msg = (
                     f"{fun_name:20s} | seed {seed:2d} | curv trial {trial_idx:3d} | "
+                    f"acc: {metrics['accuracy']:.4f} | prec: {metrics['precision']:.4f} | "
+                    f"rec: {metrics['recall']:.4f} | f1: {metrics['f1']:.4f} | t: {elapsed:.1f}s | {hp_desc}"
+                )
+                if trial_logger is not None:
+                    trial_logger(msg)
+                else:
+                    print(msg)
+            return metrics["accuracy"]
+
+        hpo.optimize(wrapped_objective, budget=budget)
+        return best_metrics, best_x_norm
+
+    elif optimizer == "adaptive":
+        hpo = QuadHPO_Adaptive(bounds=bounds, maximize=maximize, rng_seed=seed)
+        # Track best metrics
+        best_metrics = {"accuracy": -np.inf, "precision": 0.0, "recall": 0.0, "f1": 0.0}
+        best_x_norm: Optional[np.ndarray] = None
+
+        def wrapped_objective(x_norm: np.ndarray, epochs: int = 1) -> float:
+            """Objective wrapper called by QuadHPO for each trial."""
+
+            nonlocal best_metrics, best_x_norm
+            t0 = time.time()
+            metrics = objective_wrapper(x_norm)
+            elapsed = time.time() - t0
+            # Update best
+            if metrics["accuracy"] > best_metrics["accuracy"]:
+                best_metrics = metrics.copy()
+                best_x_norm = np.array(x_norm, dtype=float)
+
+            try:
+                trial_idx = int(hpo.trial_id)
+            except Exception:
+                trial_idx = -1
+
+            if verbose:
+                hp_desc = format_hparams(fun_name, x_norm)
+                msg = (
+                    f"{fun_name:20s} | seed {seed:2d} | adapt trial {trial_idx:3d} | "
                     f"acc: {metrics['accuracy']:.4f} | prec: {metrics['precision']:.4f} | "
                     f"rec: {metrics['recall']:.4f} | f1: {metrics['f1']:.4f} | t: {elapsed:.1f}s | {hp_desc}"
                 )
@@ -491,7 +581,7 @@ def main():
         help="Comma-separated function names",
     )
     parser.add_argument(
-        "--methods", type=str, default="curv,optuna,random", help="Which methods to run"
+        "--methods", type=str, default="curvature,adaptive,optuna,random", help="Which methods to run"
     )
     parser.add_argument("--gpu", action="store_true", help="Use GPU-backed XGBoost if available")
     parser.add_argument("--verbose", action="store_true", help="Print per-seed details")
@@ -506,6 +596,11 @@ def main():
         type=int,
         default=10,
         help="Evaluate top-K validation winners on the true test set",
+    )
+    parser.add_argument(
+        "--debug-max-depth",
+        action="store_true",
+        help="Run a small diagnostic to see how max_depth changes trees",
     )
     args = parser.parse_args()
 
@@ -546,6 +641,11 @@ def main():
 
     # Open output file and write header
     with open(output_file, "w", newline="") as f:
+        # Handle debug mode inside the with block so output goes to file
+        if args.debug_max_depth:
+            debug_max_depth_effect(logger=lambda msg: print_and_log(msg, f))
+            return
+        
         writer = csv.writer(f, delimiter="\t")
         writer.writerow(
             [
@@ -630,15 +730,12 @@ def main():
                         )
                     )
 
-        # Write a compact summary at the end of the file
+        # Write a formatted summary at the end of the file
         print_and_log("", f)
-        print_and_log("# SUMMARY (per fun/method aggregated over seeds)", f)
-        print_and_log(
-            "# fun\tmethod\tbest_acc_mean\tbest_prec_mean\tbest_rec_mean\tbest_f1_mean\t"
-            "test_acc_mean\ttest_prec_mean\ttest_rec_mean\ttest_f1_mean",
-            f,
-        )
-
+        print_and_log("=" * 120, f)
+        print_and_log("BENCHMARK SUMMARY (aggregated over seeds)", f)
+        print_and_log("=" * 120, f)
+        
         # Aggregate by (fun, method)
         summary_dict: Dict[Tuple[str, str], List[Tuple[float, float, float, float, float, float, float, float]]] = {}
         for row in summary_rows:
@@ -646,15 +743,26 @@ def main():
             vals = tuple(row[2:])  # type: ignore[assignment]
             summary_dict.setdefault(key, []).append(vals)  # type: ignore[arg-type]
 
+        # Print header
+        header = (
+            f"{'Function':<20} | {'Method':<12} | "
+            f"{'Best Acc':>8} {'Best Prec':>9} {'Best Rec':>8} {'Best F1':>8} | "
+            f"{'Test Acc':>8} {'Test Prec':>9} {'Test Rec':>8} {'Test F1':>8}"
+        )
+        print_and_log(header, f)
+        print_and_log("-" * 120, f)
+        
         for (fun_name, method), vals_list in summary_dict.items():
             arr = np.array(vals_list, dtype=float)  # shape (n_seeds, 8)
             means = arr.mean(axis=0)
-            print_and_log(
-                f"# {fun_name}\t{method}\t"
-                f"{means[0]:.4f}\t{means[1]:.4f}\t{means[2]:.4f}\t{means[3]:.4f}\t"
-                f"{means[4]:.4f}\t{means[5]:.4f}\t{means[6]:.4f}\t{means[7]:.4f}",
-                f,
+            row_str = (
+                f"{fun_name:<20} | {method:<12} | "
+                f"{means[0]:>8.4f} {means[1]:>9.4f} {means[2]:>8.4f} {means[3]:>8.4f} | "
+                f"{means[4]:>8.4f} {means[5]:>9.4f} {means[6]:>8.4f} {means[7]:>8.4f}"
             )
+            print_and_log(row_str, f)
+        
+        print_and_log("=" * 120, f)
 
 
 if __name__ == "__main__":

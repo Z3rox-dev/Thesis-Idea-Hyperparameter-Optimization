@@ -25,9 +25,12 @@ class QuadCube:
     # Surrogate model cache (2D quadratic on PC1-PC2)
     surrogate_2d: Optional[Dict[str, Any]] = field(default=None, init=False)
     
-    # Centralized surrogate hyperparameters
-    ridge_alpha: float = field(default=1e-3, init=False)
-    surrogate_min_points: int = field(default=8, init=False)
+    # Centralized surrogate hyperparameters (optimized via meta-optimization)
+    ridge_alpha: float = field(default=0.0054, init=False)  # Optimized: was 1e-3
+    surrogate_min_points: int = field(default=10, init=False)  # Optimized: was 8
+    
+    # Debug logger callback (passed from QuadHPO)
+    _debug_logger: Optional[Callable[[str], None]] = field(default=None, init=False, repr=False)
 
     #Metodo che adatta una funzione quadratica sulle prime due componenti principali (PC1 e PC2)
     def fit_surrogate(self, min_points: Optional[int] = None) -> None: #Prendo i dati che ho già misurato, li guardo da un’angolazione comoda (PCA) e ci disegno sopra una parabola (tipo “colline” e “valli”) che approssima la zona vicina.
@@ -61,6 +64,13 @@ class QuadCube:
         except Exception:
             self.surrogate_2d = None
             return
+        
+        # SANITY CHECK: Check for NaN/Inf in surrogate predictions
+        if self._debug_logger:
+            test_pred = Phi @ w
+            if np.any(np.isnan(test_pred)) or np.any(np.isinf(test_pred)):
+                self._debug_logger(f"[CRITICAL] Surrogate predictions contain NaN/Inf! w={w}, Phi.shape={Phi.shape}")
+        
         # Pre-compute (Phi^T Phi + alpha I)^-1 for predictive variance
         try:
             A_inv = np.linalg.inv(A)  # Mi salvo un calcolo che userò più tardi per sapere “quanto sono sicuro” delle mie previsioni.
@@ -324,7 +334,11 @@ class QuadCube:
         bonus = lambda_geo * vol / decay
         ucb_val = base + bonus
         
-        return base + bonus
+        # Debug logging for UCB components (only if debug flag is set on root or globally)
+        # We can't easily access the main QuadHPO instance here, so we skip this for now
+        # or we could add a weakref if needed.
+        
+        return ucb_val
 
     def should_split(self,
                      min_trials: int = 5,
@@ -592,6 +606,20 @@ class QuadCube:
         order = np.argsort(evals)[::-1]
         evals = evals[order]
         evecs = evecs[:, order]
+        
+        # SANITY CHECK: PCA condition number
+        if self._debug_logger:
+            cond = float(evals[0] / max(evals[-1], 1e-12))
+            if cond > 1e6:
+                self._debug_logger(f"[WARNING] PCA condition number very high: {cond:.2e} (evals: {evals})")
+        
+        # SANITY CHECK: PCA reconstruction error
+        if self._debug_logger:
+            Z_recon = (evecs @ evecs.T) @ Z.T
+            recon_err = np.linalg.norm(Z.T - Z_recon, 'fro') / max(np.linalg.norm(Z, 'fro'), 1e-12)
+            if recon_err > 0.1:
+                self._debug_logger(f"[WARNING] PCA reconstruction error high: {recon_err:.4f}")
+        
         # anisotropy check
         ratio = float(evals[0] / max(np.mean(evals[1:]) if d > 1 else evals[0], 1e-9))
         ok = bool(ratio >= anisotropy_threshold)
@@ -749,6 +777,11 @@ class QuadCube:
         for (pt, s) in pairs:
             t = float((R_use.T @ (pt - mu_use))[ax])
             (c1._tested_pairs if t < cut else c2._tested_pairs).append((np.array(pt, dtype=float), float(s)))
+        
+        # Propagate debug logger to children
+        c1._debug_logger = self._debug_logger
+        c2._debug_logger = self._debug_logger
+        
         self.children = [c1, c2]
         return self.children
 
@@ -875,6 +908,11 @@ class QuadCube:
                 children[2]._tested_pairs.append((np.array(pt, dtype=float), float(s)))
             else:
                 children[3]._tested_pairs.append((np.array(pt, dtype=float), float(s)))
+        
+        # Propagate debug logger to children
+        for ch in children:
+            ch._debug_logger = self._debug_logger
+        
         self.children = children
         return self.children
 
@@ -883,8 +921,8 @@ class QuadHPO:
     def __init__(
         self,
         bounds: List[Tuple[float, float]],
-        beta: float = 0.05,
-        lambda_geo: float = 1.0,
+        beta: float = 0.0117,
+        lambda_geo: float = 4.99,
         full_epochs: int = 50,
         maximize: bool = True,
         param_space: Optional[ParamSpace] = None,
@@ -894,34 +932,34 @@ class QuadHPO:
         on_trial: Optional[Callable[[Dict[str, Any]], None]] = None,
     ) -> None:
         # ============================================================
-        # CORE PARAMETERS (user-tunable)
+        # CORE PARAMETERS (user-tunable) - OPTIMIZED VIA META-OPT
         # ============================================================
-        self.beta = float(beta)              # Exploitation strength (0.05 = strong)
-        self.lambda_geo = float(lambda_geo)  # Geometric shrinkage rate (0.8 recommended)
+        self.beta = float(beta)              # Exploitation strength (0.012 = optimal from meta-opt)
+        self.lambda_geo = float(lambda_geo)  # Geometric shrinkage rate (4.99 = optimal from meta-opt)
         self.full_epochs = int(full_epochs)  # Surrogate training epochs (50 recommended)
         self.maximize = bool(maximize)
         self.sign = 1.0 if self.maximize else -1.0
         
         # ============================================================
-        # HARDCODED CONSTANTS (tested and optimized)
+        # HARDCODED CONSTANTS (optimized via meta-optimization 400 trials)
         # ============================================================
-        self.min_trials = 12          # Minimum samples before split
-        self.gamma = 0.00             # UCB exploration coefficient
+        self.min_trials = 17          # Minimum samples before split (optimized: was 12)
+        self.gamma = 0.00             # UCB exploration coefficient (fixed at 0)
         self.stale_steps_max = 15     # Max iterations without improvement before prune
         self.delta_prune = 0.025      # Prune threshold
-        self.max_depth = 6             # Maximum tree depth (was 1, increased for better refinement)
-        self.min_width = 1e-3         # Minimum cube width
-        self.min_points = 8           # Minimum points for surrogate (same as QuadCube.surrogate_min_points)
+        self.max_depth = 6             # Maximum tree depth (optimized: kept at 6)
+        self.min_width = 1e-4         # Minimum cube width (optimized: was 1e-3)
+        self.min_points = 10          # Minimum points for surrogate (optimized: was 8)
         self.min_leaves = 5           # Minimum leaf count
         self.prune_grace_period = 3   # Min trials before a leaf can be pruned
         
-        # PCA/Sampling constants
+        # PCA/Sampling constants (optimized via meta-optimization)
         self.pca_q_good = 0.3
-        self.pca_min_points = 8       # Use same as surrogate for consistency
+        self.pca_min_points = 10      # Use same as surrogate for consistency (optimized)
         self.anisotropy_threshold = 1.4
         self.depth_min_for_pca = 1
-        self.line_search_prob = 0.25
-        self.gauss_scale = 0.35
+        self.line_search_prob = 0.10  # Optimized: was 0.25
+        self.gauss_scale = 0.16       # Optimized: was 0.35
         
         # Surrogate mode: always 'auto' (adaptive)
         self.surr_mode = 'auto'
@@ -1002,6 +1040,10 @@ class QuadHPO:
         self.root.pca_softmax_tau = 0.6
         self.root.pca_mix_uniform = 0.25
         self.root.pca_weight_floor = 0.02
+        
+        # Set debug logger callback on root cube
+        self.root._debug_logger = self._debug_log
+        self._debug_logger = self._debug_log  # Alias for consistency
 
     def _safe_json(self, obj: Any) -> str:
         try:
@@ -1367,7 +1409,26 @@ class QuadHPO:
                 return leaf
         
         # Always use UCB (best performer)
-        return max(self.leaf_cubes, key=lambda c: c.ucb(beta=self.beta, lambda_geo=self.lambda_geo))
+        # Debug: log top 3 candidates
+        candidates = [(c, c.ucb(beta=self.beta, lambda_geo=self.lambda_geo)) for c in self.leaf_cubes]
+        candidates.sort(key=lambda x: x[1], reverse=True)
+        
+        if self.trial_id % 5 == 0: # Log every 5 trials to avoid spam
+            self._debug_log(f"\n[Select Cube Trial {self.trial_id}] Top 5 candidates:")
+            for i, (c, val) in enumerate(candidates[:5]):
+                vol = 1.0
+                for lo, hi in c.bounds:
+                    vol *= max(hi - lo, 0.0)
+                n_eff = c.n_trials
+                mu = float(c.mean_score) if n_eff > 0 else 0.0
+                var = float(c.var_score) if n_eff > 1 else float(c.prior_var)
+                decay = float(np.log(n_eff + 2.0))
+                bonus = self.lambda_geo * vol / decay
+                base = val - bonus
+                self._debug_log(f"  #{i} ID={id(c)%1000} UCB={val:.4f} (Base={base:.4f}, Bonus={bonus:.4f}) "
+                               f"mu={mu:.4f}, var={var:.4f}, vol={vol:.2e}, n={n_eff}, depth={c.depth}")
+
+        return candidates[0][0]
 
     def _maybe_denormalize(self, x_norm: np.ndarray) -> Optional[List[Any]]:
         if self.param_space is None:
@@ -1446,6 +1507,10 @@ class QuadHPO:
         s_final_raw, artifact = self._call_objective(objective_fn, x_for_obj, epochs=self.full_epochs)
         # Internally use signed score so minimization works seamlessly with UCB/max logic
         s_final = float(self.sign * s_final_raw)
+        
+        # SANITY CHECK: Log every loss value
+        if self._debug_logger:
+            self._debug_logger(f"[LOSS] Trial {self.trial_id}: s_raw={s_final_raw:.6f}, s_signed={s_final:.6f}")
         
         # Log objective values at key trials to detect anomalies
         if self.trial_id in [1, 2, 10, 20, 30, 48, 49, 50, 51, 69, 85, 92] or s_final_raw > 1.0 or s_final_raw < 0.0 or np.isnan(s_final_raw) or np.isinf(s_final_raw):

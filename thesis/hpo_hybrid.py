@@ -75,6 +75,9 @@ class Cube:
         
         This transforms the local rotated cube bounds to global coordinates and
         returns the AABB (Axis-Aligned Bounding Box) clipped to the domain [0,1]^d.
+        
+        Note: Local bounds are in format [(lo_0, hi_0), ...] NOT necessarily centered at 0.
+        The cube occupies the region: mu + R @ local_point for local_point in local bounds.
         """
         if self._global_bounds is not None:
             return self._global_bounds
@@ -82,15 +85,20 @@ class Cube:
         d = len(self.bounds)
         self._ensure_frame()
         
-        # Compute corners of local cube and transform to global
-        # For efficiency, use the fact that AABB of rotated box = |R| @ half_widths
-        half_widths = np.array([(hi-lo)/2 for lo, hi in self.bounds])
+        # Get local bounds center and half-widths
+        local_centers = np.array([(lo + hi) / 2 for lo, hi in self.bounds])
+        half_widths = np.array([(hi - lo) / 2 for lo, hi in self.bounds])
+        
+        # The global center of the cube's bounding box center
+        # Note: mu is already the global center, local_centers should be ~0 for centered bounds
+        # But for non-centered bounds, we need: global_center = mu + R @ local_centers
+        global_center = self.mu + self.R @ local_centers
         
         # The extent in each global dimension is sum of |R_ij| * half_width_j
         extents = np.abs(self.R) @ half_widths
         
-        global_lo = self.mu - extents
-        global_hi = self.mu + extents
+        global_lo = global_center - extents
+        global_hi = global_center + extents
         
         # Clip to domain
         self._global_bounds = []
@@ -551,41 +559,72 @@ class Cube:
             pass
         return 0.5*(correct_lo + correct_hi)
 
+    def _local_cut(self, ax: int) -> float:
+        """Compute cut point in LOCAL coordinates of this cube.
+        
+        Uses quadratic fit if enough points, otherwise median of good points,
+        otherwise midpoint.
+        """
+        lo, hi = self.bounds[ax]
+        mid = 0.5 * (lo + hi)
+        
+        if len(self._tested_pairs) < 3:
+            return mid
+        
+        self._ensure_frame()
+        
+        # Transform all points to local coords
+        X = np.array([p for p, _ in self._tested_pairs])
+        y = np.array([s for _, s in self._tested_pairs])
+        T = (self.R.T @ (X.T - self.mu.reshape(-1, 1))).T  # Local coords
+        t = T[:, ax]  # Values along axis
+        
+        # Try quadratic fit for optimal cut
+        if len(self._tested_pairs) >= 6:
+            t_std = max(float(np.std(t)), 1e-9)
+            ts = t / t_std
+            Phi = np.stack([np.ones_like(ts), ts, 0.5*ts*ts], axis=1)
+            A = Phi.T @ Phi + 1e-3*np.eye(3)
+            try:
+                w = np.linalg.solve(A, Phi.T @ y)
+                if w[2] > 1e-8:  # Convex parabola
+                    t_star = -w[1]/w[2] * t_std
+                    margin = 0.1 * (hi - lo)
+                    return float(np.clip(t_star, lo + margin, hi - margin))
+            except:
+                pass
+        
+        # Fallback: median of points
+        return float(np.clip(np.median(t), lo + 0.1*(hi-lo), hi - 0.1*(hi-lo)))
+
     def split(self, dim: int, mode: str, depth_threshold: int = 5, gamma_threshold: float = None) -> List["Cube"]:
+        """Split cube using LOCAL bounds directly (no coordinate explosion).
+        
+        Key insight: Work in the PARENT's local coordinate system.
+        Use PCA rotation only to determine WHICH axis to split and WHERE to cut.
+        Children inherit parent's R but get subdivided bounds.
+        """
         d = len(self.bounds)
         self._ensure_frame()
         S = self.curvature_scores()
-        R_use, mu_use = self.R, self.mu
-        if S is not None and self.surrogate:
-            R_use = self.surrogate['R']
-            mu_use = self.surrogate['mu']
-            
         widths = self._widths()
+        
+        # Decide split axes using curvature or width
         if S is not None:
             order = np.argsort(S)[::-1]
             ax_i, ax_j = int(order[0]), int(order[1] if len(order)>1 else order[0])
         else:
             top2 = np.argsort(widths)[-2:]
             ax_i, ax_j = int(top2[-1]), int(top2[-2] if len(top2)>1 else top2[-1])
-            
-        M = R_use.T @ self.R if self.R is not None else R_use.T
-        spans = np.abs(M) @ widths
-        delta_mu = (self.mu if self.mu is not None else np.zeros(d)) - mu_use
-        center = R_use.T @ delta_mu
-        base = [(center[k]-spans[k]/2, center[k]+spans[k]/2) for k in range(d)]
         
-        # Ensure base spans have minimum width
-        min_span = 1e-4
-        for k in range(d):
-            lo, hi = base[k]
-            if hi - lo < min_span:
-                mid = (lo + hi) / 2
-                base[k] = (mid - min_span/2, mid + min_span/2)
+        # Work directly on parent's local bounds (no |M| @ widths explosion!)
+        lo_i, hi_i = self.bounds[ax_i]
+        lo_j, hi_j = self.bounds[ax_j] if mode == 'quad' else (0, 0)
         
-        cut_i = self._quad_cut(ax_i, R_use, mu_use)
-        cut_j = self._quad_cut(ax_j, R_use, mu_use) if mode=='quad' else 0.0
-        lo_i, hi_i = base[ax_i]
-        lo_j, hi_j = base[ax_j] if mode=='quad' else (0,0)
+        # Compute cut points in LOCAL coordinates
+        # Transform tested points to local coords for median computation
+        cut_i = self._local_cut(ax_i)
+        cut_j = self._local_cut(ax_j) if mode == 'quad' else 0.0
         
         # Ensure cut is not too close to edges (leave at least 10% on each side)
         margin_i = 0.1 * (hi_i - lo_i)
@@ -603,7 +642,6 @@ class Cube:
         new_depth = self.depth + 1
         
         # DYNAMIC PHASE TRANSITION based on surrogate sanity
-        # If parent's surrogate is unhealthy, children should use Phase 2
         parent_sanity = self.surrogate_sanity()
         force_phase2 = False
         
@@ -620,34 +658,32 @@ class Cube:
         child_phase = 2 if (force_phase2 or new_depth >= depth_threshold) else 1
         
         for q in quads:
-            nb = list(base)
+            # Build child bounds by subdividing parent's bounds directly
+            nb = list(self.bounds)
             nb[ax_i] = (lo_i, cut_i) if q[0] else (cut_i, hi_i)
             if mode == 'quad':
                 nb[ax_j] = (lo_j, cut_j) if q[1] else (cut_j, hi_j)
-            ctr = np.array([(a+b)*0.5 for a,b in nb])
-            wch = np.array([b-a for a,b in nb])
             
-            # BUG FIX: Ensure minimum width to prevent degenerate cubes
-            min_width = 1e-6
-            wch = np.maximum(wch, min_width)
-            
-            ch = Cube(bounds=[(-w/2, w/2) for w in wch], parent=self)
-            ch.R = R_use.copy()
-            ch.mu = (mu_use + R_use @ ctr).astype(float)
+            # Child inherits parent's rotation and bounds are already in local coords
+            ch = Cube(bounds=nb, parent=self)
+            ch.R = self.R.copy()
+            # Child's global center: transform child's local center to global
+            ctr_local = np.array([(a+b)*0.5 for a, b in nb])
+            ch.mu = self.mu + self.R @ ctr_local
             ch.depth = new_depth
             ch.phase = child_phase
             children.append(ch)
-            
-        X = np.array([p for p,_ in self._tested_pairs]) if self._tested_pairs else np.empty((0,d))
-        if X.size > 0:
-            T = (R_use.T @ (X.T - mu_use.reshape(-1,1))).T
-            for idx_pt, (pt, sc) in enumerate(self._tested_pairs):
-                t = T[idx_pt]
+        
+        # Assign points to children using LOCAL coordinates
+        if self._tested_pairs:
+            for pt, sc in self._tested_pairs:
+                # Transform global point to parent's local coords
+                local_pt = self.R.T @ (pt - self.mu)
                 if mode == 'binary':
-                    ci = 0 if t[ax_i] < cut_i else 1
+                    ci = 0 if local_pt[ax_i] < cut_i else 1
                 else:
-                    li = t[ax_i] < cut_i
-                    lj = t[ax_j] < cut_j
+                    li = local_pt[ax_i] < cut_i
+                    lj = local_pt[ax_j] < cut_j
                     ci = {(True,True):0, (False,True):1, (True,False):2, (False,False):3}[(li,lj)]
                 children[ci]._tested_pairs.append((pt.copy(), sc))
                 
