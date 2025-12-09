@@ -53,7 +53,7 @@ class Cube:
         return self.n_good / self.n_trials
 
     def fit_lgs_model(self, gamma: float, dim: int) -> None:
-        """Costruisce modello geometrico dai dati."""
+        """Costruisce modello geometrico dai dati - MIGLIORATO per paesaggi complessi."""
         pairs = list(self._tested_pairs)
         
         if self.parent and len(pairs) < 3 * dim:
@@ -70,32 +70,77 @@ class Cube:
         all_pts = np.array([p for p, s in pairs])
         all_scores = np.array([s for p, s in pairs])
         
-        # Top-k punti (i migliori)
-        k = max(3, len(pairs) // 5)
+        # Top-k punti (i migliori) - adattivo
+        k = max(5, min(len(pairs) // 4, 15))  # Tra 5 e 15 punti
         top_k_idx = np.argsort(all_scores)[-k:]
         top_k_pts = all_pts[top_k_idx]
+        top_k_scores = all_scores[top_k_idx]
         
         # Punti cattivi (sotto gamma)
         bad_mask = all_scores < gamma
         bad_pts = all_pts[bad_mask] if bad_mask.any() else None
         
-        # Stima gradiente (direzione miglioramento)
+        # MIGLIORAMENTO: Stima gradiente con focus sui top points
         gradient_dir = None
+        gradient_confidence = 0.0
         if len(pairs) >= dim + 3:
             widths = np.maximum(self._widths(), 1e-9)
             center = self.center()
+            
+            # Prova due approcci e scegli il migliore
+            gradients = []
+            
+            # Approccio 1: Regressione lineare su tutti i punti (robusto)
             X_norm = (all_pts - center) / widths
             y_centered = all_scores - all_scores.mean()
-            
             try:
                 XtX = X_norm.T @ X_norm + 0.01 * np.eye(dim)
                 Xty = X_norm.T @ y_centered
-                grad = np.linalg.solve(XtX, Xty)
-                grad_norm = np.linalg.norm(grad)
-                if grad_norm > 1e-9:
-                    gradient_dir = grad / grad_norm
+                grad1 = np.linalg.solve(XtX, Xty)
+                grad1_norm = np.linalg.norm(grad1)
+                if grad1_norm > 1e-9:
+                    gradients.append(grad1 / grad1_norm)
             except:
                 pass
+            
+            # Approccio 2: Weighted regression (più peso ai top points)
+            if len(top_k_pts) >= dim + 1:
+                try:
+                    # Pesi esponenziali: più alto lo score, più peso
+                    weights = np.exp(2 * (top_k_scores - top_k_scores.min()) / 
+                                    (top_k_scores.max() - top_k_scores.min() + 1e-9))
+                    weights = weights / weights.sum()
+                    
+                    X_top_norm = (top_k_pts - center) / widths
+                    y_top_centered = top_k_scores - top_k_scores.mean()
+                    
+                    W_sqrt = np.sqrt(weights)
+                    X_weighted = X_top_norm * W_sqrt[:, np.newaxis]
+                    y_weighted = y_top_centered * W_sqrt
+                    
+                    XtX = X_weighted.T @ X_weighted + 0.01 * np.eye(dim)
+                    Xty = X_weighted.T @ y_weighted
+                    grad2 = np.linalg.solve(XtX, Xty)
+                    grad2_norm = np.linalg.norm(grad2)
+                    if grad2_norm > 1e-9:
+                        gradients.append(grad2 / grad2_norm)
+                except:
+                    pass
+            
+            # Approccio 3: Direzione dal centroide bad verso centroide top (semplice)
+            if bad_pts is not None and len(bad_pts) > 0 and len(top_k_pts) > 0:
+                bad_center = bad_pts.mean(axis=0)
+                top_center = top_k_pts.mean(axis=0)
+                grad3 = (top_center - bad_center) / widths
+                grad3_norm = np.linalg.norm(grad3)
+                if grad3_norm > 1e-9:
+                    gradients.append(grad3 / grad3_norm)
+            
+            # Combina i gradienti con media (ensemble)
+            if len(gradients) > 0:
+                gradient_dir = np.mean(gradients, axis=0)
+                gradient_dir = gradient_dir / (np.linalg.norm(gradient_dir) + 1e-9)
+                gradient_confidence = len(gradients) / 3.0  # Confidence in [0, 1]
         
         self.lgs_model = {
             'all_pts': all_pts,
@@ -103,6 +148,7 @@ class Cube:
             'top_k_pts': top_k_pts,
             'bad_pts': bad_pts,
             'gradient_dir': gradient_dir,
+            'gradient_confidence': gradient_confidence,
             'widths': np.maximum(self._widths(), 1e-9),
             'center': self.center(),
         }
@@ -259,7 +305,7 @@ class HPOptimizer:
     def __init__(self, bounds: List[Tuple[float,float]], maximize: bool = False, 
                  seed: int = 42, gamma_quantile: float = 0.25,
                  local_search_ratio: float = 0.2,
-                 n_candidates: int = 30):
+                 n_candidates: int = 40):  # Aumentato da 30 a 40
         
         self.bounds = bounds
         self.dim = len(bounds)
@@ -343,7 +389,7 @@ class HPOptimizer:
         ])
     
     def _generate_candidates(self, cube: Cube, n: int) -> List[np.ndarray]:
-        """Genera candidati con strategie diverse."""
+        """Genera candidati con strategie diverse - MIGLIORATO per funzioni complesse."""
         candidates = []
         widths = cube._widths()
         center = cube.center()
@@ -353,24 +399,54 @@ class HPOptimizer:
         for _ in range(n):
             strategy = self.rng.random()
             
-            if strategy < 0.35 and model is not None and len(model['top_k_pts']) > 0:
-                # Vicino a un top-k point
+            # Strategia 1: Esplorazione vicino ai top-k (aumentata)
+            if strategy < 0.25 and model is not None and len(model['top_k_pts']) > 0:
+                # Usa più varianza per esplorare meglio
                 idx = self.rng.integers(len(model['top_k_pts']))
-                x = model['top_k_pts'][idx] + self.rng.normal(0, 0.12, self.dim) * widths
+                scale = 0.15 if self.iteration < self.exploration_budget * 0.5 else 0.08
+                x = model['top_k_pts'][idx] + self.rng.normal(0, scale, self.dim) * widths
                 
-            elif strategy < 0.55 and model is not None and model['gradient_dir'] is not None:
-                # Lungo il gradiente
+            # Strategia 2: Multi-hop lungo il gradiente (NUOVO)
+            elif strategy < 0.40 and model is not None and model['gradient_dir'] is not None:
+                # Prova diversi step size lungo il gradiente
                 top_center = model['top_k_pts'].mean(axis=0)
-                step = self.rng.uniform(0.05, 0.3)
-                x = top_center + step * model['gradient_dir'] * widths
+                step = self.rng.choice([0.05, 0.15, 0.30, 0.50])  # Multi-scale steps
+                direction = model['gradient_dir']
+                # Aggiungi perturbazione perpendicolare per esplorare attorno
+                perp_noise = self.rng.normal(0, 0.08, self.dim)
+                perp_noise = perp_noise - np.dot(perp_noise, direction) * direction  # Ortogonale
+                x = top_center + step * direction * widths + perp_noise * widths
+                
+            # Strategia 3: Esplorazione direzionale tra top punti (NUOVO)
+            elif strategy < 0.50 and model is not None and len(model['top_k_pts']) > 1:
+                # Interpola/estrapola tra i migliori punti
+                idx1, idx2 = self.rng.choice(len(model['top_k_pts']), size=2, replace=False)
+                alpha = self.rng.uniform(-0.3, 1.3)  # Permetti extrapolazione
+                x = alpha * model['top_k_pts'][idx1] + (1 - alpha) * model['top_k_pts'][idx2]
                 x = x + self.rng.normal(0, 0.05, self.dim) * widths
                 
-            elif strategy < 0.70:
-                # Vicino al centro del cubo
+            # Strategia 4: Evita zone cattive con bounce (MIGLIORATO)
+            elif strategy < 0.65 and model is not None and model['bad_pts'] is not None and len(model['bad_pts']) > 0:
+                # Parti dal centro, muoviti lontano dai punti cattivi
+                bad_center = model['bad_pts'].mean(axis=0)
+                away_direction = center - bad_center
+                away_norm = np.linalg.norm(away_direction)
+                if away_norm > 1e-9:
+                    away_direction = away_direction / away_norm
+                    step = self.rng.uniform(0.2, 0.4)
+                    x = center + step * away_direction * widths
+                    x = x + self.rng.normal(0, 0.1, self.dim) * widths
+                else:
+                    x = center + self.rng.normal(0, 0.2, self.dim) * widths
+                
+            # Strategia 5: Cerca vicino al centro
+            elif strategy < 0.75:
+                # Gaussiano centrato
                 x = center + self.rng.normal(0, 0.2, self.dim) * widths
                 
+            # Strategia 6: Esplorazione uniforme residua
             else:
-                # Random nel cubo
+                # Random uniforme nel cubo
                 x = np.array([self.rng.uniform(lo, hi) for lo, hi in cube.bounds])
             
             x = self._clip_to_cube(x, cube)
@@ -404,12 +480,48 @@ class HPOptimizer:
         return self._sample_with_lgs(cube)
     
     def _local_search_sample(self, progress: float) -> np.ndarray:
+        """Local search migliorata con strategie multiple per evitare minimi locali."""
         if self.best_x is None:
             return np.array([self.rng.uniform(lo, hi) for lo, hi in self.bounds])
         
-        radius = 0.10 * (1 - progress) + 0.02
-        noise = self.rng.normal(0, radius, self.dim) * self.global_widths
-        x = self.best_x + noise
+        # Scegli strategia in base al progresso
+        strategy = self.rng.random()
+        
+        # Strategia 1: Raffinamento locale intenso (early)
+        if strategy < 0.4 and progress < 0.5:
+            radius = 0.08 * (1 - progress) + 0.01
+            noise = self.rng.normal(0, radius, self.dim) * self.global_widths
+            x = self.best_x + noise
+            
+        # Strategia 2: Esplorazione radiale multi-scala (NUOVO)
+        elif strategy < 0.6:
+            # Prova diverse distanze dal best point
+            radius = self.rng.choice([0.03, 0.08, 0.15, 0.25]) * (1 - progress * 0.7)
+            direction = self.rng.normal(0, 1, self.dim)
+            direction = direction / (np.linalg.norm(direction) + 1e-9)
+            x = self.best_x + radius * direction * self.global_widths
+            
+        # Strategia 3: Jump and descend (per scappare da local minima)
+        elif strategy < 0.75 and len(self.X_all) > 10:
+            # Salta verso una regione promettente ma non ancora ottimizzata
+            top_k = min(10, len(self.y_all))
+            top_indices = np.argsort(self.y_all)[-top_k:]
+            idx = self.rng.choice(top_indices)
+            other_good = self.X_all[idx]
+            # Vai tra best e other good point, con rumore
+            alpha = self.rng.uniform(0.3, 0.7)
+            x = alpha * self.best_x + (1 - alpha) * other_good
+            x = x + self.rng.normal(0, 0.05, self.dim) * self.global_widths
+            
+        # Strategia 4: Pattern search (esplora coordinate systematicamente)
+        else:
+            x = self.best_x.copy()
+            # Perturba 1-3 dimensioni in modo più significativo
+            n_dims = min(self.rng.integers(1, 4), self.dim)
+            dims = self.rng.choice(self.dim, size=n_dims, replace=False)
+            for d in dims:
+                x[d] += self.rng.choice([-1, 1]) * self.rng.uniform(0.05, 0.15) * self.global_widths[d]
+        
         return self._clip_to_bounds(x)
     
     def _should_split(self, cube: Cube) -> bool:

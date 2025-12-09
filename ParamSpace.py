@@ -317,6 +317,228 @@ def alpine2(x: np.ndarray) -> float:
     return float(np.sum(np.sqrt(np.abs(x)) * np.sin(x)))
 
 
+# ============================================================================
+# ML-INSPIRED COMPLEX FUNCTIONS
+# ============================================================================
+# These functions simulate complex optimization landscapes similar to those
+# encountered in machine learning hyperparameter optimization
+
+def ml_loss_landscape(x: np.ndarray) -> float:
+    """
+    Simulates a neural network loss landscape with multiple local minima,
+    plateaus, and saddle points. Combines polynomial, exponential, and 
+    trigonometric components to create ML-like complexity.
+    """
+    d = x.size
+    
+    # Global structure: bowl-shaped with offset optimum
+    global_term = np.sum((x - 0.3) ** 2)
+    
+    # Local minima: multiple attractors
+    local_minima = 0.0
+    for i in range(d):
+        # Create deceptive local minima
+        local_minima += 0.5 * np.exp(-5 * (x[i] - 0.7) ** 2)
+        local_minima += 0.3 * np.exp(-5 * (x[i] + 0.5) ** 2)
+    
+    # Plateaus: flat regions that are hard to escape
+    plateau = 0.2 * np.sum(np.tanh(10 * x))
+    
+    # Saddle points: non-convex interactions
+    saddle = 0.0
+    for i in range(d - 1):
+        saddle += 0.1 * (x[i] ** 2 - x[i + 1] ** 2)
+    
+    # High-frequency noise: simulates stochastic gradients
+    noise = 0.05 * np.sum(np.sin(20 * x) * np.cos(15 * x))
+    
+    return float(global_term - local_minima + plateau + saddle + noise)
+
+
+def hyperparameter_surface(x: np.ndarray) -> float:
+    """
+    Simulates hyperparameter optimization surface with:
+    - Learning rate sensitivity (exponential scaling)
+    - Regularization effects (non-linear interactions)
+    - Architecture parameters (discrete-like continuous jumps)
+    """
+    d = x.size
+    
+    # Learning rate effect: sensitive near 0, plateau at high values
+    lr_effect = 0.0
+    for i in range(min(3, d)):
+        lr = x[i]
+        lr_effect += np.where(lr < 0.1, 10 * (0.1 - lr) ** 2, 
+                              np.where(lr > 0.8, 5 * (lr - 0.8) ** 2, 0.1))
+    
+    # Regularization interactions: coupling between dimensions
+    reg_effect = 0.0
+    for i in range(d - 1):
+        reg_effect += 0.3 * (x[i] * x[i + 1] - 0.25) ** 2
+    
+    # Architecture sensitivity: step-like behavior
+    arch_effect = 0.0
+    for i in range(d):
+        # Simulate discrete choices with smooth approximation
+        arch_effect += 0.2 * np.sum(np.exp(-50 * (x[i] - k * 0.25) ** 2) 
+                                     for k in range(5))
+    
+    # Overfitting valley: narrow region of good performance
+    center = np.full(d, 0.4)
+    dist_to_opt = np.linalg.norm(x - center)
+    overfitting = 3.0 * np.abs(dist_to_opt - 0.2)
+    
+    return float(lr_effect + reg_effect - arch_effect + overfitting)
+
+
+def neural_network_loss(x: np.ndarray) -> float:
+    """
+    Models a neural network loss surface with:
+    - Sharp minima vs flat minima
+    - Symmetries from neuron permutations
+    - Gradient pathologies (vanishing/exploding)
+    """
+    d = x.size
+    
+    # Sharp minimum at origin
+    sharp_min = 20 * np.sum(x ** 4)
+    
+    # Flat minimum region around (0.5, 0.5, ...)
+    flat_center = np.full(d, 0.5)
+    flat_min = np.sum((x - flat_center) ** 2) + 0.01 * np.sum((x - flat_center) ** 4)
+    
+    # Symmetry-induced plateaus
+    symmetry = 0.0
+    for i in range(d // 2):
+        # Pairs of neurons can be swapped
+        diff = abs(x[i] - x[d - 1 - i])
+        symmetry += 0.5 * np.exp(-10 * diff)
+    
+    # Gradient pathology regions
+    pathology = 0.0
+    for i in range(d):
+        # Regions where gradient is very small (vanishing) or large (exploding)
+        pathology += 0.1 * (np.tanh(20 * (x[i] - 0.7)) ** 2)
+    
+    # Combine with weight to prefer flat minimum
+    return float(0.3 * sharp_min + flat_min - symmetry + pathology)
+
+
+def ensemble_hyperopt(x: np.ndarray) -> float:
+    """
+    Models ensemble method hyperparameter space:
+    - Number of estimators effect
+    - Max depth interactions
+    - Learning rate + subsample coupling
+    """
+    d = x.size
+    
+    # Estimator count effect (diminishing returns)
+    n_est = x[0] if d > 0 else 0.5
+    est_effect = -2.0 * np.log1p(n_est)
+    
+    # Depth effect (U-shaped: too shallow or too deep is bad)
+    if d > 1:
+        depth = x[1]
+        depth_effect = 3.0 * ((depth - 0.6) ** 2)
+    else:
+        depth_effect = 0.0
+    
+    # Learning rate and subsample interaction
+    if d > 2:
+        lr = x[2]
+        subsample = x[3] if d > 3 else 0.8
+        # Good performance when both are balanced
+        interaction = 2.0 * (lr - 0.5 * subsample) ** 2
+    else:
+        interaction = 0.0
+    
+    # Feature importance interactions
+    feature_effect = 0.0
+    for i in range(4, d):
+        feature_effect += 0.1 * (x[i] - 0.5) ** 2
+        # Non-linear coupling
+        if i > 4:
+            feature_effect += 0.05 * np.sin(10 * x[i] * x[i - 1])
+    
+    # Add noise to simulate validation set variance
+    noise = 0.1 * np.sum(np.cos(15 * x))
+    
+    return float(est_effect + depth_effect + interaction + feature_effect + noise)
+
+
+def adversarial_landscape(x: np.ndarray) -> float:
+    """
+    Deliberately difficult landscape designed to fool optimizers:
+    - Deceptive gradients pointing away from global optimum
+    - Multiple competing attractors
+    - Narrow path to global optimum
+    """
+    d = x.size
+    
+    # Global optimum in corner
+    global_opt = np.full(d, 0.8)
+    global_dist = np.linalg.norm(x - global_opt)
+    global_basin = 5.0 * global_dist ** 2
+    
+    # Strong local attractor at center (deceptive)
+    center = np.full(d, 0.5)
+    center_dist = np.linalg.norm(x - center)
+    deceptive_basin = -3.0 * np.exp(-10 * center_dist)
+    
+    # Barrier between local and global
+    # Creates a ridge that's hard to cross
+    barrier = 0.0
+    for i in range(d):
+        if 0.6 < x[i] < 0.7:
+            barrier += 2.0
+    
+    # Noisy gradient information
+    gradient_noise = 0.3 * np.sum(np.sin(30 * x) * np.cos(25 * x))
+    
+    # Narrow valley towards optimum (easy to miss)
+    valley_dir = (x - center) / (np.linalg.norm(x - center) + 1e-9)
+    opt_dir = (global_opt - center) / np.linalg.norm(global_opt - center)
+    alignment = np.dot(valley_dir, opt_dir)
+    valley_bonus = -0.5 * np.exp(10 * alignment) if alignment > 0.9 else 0.0
+    
+    return float(global_basin + deceptive_basin + barrier + gradient_noise + valley_bonus)
+
+
+def multiscale_landscape(x: np.ndarray) -> float:
+    """
+    Combines features at multiple scales (like CNNs):
+    - Coarse structure: overall topology
+    - Fine structure: local details
+    - Micro structure: noise and small variations
+    """
+    d = x.size
+    
+    # Coarse scale: overall bowl shape
+    coarse = np.sum((x - 0.6) ** 2)
+    
+    # Medium scale: undulations
+    medium = 0.0
+    for i in range(d):
+        medium += 0.3 * np.sin(5 * np.pi * x[i])
+    
+    # Fine scale: many small local minima
+    fine = 0.0
+    for i in range(d):
+        fine += 0.1 * np.sin(20 * np.pi * x[i])
+    
+    # Micro scale: high-frequency noise
+    micro = 0.02 * np.sum(np.sin(100 * np.pi * x))
+    
+    # Cross-scale interactions
+    cross_scale = 0.0
+    for i in range(d - 1):
+        # Interaction between adjacent dimensions
+        cross_scale += 0.05 * np.sin(10 * x[i]) * np.cos(10 * x[i + 1])
+    
+    return float(coarse + medium + fine + micro + cross_scale)
+
+
 FUNS: Dict[str, Tuple[Callable[[np.ndarray], float], List[Tuple[float, float]]]] = {
     # name: (function, domain bounds)
     'rosenbrock': (rosenbrock, [(-2.0, 2.0)] * 10),
@@ -358,6 +580,13 @@ FUNS: Dict[str, Tuple[Callable[[np.ndarray], float], List[Tuple[float, float]]]]
     'schwefel_221': (schwefel_221, [(-100.0, 100.0)] * 10),
     'schumer_steiglitz': (schumer_steiglitz, [(-100.0, 100.0)] * 10),
     'alpine2': (alpine2, [(0.0, 10.0)] * 10),
+    # ML-inspired complex functions
+    'ml_loss_landscape': (ml_loss_landscape, [(0.0, 1.0)] * 10),
+    'hyperparameter_surface': (hyperparameter_surface, [(0.0, 1.0)] * 10),
+    'neural_network_loss': (neural_network_loss, [(0.0, 1.0)] * 10),
+    'ensemble_hyperopt': (ensemble_hyperopt, [(0.0, 1.0)] * 10),
+    'adversarial_landscape': (adversarial_landscape, [(0.0, 1.0)] * 10),
+    'multiscale_landscape': (multiscale_landscape, [(0.0, 1.0)] * 10),
 }
 
 
