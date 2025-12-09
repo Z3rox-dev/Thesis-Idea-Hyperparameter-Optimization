@@ -23,6 +23,8 @@ thesis/*
 !thesis/benchmark_xgboost_tabular.py
 !thesis/benchmark_hpobench_paramnet_curv.py
 !thesis/benchmark_hpobench_xgb_tabular_curv.py
+!thesis/hpo_lgs_v3.py
+!thesis/benchmark_lgsv3_improved.py
 !benchmark_synthetic_cma.py
 
 # Large folders
