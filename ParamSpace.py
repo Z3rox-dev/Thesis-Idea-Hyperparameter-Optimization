@@ -376,12 +376,14 @@ def hyperparameter_surface(x: np.ndarray) -> float:
     for i in range(d - 1):
         reg_effect += 0.3 * (x[i] * x[i + 1] - 0.25) ** 2
     
-    # Architecture sensitivity: step-like behavior
+    # Architecture sensitivity: step-like behavior  
     arch_effect = 0.0
+    # Vectorize the inner loop computation
+    k_values = np.arange(5) * 0.25  # [0, 0.25, 0.5, 0.75, 1.0]
     for i in range(d):
-        # Simulate discrete choices with smooth approximation
-        arch_effect += 0.2 * np.sum(np.exp(-50 * (x[i] - k * 0.25) ** 2) 
-                                     for k in range(5))
+        # Compute all exponentials at once
+        diffs_sq = (x[i] - k_values) ** 2
+        arch_effect += 0.2 * np.sum(np.exp(-50 * diffs_sq))
     
     # Overfitting valley: narrow region of good performance
     center = np.full(d, 0.4)

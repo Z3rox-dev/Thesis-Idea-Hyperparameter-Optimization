@@ -107,9 +107,13 @@ class Cube:
             if len(top_k_pts) >= dim + 1:
                 try:
                     # Pesi esponenziali: più alto lo score, più peso
-                    weights = np.exp(2 * (top_k_scores - top_k_scores.min()) / 
-                                    (top_k_scores.max() - top_k_scores.min() + 1e-9))
-                    weights = weights / weights.sum()
+                    score_range = top_k_scores.max() - top_k_scores.min()
+                    if score_range > 1e-6:  # Check for non-degenerate scores
+                        weights = np.exp(2 * (top_k_scores - top_k_scores.min()) / score_range)
+                        weights = weights / weights.sum()
+                    else:
+                        # All scores similar, use uniform weights
+                        weights = np.ones(len(top_k_scores)) / len(top_k_scores)
                     
                     X_top_norm = (top_k_pts - center) / widths
                     y_top_centered = top_k_scores - top_k_scores.mean()
@@ -219,7 +223,7 @@ class Cube:
             for c in cands_norm:
                 direction = c - top_center_norm
                 dir_norm = np.linalg.norm(direction)
-                if dir_norm > 1e-9:
+                if dir_norm > 1e-6:  # Increased epsilon for better stability
                     direction = direction / dir_norm
                     alignment = np.dot(direction, model['gradient_dir'])
                     grd_scores.append(alignment)

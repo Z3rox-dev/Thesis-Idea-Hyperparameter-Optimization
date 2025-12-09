@@ -12,16 +12,25 @@ Confronta:
 from __future__ import annotations
 
 import sys
+import os
 import time
 import numpy as np
 from typing import Dict, List, Tuple
 
+# Get the repository root directory
+try:
+    repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+except NameError:
+    # Fallback when __file__ is not defined (e.g., interactive mode)
+    repo_root = os.getcwd()
+
 # Import ParamSpace functions
-sys.path.insert(0, '/home/runner/work/Thesis-Idea-Hyperparameter-Optimization/Thesis-Idea-Hyperparameter-Optimization')
+sys.path.insert(0, repo_root)
 from ParamSpace import FUNS, map_to_domain
 
 # Import HPOptimizer
-sys.path.insert(0, '/home/runner/work/Thesis-Idea-Hyperparameter-Optimization/Thesis-Idea-Hyperparameter-Optimization/thesis')
+thesis_dir = os.path.join(repo_root, 'thesis')
+sys.path.insert(0, thesis_dir)
 from hpo_lgs_v3 import HPOptimizer
 
 
