@@ -158,7 +158,7 @@ class Cube:
             return int(np.argmax(np.abs(self.lgs_model["gradient_dir"])))
         return int(np.argmax(self._widths()))
 
-    def split(self, gamma: float, dim: int) -> List["Cube"]:
+    def split(self, gamma: float, dim: int, rng: np.random.Generator = None) -> List["Cube"]:
         """Split cube into two children along the chosen axis."""
         axis = self.get_split_axis()
         lo, hi = self.bounds[axis]
@@ -189,14 +189,14 @@ class Cube:
                 child.n_good += 1
 
         for ch in (child_lo, child_hi):
-            ch.fit_lgs_model(gamma, dim)
+            ch.fit_lgs_model(gamma, dim, rng)
 
         return [child_lo, child_hi]
 
 
 class ALBA:
     """
-    ALBA (Adaptive Local Bayesian Algorithm) for Hyperparameter Optimization.
+    ALBA (Adaptive Local Bayesian Allocator) for Hyperparameter Optimization.
     
     Parameters
     ----------
@@ -347,7 +347,7 @@ class ALBA:
             cube.fit_lgs_model(self.gamma, self.dim, self.rng)
 
             if self._should_split(cube):
-                children = cube.split(self.gamma, self.dim)
+                children = cube.split(self.gamma, self.dim, self.rng)
                 if cube in self.leaves:
                     self.leaves.remove(cube)
                     self.leaves.extend(children)
