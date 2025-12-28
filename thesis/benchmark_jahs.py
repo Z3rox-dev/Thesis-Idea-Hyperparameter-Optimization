@@ -1,13 +1,20 @@
 #!/usr/bin/env python3
 """
-Benchmark JAHS-Bench-201: Random Search vs Optuna TPE vs TuRBO vs HPOptimizerV5sFixed
+Benchmark JAHS-Bench-201: Random Search vs Optuna TPE vs TuRBO-M vs ALBA
 ================================================================================
 
 Questo benchmark confronta 4 ottimizzatori su JAHS-Bench-201 (surrogate mode):
 1. Random Search
-2. Optuna TPE
-3. TuRBO-M (via BoTorch)
-4. HPOptimizerV5sFixed (il nostro algoritmo custom)
+2. Optuna TPE (gestisce nativamente i categorici)
+3. TuRBO-M (implementazione ufficiale Uber con multi trust regions)
+4. ALBA (il nostro algoritmo custom)
+
+NOTA SULLE VARIABILI CATEGORICHE:
+- Lo spazio JAHS ha 13 dimensioni: 2 float (log), 3 ordinal, 8 categorical
+- Per Random/TuRBO/ALBA normalizziamo tutto a [0,1]^13 e arrotondiamo
+- Questo crea funzioni a gradini (non lisce) per le dimensioni discrete
+- TPE invece gestisce nativamente i categorici -> potenziale vantaggio
+- GP/LGS vedono variabili "continue" che in realtà sono discrete
 
 Usage:
     python benchmark_jahs.py --task cifar10 --n_evals 200 --n_seeds 10
@@ -233,14 +240,16 @@ def run_optuna_tpe(wrapper: JAHSBenchWrapper, n_evals: int, seed: int) -> Tuple[
     return history, best_error
 
 
-def run_turbo(wrapper: JAHSBenchWrapper, n_evals: int, seed: int) -> Tuple[List[float], float]:
-    """TuRBO optimizer (simplified single-trust-region version)."""
+def run_turbo_m(wrapper: JAHSBenchWrapper, n_evals: int, seed: int) -> Tuple[List[float], float]:
+    """
+    TuRBO-M optimizer (official Uber implementation with multiple trust regions).
+    
+    Uses the official uber-research/TuRBO implementation.
+    TuRBO-M maintains multiple independent trust regions that compete
+    for samples, providing better exploration than single-TR TuRBO-1.
+    """
+    from turbo import TurboM
     import torch
-    from botorch.models import SingleTaskGP
-    from botorch.fit import fit_gpytorch_model  # botorch 0.7.0 compatible
-    from botorch.acquisition import ExpectedImprovement
-    from botorch.optim import optimize_acqf
-    from gpytorch.mlls import ExactMarginalLogLikelihood
     
     torch.manual_seed(seed)
     np.random.seed(seed)
@@ -248,120 +257,74 @@ def run_turbo(wrapper: JAHSBenchWrapper, n_evals: int, seed: int) -> Tuple[List[
     wrapper.reset()
     dim = wrapper.dim
     
-    # Parametri TuRBO
-    n_init = min(20, n_evals // 5)  # Initial random samples
-    batch_size = 1
+    # Wrapper function for TuRBO (expects (d,) -> scalar)
+    eval_count = [0]
+    history = []
+    best_error = [float('inf')]
     
-    # Trust region parameters
-    length = 0.8
-    length_min = 0.5 ** 7
-    length_max = 1.6
-    success_tolerance = 3
-    failure_tolerance = max(dim, 5)
+    class JAHSObjective:
+        def __init__(self):
+            self.dim = dim
+            self.lb = np.zeros(dim)
+            self.ub = np.ones(dim)
+        
+        def __call__(self, x):
+            error = wrapper.evaluate_array(x)
+            eval_count[0] += 1
+            best_error[0] = min(best_error[0], error)
+            history.append(best_error[0])
+            return error
     
-    # Initial random sampling
-    rng = np.random.default_rng(seed)
-    X = torch.tensor(rng.uniform(0, 1, (n_init, dim)), dtype=torch.double)
-    Y = torch.tensor([wrapper.evaluate_array(x.numpy()) for x in X], dtype=torch.double).unsqueeze(-1)
+    f = JAHSObjective()
     
-    best_error = Y.min().item()
-    history = [best_error] * n_init
+    # TuRBO-M parameters
+    n_trust_regions = min(5, max(2, n_evals // 50))  # 2-5 trust regions
+    n_init = min(2 * dim, n_evals // (n_trust_regions * 3))  # Per trust region
+    n_init = max(n_init, dim + 1)  # At least dim+1
     
-    # Track success/failure for trust region
-    n_success = 0
-    n_failure = 0
-    best_value = Y.min().item()
+    # Run TuRBO-M
+    turbo_m = TurboM(
+        f=f,
+        lb=f.lb,
+        ub=f.ub,
+        n_init=n_init,
+        max_evals=n_evals,
+        n_trust_regions=n_trust_regions,
+        batch_size=1,
+        verbose=False,
+        use_ard=True,
+        max_cholesky_size=2000,
+        n_training_steps=50,
+        device="cpu",
+        dtype="float64",
+    )
     
-    # Main optimization loop
-    remaining = n_evals - n_init
+    turbo_m.optimize()
     
-    for _ in range(remaining):
-        # Fit GP model
-        try:
-            model = SingleTaskGP(X, Y)
-            mll = ExactMarginalLogLikelihood(model.likelihood, model)
-            fit_gpytorch_model(mll)  # botorch 0.7.0 compatible
-        except Exception:
-            # Fallback to random if GP fitting fails
-            x_new = torch.tensor(rng.uniform(0, 1, (1, dim)), dtype=torch.double)
-            y_new = wrapper.evaluate_array(x_new[0].numpy())
-            X = torch.cat([X, x_new])
-            Y = torch.cat([Y, torch.tensor([[y_new]], dtype=torch.double)])
-            best_error = min(best_error, y_new)
-            history.append(best_error)
-            continue
-        
-        # Create trust region bounds around best point
-        x_center = X[Y.argmin()]
-        lb = torch.clamp(x_center - length / 2, 0.0, 1.0)
-        ub = torch.clamp(x_center + length / 2, 0.0, 1.0)
-        bounds = torch.stack([lb, ub])
-        
-        # Optimize acquisition function
-        acq = ExpectedImprovement(model, best_f=Y.min(), maximize=False)
-        try:
-            candidates, _ = optimize_acqf(
-                acq_function=acq,
-                bounds=bounds,
-                q=batch_size,
-                num_restarts=5,
-                raw_samples=100,
-            )
-            x_new = candidates
-        except Exception:
-            # Fallback to random in trust region
-            x_new = torch.tensor(
-                rng.uniform(lb.numpy(), ub.numpy(), (1, dim)), 
-                dtype=torch.double
-            )
-        
-        # Evaluate
-        y_new = wrapper.evaluate_array(x_new[0].numpy())
-        
-        # Update trust region
-        if y_new < best_value - 1e-3 * abs(best_value):
-            n_success += 1
-            n_failure = 0
-            best_value = y_new
-        else:
-            n_failure += 1
-            n_success = 0
-        
-        # Adjust trust region size
-        if n_success >= success_tolerance:
-            length = min(2.0 * length, length_max)
-            n_success = 0
-        elif n_failure >= failure_tolerance:
-            length = length / 2.0
-            n_failure = 0
-        
-        # Restart if trust region too small
-        if length < length_min:
-            length = 0.8
-            n_success = 0
-            n_failure = 0
-        
-        # Update data
-        X = torch.cat([X, x_new])
-        Y = torch.cat([Y, torch.tensor([[y_new]], dtype=torch.double)])
-        
-        best_error = min(best_error, y_new)
-        history.append(best_error)
+    # Ensure history has correct length
+    while len(history) < n_evals:
+        history.append(best_error[0])
     
-    return history, best_error
+    return history[:n_evals], best_error[0]
 
 
-def run_hpo_v5s_fixed(wrapper: JAHSBenchWrapper, n_evals: int, seed: int) -> Tuple[List[float], float]:
-    """HPOptimizerV5sFixed - il nostro algoritmo custom."""
+def run_alba(wrapper: JAHSBenchWrapper, n_evals: int, seed: int) -> Tuple[List[float], float]:
+    """
+    ALBA (Adaptive Local Bayesian Algorithm) - il nostro algoritmo custom.
+    
+    Note: ALBA lavora su [0,1]^d e vede le variabili categoriche come continue.
+    Questo può causare problemi perché la LGS lineare assume smoothness,
+    ma le dimensioni categoriche creano funzioni a gradini.
+    """
     # Import del nostro optimizer
     sys.path.insert(0, '/mnt/workspace/thesis')
-    from debug_v5s_fixed import HPOptimizerV5sFixed
+    from ALBA_V1 import ALBA
     
     wrapper.reset()
     dim = wrapper.dim
     
     # Parametri ottimizzatore
-    opt = HPOptimizerV5sFixed(
+    opt = ALBA(
         bounds=[(0.0, 1.0)] * dim,
         maximize=False,
         seed=seed,
@@ -396,8 +359,8 @@ def run_hpo_v5s_fixed(wrapper: JAHSBenchWrapper, n_evals: int, seed: int) -> Tup
 OPTIMIZERS = {
     'Random': run_random_search,
     'Optuna_TPE': run_optuna_tpe,
-    'TuRBO': run_turbo,
-    'HPO_v5s_Fixed': run_hpo_v5s_fixed,
+    'TuRBO_M': run_turbo_m,
+    'ALBA': run_alba,
 }
 
 
