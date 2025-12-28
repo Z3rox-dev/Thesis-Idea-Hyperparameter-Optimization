@@ -264,8 +264,8 @@ class ALBA:
         self.leaves: List[Cube] = [self.root]
 
         self.X_all: List[np.ndarray] = []
-        self.y_all: List[float] = []
-        self.best_y = -np.inf if maximize else np.inf
+        self.y_all: List[float] = []  # Always stored as "higher is better"
+        self.best_y_internal = -np.inf  # Internal score (always maximize)
         self.best_x: Optional[np.ndarray] = None
         self.gamma = 0.0
         self.iteration = 0
@@ -286,6 +286,14 @@ class ALBA:
         self._novelty_weight = novelty_weight
         self._global_random_prob = global_random_prob
         self._stagnation_threshold = stagnation_threshold
+
+    def _to_internal(self, y_raw: float) -> float:
+        """Convert raw objective value to internal score (higher is better)."""
+        return y_raw if self.maximize else -y_raw
+
+    def _to_raw(self, y_internal: float) -> float:
+        """Convert internal score back to raw objective value."""
+        return y_internal if self.maximize else -y_internal
 
     def ask(self) -> np.ndarray:
         """Suggest the next point to evaluate."""
@@ -323,12 +331,12 @@ class ALBA:
 
     def tell(self, x: np.ndarray, y_raw: float) -> None:
         """Report the objective value for a point."""
-        y = y_raw if self.maximize else -y_raw
+        y = self._to_internal(y_raw)
         
-        old_best = self.best_y
-        self._update_best(x, y_raw)
-        
-        if self.best_y != old_best:
+        # Update best (internal score, always maximize)
+        if y > self.best_y_internal:
+            self.best_y_internal = y
+            self.best_x = x.copy()
             self.stagnation = 0
             self.last_improvement_iter = self.iteration
         else:
@@ -367,16 +375,6 @@ class ALBA:
     def _recount_good(self) -> None:
         for leaf in self.leaves:
             leaf.n_good = sum(1 for _, s in leaf._tested_pairs if s >= self.gamma)
-
-    def _update_best(self, x: np.ndarray, y_raw: float) -> None:
-        if self.maximize:
-            if y_raw > self.best_y:
-                self.best_y = y_raw
-                self.best_x = x.copy()
-        else:
-            if y_raw < self.best_y:
-                self.best_y = y_raw
-                self.best_x = x.copy()
 
     def _select_leaf(self) -> Cube:
         if not self.leaves:
@@ -518,4 +516,4 @@ class ALBA:
             y_raw = objective(x)
             self.tell(x, y_raw)
 
-        return self.best_x, self.best_y
+        return self.best_x, self._to_raw(self.best_y_internal)
