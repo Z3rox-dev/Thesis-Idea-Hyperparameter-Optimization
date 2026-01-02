@@ -37,6 +37,8 @@ class Cube:
     _tested_pairs: List[Tuple[np.ndarray, float]] = field(default_factory=list)
     lgs_model: Optional[dict] = field(default=None, init=False)
     depth: int = 0
+    # Categorical stats: {dim_idx: {value_idx: (n_good, n_total)}}
+    cat_stats: dict = field(default_factory=dict)
 
     def _widths(self) -> np.ndarray:
         return np.array([abs(hi - lo) for lo, hi in self.bounds], dtype=float)
@@ -187,6 +189,10 @@ class Cube:
             child.n_trials += 1
             if sc >= gamma:
                 child.n_good += 1
+            # Update child's best score
+            if sc > child.best_score:
+                child.best_score = sc
+                child.best_x = pt.copy()
 
         for ch in (child_lo, child_hi):
             ch.fit_lgs_model(gamma, dim, rng)
@@ -242,13 +248,14 @@ class ALBA:
         local_search_ratio: float = 0.30,
         n_candidates: int = 25,
         split_trials_min: int = 15,
-        split_depth_max: int = 8,
+        split_depth_max: int = 16,
         split_trials_factor: float = 3.0,
         split_trials_offset: int = 6,
         novelty_weight: float = 0.4,
         total_budget: int = 200,
         global_random_prob: float = 0.05,
         stagnation_threshold: int = 50,
+        categorical_dims: List[Tuple[int, int]] = None,  # [(dim_idx, n_choices), ...]
     ) -> None:
         self.bounds = bounds
         self.dim = len(bounds)
@@ -259,6 +266,14 @@ class ALBA:
         self.local_search_ratio = local_search_ratio
         self.n_candidates = n_candidates
         self.total_budget = total_budget
+        self.categorical_dims = categorical_dims or []  # List of (dim_idx, n_choices)
+        
+        # === CURIOSITY-DRIVEN + ELITE CROSSOVER ===
+        self._cat_visit_counts = {}  # Track how often each cat combo is visited
+        self._elite_configs = []  # Top categorical configurations: [(cat_tuple, score)]
+        self._elite_size = 10
+        self._curiosity_bonus = 0.3  # Bonus for unseen combinations (tuned)
+        self._crossover_rate = 0.15  # Probability of elite crossover (tuned)
 
         self.root = Cube(bounds=list(bounds))
         self.leaves: List[Cube] = [self.root]
@@ -299,9 +314,11 @@ class ALBA:
         """Suggest the next point to evaluate."""
         self.iteration = len(self.X_all)
 
-        # Global random for diversity
+        # Global random for diversity - but still assign to a cube
         if self.rng.random() < self._global_random_prob:
-            return np.array([self.rng.uniform(lo, hi) for lo, hi in self.bounds])
+            x = np.array([self.rng.uniform(lo, hi) for lo, hi in self.bounds])
+            self.last_cube = self._find_containing_leaf(x)
+            return x
 
         if self.iteration < self.exploration_budget:
             self._update_gamma()
@@ -320,7 +337,7 @@ class ALBA:
         
         if self.rng.random() < local_search_prob:
             x = self._local_search_sample(progress)
-            self.last_cube = None
+            self.last_cube = self._find_containing_leaf(x)  # Assign to tree
         else:
             self._update_gamma()
             self._recount_good()
@@ -344,18 +361,45 @@ class ALBA:
 
         self.X_all.append(x.copy())
         self.y_all.append(y)
+        
+        # Update curiosity tracking and elite pool
+        if self.categorical_dims:
+            cat_key = self._get_cat_key(x)
+            self._cat_visit_counts[cat_key] = self._cat_visit_counts.get(cat_key, 0) + 1
+            
+            # Update elite pool
+            self._elite_configs.append((cat_key, y))
+            self._elite_configs.sort(key=lambda p: p[1], reverse=True)  # Higher is better (internal)
+            self._elite_configs = self._elite_configs[:self._elite_size]
 
         if self.last_cube is not None:
             cube = self.last_cube
             cube._tested_pairs.append((x.copy(), y))
             cube.n_trials += 1
-            if y >= self.gamma:
+            is_good = y >= self.gamma
+            if is_good:
                 cube.n_good += 1
+            
+            # Update cube's best score
+            if y > cube.best_score:
+                cube.best_score = y
+                cube.best_x = x.copy()
+            
+            # Update categorical stats
+            for dim_idx, n_choices in self.categorical_dims:
+                val_idx = self._discretize_cat(x[dim_idx], n_choices)
+                if dim_idx not in cube.cat_stats:
+                    cube.cat_stats[dim_idx] = {}
+                n_g, n_t = cube.cat_stats[dim_idx].get(val_idx, (0, 0))
+                cube.cat_stats[dim_idx][val_idx] = (n_g + (1 if is_good else 0), n_t + 1)
 
             cube.fit_lgs_model(self.gamma, self.dim, self.rng)
 
             if self._should_split(cube):
                 children = cube.split(self.gamma, self.dim, self.rng)
+                # Propagate categorical stats to children
+                for child in children:
+                    self._recompute_cat_stats(child)
                 if cube in self.leaves:
                     self.leaves.remove(cube)
                     self.leaves.extend(children)
@@ -375,6 +419,8 @@ class ALBA:
     def _recount_good(self) -> None:
         for leaf in self.leaves:
             leaf.n_good = sum(1 for _, s in leaf._tested_pairs if s >= self.gamma)
+            # Recompute cat_stats with current gamma to avoid stale stats
+            self._recompute_cat_stats(leaf)
 
     def _select_leaf(self) -> Cube:
         if not self.leaves:
@@ -416,6 +462,21 @@ class ALBA:
             np.clip(x[i], self.bounds[i][0], self.bounds[i][1])
             for i in range(self.dim)
         ])
+
+    def _find_containing_leaf(self, x: np.ndarray) -> Cube:
+        """Find the leaf cube that contains point x."""
+        for leaf in self.leaves:
+            if leaf.contains(x):
+                return leaf
+        # Fallback: return leaf with closest center (shouldn't happen normally)
+        min_dist = float('inf')
+        closest = self.leaves[0] if self.leaves else self.root
+        for leaf in self.leaves:
+            dist = np.linalg.norm(x - leaf.center())
+            if dist < min_dist:
+                min_dist = dist
+                closest = leaf
+        return closest
 
     def _generate_candidates(self, cube: Cube, n: int) -> List[np.ndarray]:
         candidates: List[np.ndarray] = []
@@ -464,10 +525,163 @@ class ALBA:
         idx = self.rng.choice(len(candidates), p=probs)
         return candidates[idx]
 
+    def _discretize_cat(self, x_val: float, n_choices: int) -> int:
+        """Convert continuous [0,1] value to discrete category index."""
+        return min(int(round(x_val * (n_choices - 1))), n_choices - 1)
+    
+    def _cat_value_to_continuous(self, val_idx: int, n_choices: int) -> float:
+        """Convert discrete category index back to continuous [0,1]."""
+        return val_idx / (n_choices - 1) if n_choices > 1 else 0.5
+    
+    def _get_cat_key(self, x: np.ndarray) -> tuple:
+        """Get tuple of categorical values from x."""
+        return tuple(self._discretize_cat(x[dim_idx], n_ch) 
+                     for dim_idx, n_ch in self.categorical_dims)
+    
+    def _cat_key_to_x(self, cat_key: tuple, x: np.ndarray) -> np.ndarray:
+        """Apply categorical key to x vector."""
+        x = x.copy()
+        for i, (dim_idx, n_ch) in enumerate(self.categorical_dims):
+            x[dim_idx] = self._cat_value_to_continuous(cat_key[i], n_ch)
+        return x
+    
+    def _elite_crossover(self) -> tuple:
+        """Create new categorical config by crossing over two elites."""
+        if len(self._elite_configs) < 2:
+            return None
+        
+        # Select two parents (bias towards better ones)
+        n = len(self._elite_configs)
+        weights = np.array([1.0 / (i + 1) for i in range(n)])
+        weights = weights / weights.sum()
+        
+        idx1, idx2 = self.rng.choice(n, size=2, replace=False, p=weights)
+        parent1 = self._elite_configs[idx1][0]
+        parent2 = self._elite_configs[idx2][0]
+        
+        # Adaptive mutation rate: higher when stagnating
+        mutation_rate = 0.1
+        if self.stagnation > self._stagnation_threshold:
+            mutation_rate = 0.25
+        
+        # Uniform crossover with mutation
+        child = []
+        for i, (dim_idx, n_ch) in enumerate(self.categorical_dims):
+            if self.rng.random() < 0.5:
+                val = parent1[i]
+            else:
+                val = parent2[i]
+            
+            if self.rng.random() < mutation_rate:
+                val = self.rng.integers(0, n_ch)
+            
+            child.append(val)
+        
+        return tuple(child)
+    
+    def _recompute_cat_stats(self, cube: Cube) -> None:
+        """Recompute categorical stats for a cube from its tested pairs."""
+        cube.cat_stats = {}
+        for dim_idx, n_choices in self.categorical_dims:
+            cube.cat_stats[dim_idx] = {}
+        
+        for pt, sc in cube._tested_pairs:
+            is_good = sc >= self.gamma
+            for dim_idx, n_choices in self.categorical_dims:
+                val_idx = self._discretize_cat(pt[dim_idx], n_choices)
+                if dim_idx not in cube.cat_stats:
+                    cube.cat_stats[dim_idx] = {}
+                n_g, n_t = cube.cat_stats[dim_idx].get(val_idx, (0, 0))
+                cube.cat_stats[dim_idx][val_idx] = (n_g + (1 if is_good else 0), n_t + 1)
+    
+    def _apply_categorical_sampling(self, x: np.ndarray, cube: Cube) -> np.ndarray:
+        """
+        CURIOSITY-DRIVEN categorical sampling with ELITE CROSSOVER.
+        - Bonus for less-visited combinations (curiosity)
+        - Occasional crossover from elite pool
+        - TPE-like base probabilities
+        """
+        if not self.categorical_dims:
+            return x
+        
+        x = x.copy()
+        
+        # === ELITE CROSSOVER: occasionally use crossover from top configs ===
+        crossover_prob = self._crossover_rate
+        if self.stagnation > self._stagnation_threshold:
+            crossover_prob *= 2  # More crossover when stuck
+        
+        if self.rng.random() < crossover_prob and len(self._elite_configs) >= 2:
+            child_key = self._elite_crossover()
+            if child_key:
+                return self._cat_key_to_x(child_key, x)
+        
+        # === CURIOSITY-DRIVEN SAMPLING ===
+        # Thompson Sampling per categoria!
+        
+        # First, do Thompson Sampling per dimension
+        exploration_boost = 2.0 if self.stagnation > self._stagnation_threshold else 1.0
+        
+        # Generate multiple candidate categorical configs
+        n_candidates = 5
+        candidates = []
+        
+        for _ in range(n_candidates):
+            cat_vals = []
+            for dim_idx, n_choices in self.categorical_dims:
+                stats = cube.cat_stats.get(dim_idx, {})
+                
+                # Thompson Sampling: sample from Beta distribution for each category
+                samples = []
+                K = n_choices * exploration_boost
+                for v in range(n_choices):
+                    n_g, n_t = stats.get(v, (0, 0))
+                    # Beta distribution parameters
+                    alpha = n_g + 1
+                    beta_param = (n_t - n_g) + K
+                    # Sample from Beta
+                    sample = self.rng.beta(alpha, beta_param)
+                    samples.append(sample)
+                
+                # Pick the category with highest sampled value
+                chosen = int(np.argmax(samples))
+                cat_vals.append(chosen)
+            
+            candidates.append(tuple(cat_vals))
+        
+        # Score candidates by curiosity (inverse visit count)
+        scores = []
+        for cat_key in candidates:
+            visit_count = self._cat_visit_counts.get(cat_key, 0)
+            # Curiosity: prefer less-visited combinations
+            curiosity = self._curiosity_bonus / (1 + visit_count)
+            scores.append(curiosity)
+        
+        # Select based on curiosity score (softmax)
+        scores = np.array(scores)
+        if scores.max() > scores.min():
+            scores = (scores - scores.min()) / (scores.max() - scores.min() + 1e-9)
+        probs = np.exp(scores * 3)
+        probs = probs / probs.sum()
+        
+        chosen_idx = self.rng.choice(len(candidates), p=probs)
+        chosen_key = candidates[chosen_idx]
+        
+        # Apply chosen categorical config to x
+        return self._cat_key_to_x(chosen_key, x)
+
     def _sample_in_cube(self, cube: Cube) -> np.ndarray:
         if self.iteration < 15:
-            return np.array([self.rng.uniform(lo, hi) for lo, hi in cube.bounds])
-        return self._sample_with_lgs(cube)
+            x = np.array([self.rng.uniform(lo, hi) for lo, hi in cube.bounds])
+        else:
+            x = self._sample_with_lgs(cube)
+        
+        # Apply categorical sampling based on cube stats
+        x = self._apply_categorical_sampling(x, cube)
+        
+        # Re-clip to cube bounds (categorical sampling may have moved outside)
+        x = self._clip_to_cube(x, cube)
+        return x
 
     def _local_search_sample(self, progress: float) -> np.ndarray:
         if self.best_x is None:
