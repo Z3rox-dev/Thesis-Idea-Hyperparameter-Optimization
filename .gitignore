@@ -27,6 +27,14 @@ thesis/*
 !thesis/ALBA_V1.py
 !benchmark_synthetic_cma.py
 
+# Allow the modular framework package
+!thesis/alba_framework/
+!thesis/alba_framework/**
+
+# But still ignore caches inside it
+thesis/alba_framework/__pycache__/
+thesis/alba_framework/**/*.pyc
+
 # Large folders
 miniconda3/
 miniconda.sh
