@@ -144,7 +144,7 @@ class ALBA:
         heatmap_ucb_explore_prob: float = 0.25,
         heatmap_ucb_temperature: float = 1.0,
         categorical_sampling: bool = True,
-        categorical_stage: str = "post",
+        categorical_stage: str = "auto",
         categorical_pre_n: int = 8,
         surrogate: str = "lgs",
         knn_k: int = 15,
@@ -228,13 +228,21 @@ class ALBA:
             raise ValueError("heatmap_ucb_explore_prob must be in [0,1]")
         if self._heatmap_ucb_temperature < 0.0:
             raise ValueError("heatmap_ucb_temperature must be >= 0")
-        if self._categorical_stage not in {"post", "pre"}:
-            raise ValueError("categorical_stage must be one of {'post','pre'}")
+        if self._categorical_stage not in {"post", "pre", "auto"}:
+            raise ValueError("categorical_stage must be one of {'post','pre','auto'}")
         if self._categorical_pre_n < 1:
             raise ValueError("categorical_pre_n must be >= 1")
-        if self._surrogate not in {"lgs", "knn", "knn_lgs", "lgs_catadd", "lgs_heatmap_blend"}:
+        if self._surrogate not in {
+            "lgs",
+            "knn",
+            "knn_lgs",
+            "lgs_catadd",
+            "lgs_heatmap_sigma",
+            "lgs_heatmap_blend",
+        }:
             raise ValueError(
-                "surrogate must be one of {'lgs','knn','knn_lgs','lgs_catadd','lgs_heatmap_blend'}"
+                "surrogate must be one of "
+                "{'lgs','knn','knn_lgs','lgs_catadd','lgs_heatmap_sigma','lgs_heatmap_blend'}"
             )
         if self._knn_k < 1:
             raise ValueError("knn_k must be >= 1")
@@ -281,7 +289,11 @@ class ALBA:
         self._last_cube: Optional[Cube] = None
         if self._cont_dim_indices:
             cont_bounds = [bounds[i] for i in self._cont_dim_indices]
-            self.root.grid_state = LeafGridState(bounds=list(cont_bounds), B=self._grid_bins)
+            self.root.grid_state = LeafGridState(
+                bounds=list(cont_bounds),
+                B=self._grid_bins,
+                index_dims=self._choose_heatmap_index_dims(self.root),
+            )
         else:
             self.root.grid_state = None
 
@@ -338,12 +350,102 @@ class ALBA:
     # Grid helpers
     # -------------------------------------------------------------------------
 
+    def _choose_heatmap_index_dims(self, cube: Cube) -> np.ndarray:
+        """Choose a fixed subset of continuous dimensions to index the heatmap on.
+
+        This is intentionally deterministic (no random projections) and aims to keep
+        the number of indexed cells roughly constant as dim grows, so that per-cell
+        statistics (visits/residuals) get enough collisions to be informative.
+        """
+        cont_dim = int(len(self._cont_dim_indices))
+        if cont_dim <= 0:
+            return np.zeros(0, dtype=np.int64)
+
+        # Target number of indexed cells. With default B=8 this yields k≈2 (64 cells).
+        target_cells = 64.0
+        B = float(max(int(self._grid_bins), 1))
+        if B <= 1.0:
+            k = 1
+        else:
+            k = int(np.round(np.log(target_cells) / np.log(B)))
+            k = max(1, k)
+        k = int(min(cont_dim, k))
+
+        # Build a ranking of continuous dims (indices in [0..cont_dim-1]).
+        full_to_cont = {int(fi): int(ci) for ci, fi in enumerate(self._cont_dim_indices)}
+        order: List[int] = []
+
+        model = cube.lgs_model
+        if isinstance(model, dict):
+            grad = model.get("grad")
+            if grad is not None:
+                g = np.asarray(grad, dtype=float).ravel()
+                if g.size == self.dim:
+                    scores = np.abs(g[np.array(self._cont_dim_indices, dtype=np.int64)])
+                    if np.any(np.isfinite(scores)) and float(np.max(scores)) > 0.0:
+                        order = [int(i) for i in np.argsort(-scores)]
+            if not order:
+                active = model.get("active_dims")
+                if active is not None:
+                    active_full = np.asarray(active, dtype=np.int64).ravel().tolist()
+                    for fi in active_full:
+                        ci = full_to_cont.get(int(fi))
+                        if ci is None:
+                            continue
+                        order.append(ci)
+
+        if not order:
+            pairs = list(cube.tested_pairs)
+            if len(pairs) >= 5:
+                Xc = np.stack(
+                    [np.asarray(p, dtype=float)[self._cont_dim_indices] for p, _ in pairs],
+                    axis=0,
+                )
+                y = np.asarray([s for _, s in pairs], dtype=float)
+                y0 = y - float(np.mean(y))
+                y_std = float(np.std(y0))
+                if y_std > 1e-12:
+                    X0 = Xc - np.mean(Xc, axis=0, keepdims=True)
+                    cov = np.mean(X0 * y0.reshape(-1, 1), axis=0)
+                    x_std = np.std(Xc, axis=0)
+                    corr = np.abs(cov) / (x_std * y_std + 1e-12)
+                    corr = np.nan_to_num(corr, nan=0.0, posinf=0.0, neginf=0.0)
+                    order = [int(i) for i in np.argsort(-corr)]
+
+        if not order:
+            widths = np.array([cube.bounds[i][1] - cube.bounds[i][0] for i in self._cont_dim_indices], dtype=float)
+            if widths.size:
+                order = [int(i) for i in np.argsort(-widths)]
+
+        if not order:
+            order = list(range(cont_dim))
+
+        # Deduplicate while preserving order, then fill any missing dims.
+        seen = set()
+        uniq: List[int] = []
+        for ci in order:
+            if ci < 0 or ci >= cont_dim:
+                continue
+            if ci in seen:
+                continue
+            seen.add(ci)
+            uniq.append(ci)
+        for ci in range(cont_dim):
+            if ci not in seen:
+                uniq.append(ci)
+
+        return np.array(uniq[:k], dtype=np.int64)
+
     def _ensure_grid_state(self, cube: Cube) -> LeafGridState:
         if not self._cont_dim_indices:
             raise RuntimeError("Grid sampling requires at least one continuous dimension")
         cont_bounds = [cube.bounds[i] for i in self._cont_dim_indices]
         if cube.grid_state is None or cube.grid_state.B != self._grid_bins or cube.grid_state.bounds != cont_bounds:
-            cube.grid_state = LeafGridState(bounds=list(cont_bounds), B=self._grid_bins)
+            cube.grid_state = LeafGridState(
+                bounds=list(cont_bounds),
+                B=self._grid_bins,
+                index_dims=self._choose_heatmap_index_dims(cube),
+            )
             if cube.n_trials > 0:
                 self._rebuild_grid_state_from_pairs(cube, cube.grid_state)
         return cube.grid_state
@@ -495,7 +597,7 @@ class ALBA:
                 x_row = x.reshape(1, -1)
                 try:
                     kind = self._surrogate
-                    if kind in {"lgs", "lgs_heatmap_blend", "lgs_catadd", "knn_lgs"}:
+                    if kind in {"lgs", "lgs_heatmap_sigma", "lgs_heatmap_blend", "lgs_catadd", "knn_lgs"}:
                         if cube.n_trials >= 5 and cube.lgs_model is not None and cube.lgs_model.get("inv_cov") is not None:
                             mu0, _ = cube.predict_bayesian(x_row)
                             mu_pred_base = float(mu0[0])
@@ -536,7 +638,11 @@ class ALBA:
                     # Rebuild children's heatmap from tested pairs (robust to gamma + semantics).
                     if self._cont_dim_indices:
                         cont_bounds = [child.bounds[i] for i in self._cont_dim_indices]
-                        child.grid_state = LeafGridState(bounds=list(cont_bounds), B=self._grid_bins)
+                        child.grid_state = LeafGridState(
+                            bounds=list(cont_bounds),
+                            B=self._grid_bins,
+                            index_dims=self._choose_heatmap_index_dims(child),
+                        )
                         self._rebuild_grid_state_from_pairs(child, child.grid_state)
                     else:
                         child.grid_state = None
@@ -667,6 +773,17 @@ class ALBA:
             trace = self._pending_trace
             self._pending_trace = None
             trace["x_final"] = x.copy()
+            if self._cat_sampler.has_categoricals:
+                x_scored = trace.get("x_chosen_raw")
+                if x_scored is not None:
+                    key_scored = self._cat_sampler.get_cat_key(np.asarray(x_scored, dtype=float))
+                    trace.setdefault("categorical", {})["key_scored"] = list(key_scored)
+                key_final = self._cat_sampler.get_cat_key(x)
+                trace.setdefault("categorical", {})["key_final"] = list(key_final)
+                if x_scored is not None:
+                    trace.setdefault("categorical", {})["key_mismatch"] = bool(
+                        tuple(trace["categorical"].get("key_scored", [])) != tuple(key_final)
+                    )
             hook = self._trace_hook
             if hook is not None:
                 hook(trace)
@@ -803,6 +920,27 @@ class ALBA:
             mu, sigma = cube.predict_bayesian(X)
             mu = mu + self._catadd_adjustment(cube, X)
             return mu, sigma
+        if kind == "lgs_heatmap_sigma":
+            mu_lgs, sigma = cube.predict_bayesian(X)
+            if Xc.size == 0:
+                return mu_lgs, sigma
+            vars_r = np.zeros(Xc.shape[0], dtype=float)
+            counts = np.zeros(Xc.shape[0], dtype=float)
+            for i in range(Xc.shape[0]):
+                key = grid_state.cell_index(Xc[i])
+                st = grid_state.stats.get(key)
+                if st is None:
+                    continue
+                counts[i] = float(st.n_r)
+                vars_r[i] = float(st.var_r())
+            tau = float(self._heatmap_blend_tau)
+            w = counts / (counts + tau)
+            rep = max(1, int(X.shape[0] // max(1, Xc.shape[0])))
+            w_rep = np.repeat(w, repeats=rep)
+            v_rep = np.repeat(vars_r, repeats=rep)
+            sigma2 = sigma * sigma
+            sigma = np.sqrt(np.maximum(sigma2 + w_rep * v_rep, 1e-12))
+            return mu_lgs, sigma
         if kind == "lgs_heatmap_blend":
             mu_lgs, sigma = cube.predict_bayesian(X)
             if Xc.size == 0:
@@ -912,16 +1050,33 @@ class ALBA:
 
         cat_keys: List[Tuple[int, ...]] = []
         bases: np.ndarray
-        if (
-            self._categorical_sampling
-            and self._categorical_stage == "pre"
-            and self._cat_sampler.has_categoricals
-        ):
+        stage_eff = str(self._categorical_stage)
+
+        cat_mode = "none"  # {"none","enum","sample"}
+        if self._categorical_sampling and self._cat_sampler.has_categoricals:
+            if self._categorical_stage == "pre":
+                cat_mode = "enum"
+                stage_eff = "pre_enum"
+            elif self._categorical_stage == "auto":
+                cont_dim = int(len(self._cont_dim_indices))
+                cat_dim = int(len(self._cat_dim_indices))
+                if cont_dim <= 2 and cat_dim >= 4:
+                    cat_mode = "sample"
+                    stage_eff = "auto_sample"
+                else:
+                    cat_mode = "enum"
+                    stage_eff = "auto_enum"
+
+        if cat_mode == "enum":
             cat_keys = self._propose_cat_keys(cube, x_template, self._categorical_pre_n)
             bases = np.stack(
                 [self._clip_to_cube(self._cat_sampler.apply_cat_key(k, x_template), cube) for k in cat_keys],
                 axis=0,
             )
+        elif cat_mode == "sample":
+            x_base = self._cat_sampler.sample(x_template, cube, self.rng, self.is_stagnating)
+            cat_keys = [self._cat_sampler.get_cat_key(x_base)]
+            bases = x_base.reshape(1, -1)
         else:
             bases = x_template.reshape(1, -1)
 
@@ -1016,6 +1171,20 @@ class ALBA:
                     "explore_prob": float(self._heatmap_ucb_explore_prob),
                     "temperature": float(self._heatmap_ucb_temperature),
                 },
+                "heatmap_index": {
+                    "index_dims_cont": (
+                        grid_state.index_dims.tolist() if grid_state.index_dims is not None else None
+                    ),
+                    "index_dims_full": (
+                        [self._cont_dim_indices[int(i)] for i in grid_state.index_dims.tolist()]
+                        if grid_state.index_dims is not None
+                        else list(self._cont_dim_indices)
+                    ),
+                    "unique_cells": int(len(grid_state.stats)),
+                    "avg_occ": float(
+                        float(grid_state.total_visits) / float(max(1, len(grid_state.stats)))
+                    ),
+                },
                 "surrogate": {
                     "kind": str(self._surrogate),
                     "knn_k": int(self._knn_k),
@@ -1029,6 +1198,7 @@ class ALBA:
                 "categorical": {
                     "sampling_enabled": bool(self._categorical_sampling),
                     "stage": str(self._categorical_stage),
+                    "stage_effective": str(stage_eff),
                     "pre_n": int(self._categorical_pre_n),
                     "n_bases": int(bases.shape[0]),
                     "keys_considered": [list(k) for k in cat_keys],
@@ -1080,8 +1250,9 @@ class ALBA:
 
         if (
             self._categorical_sampling
-            and self._categorical_stage == "pre"
+            and self._categorical_stage in {"pre", "auto"}
             and self._cat_sampler.has_categoricals
+            and cat_mode in {"enum", "sample"}
         ):
             # Prevent post-hoc categorical modification in _sample_in_cube.
             self._last_sample_cat_already_applied = True

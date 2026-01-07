@@ -152,6 +152,7 @@ class LeafGridState:
 
     bounds: List[Tuple[float, float]]
     B: int
+    index_dims: Optional[np.ndarray] = None  # indices in [0..dim-1] used for cell indexing
     stats: Dict[CellIndex, CellStats] = field(default_factory=dict)
     total_visits: float = 0.0
     seq_index: int = 0  # for low-discrepancy streaming (Halton)
@@ -166,6 +167,24 @@ class LeafGridState:
         self._lo = np.array([lo for lo, _ in self.bounds], dtype=float)
         self._hi = np.array([hi for _, hi in self.bounds], dtype=float)
         self._widths = np.maximum(self._hi - self._lo, 1e-12)
+        if self.index_dims is not None:
+            idx = np.asarray(self.index_dims, dtype=np.int64).ravel()
+            if idx.ndim != 1:
+                raise ValueError("index_dims must be 1D")
+            if idx.size > 0:
+                if int(np.min(idx)) < 0 or int(np.max(idx)) >= self.dim:
+                    raise ValueError(f"index_dims must be in [0,{self.dim - 1}]")
+                # Preserve order but ensure uniqueness.
+                seen = set()
+                uniq: List[int] = []
+                for j in idx.tolist():
+                    jj = int(j)
+                    if jj in seen:
+                        continue
+                    seen.add(jj)
+                    uniq.append(jj)
+                idx = np.array(uniq, dtype=np.int64)
+            self.index_dims = idx
 
     @property
     def dim(self) -> int:
@@ -178,12 +197,18 @@ class LeafGridState:
     def cell_index(self, x: np.ndarray) -> CellIndex:
         x = np.asarray(x, dtype=float)
         idx: List[int] = []
-        for j, (lo, hi) in enumerate(self.bounds):
+        dims: Iterable[int]
+        if self.index_dims is None:
+            dims = range(self.dim)
+        else:
+            dims = (int(j) for j in self.index_dims.tolist())
+        for j in dims:
+            lo, hi = self.bounds[j]
             denom = hi - lo
             if abs(denom) < 1e-12:
                 idx.append(0)
                 continue
-            t = float((x[j] - lo) / denom)
+            t = float((x[int(j)] - lo) / denom)
             t = float(np.clip(t, 0.0, 1.0))
             ij = int(np.floor(t * self.B))
             if ij >= self.B:
@@ -318,6 +343,12 @@ class LeafGridState:
         beta = float(beta)
         temperature = float(temperature)
 
+        index_dims = (
+            np.arange(self.dim, dtype=np.int64)
+            if self.index_dims is None
+            else np.asarray(self.index_dims, dtype=np.int64)
+        )
+
         visited = list(self.stats.items())
         keys: List[CellIndex] = []
         probs: np.ndarray
@@ -348,16 +379,19 @@ class LeafGridState:
         else:
             probs = np.zeros(0, dtype=float)
 
-        idx = np.empty((n, self.dim), dtype=np.int64)
+        # Always sample full-dimensional indices; constrain only index_dims when exploiting a visited cell.
+        idx = rng.integers(0, self.B, size=(n, self.dim), dtype=np.int64)
         for i in range(n):
             if not keys or float(rng.random()) < explore_prob:
-                idx[i] = rng.integers(0, self.B, size=(self.dim,), dtype=np.int64)
                 continue
             if probs.size == 1:
-                idx[i] = np.array(keys[0], dtype=np.int64)
+                key = keys[0]
             else:
                 j = int(rng.choice(len(keys), p=probs))
-                idx[i] = np.array(keys[j], dtype=np.int64)
+                key = keys[j]
+
+            if index_dims.size:
+                idx[i, index_dims] = np.asarray(key, dtype=np.int64)
 
         if jitter:
             frac = rng.random((n, self.dim))
