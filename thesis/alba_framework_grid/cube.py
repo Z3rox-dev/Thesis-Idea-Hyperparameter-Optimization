@@ -62,6 +62,7 @@ class Cube:
     depth: int = 0
     cat_stats: Dict[int, Dict[int, Tuple[int, int]]] = field(default_factory=dict)
     grid_state: Optional["LeafGridState"] = field(default=None, repr=False)
+    tr_scale: float = 1.0  # in (0,1], local trust-region scale inside the cube
 
     # -------------------------------------------------------------------------
     # Geometry helpers

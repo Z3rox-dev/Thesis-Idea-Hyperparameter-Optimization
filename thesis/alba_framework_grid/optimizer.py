@@ -139,22 +139,19 @@ class ALBA:
         grid_batches: int = 4,
         grid_sampling: str = "grid_random",
         grid_jitter: bool = True,
-        grid_penalty_lambda: float = 0.10,
+        grid_penalty_lambda: float = 0.06,
         heatmap_ucb_beta: float = 1.0,
         heatmap_ucb_explore_prob: float = 0.25,
         heatmap_ucb_temperature: float = 1.0,
         categorical_sampling: bool = True,
         categorical_stage: str = "auto",
         categorical_pre_n: int = 8,
-        surrogate: str = "lgs",
-        knn_k: int = 15,
-        knn_cat_weight: float = 1.0,
-        knn_sigma_mode: str = "var",
-        knn_dist_scale: float = 0.25,
-        catadd_smoothing: float = 1.0,
         heatmap_blend_tau: float = 3.0,
+        heatmap_soft_assignment: bool = True,
+        heatmap_multi_resolution: bool = True,
         trace_top_k: int = 0,
         trace_hook: Optional[Callable[[Dict[str, Any]], None]] = None,
+        trace_hook_tell: Optional[Callable[[Dict[str, Any]], None]] = None,
     ) -> None:
         # Initialize param space handler if using param_space mode
         self._param_space_handler: Optional[ParamSpaceHandler] = None
@@ -202,17 +199,49 @@ class ALBA:
         self._categorical_sampling = bool(categorical_sampling)
         self._categorical_stage = str(categorical_stage).strip().lower()
         self._categorical_pre_n = int(categorical_pre_n)
-        self._surrogate = str(surrogate).strip().lower()
-        self._knn_k = int(knn_k)
-        self._knn_cat_weight = float(knn_cat_weight)
-        self._knn_sigma_mode = str(knn_sigma_mode).strip().lower()
-        self._knn_dist_scale = float(knn_dist_scale)
-        self._catadd_smoothing = float(catadd_smoothing)
         self._heatmap_blend_tau = float(heatmap_blend_tau)
+        self._heatmap_soft_assignment = bool(heatmap_soft_assignment)
+        self._heatmap_multi_resolution = bool(heatmap_multi_resolution)
         self._trace_top_k = max(0, int(trace_top_k))
         self._trace_hook = trace_hook
+        self._trace_hook_tell = trace_hook_tell
         self._pending_trace: Optional[Dict[str, Any]] = None
         self._last_sample_cat_already_applied = False
+
+        # Residual filtering: reduce the impact of very noisy/outlier residuals.
+        # - Clip stored residuals at tell-time relative to the base surrogate sigma.
+        # This is intentionally conservative to avoid degrading tasks with noisy residuals.
+        self._heatmap_resid_clip_sigma = 2.5
+
+        # Global sigma calibration (online, branchless):
+        # We track the realized z-scores on evaluated points:
+        #   z = (y - mu_pred_base) / sigma_pred_base
+        # If the model is well-calibrated, E[z^2] ~= 1. Selection bias (winner's curse)
+        # tends to inflate |z| and we compensate by scaling future sigmas by sqrt(EMA[z^2]).
+        self._sigma_calib_alpha = 0.05
+        # Cap the z^2 contribution to keep the EMA robust while still allowing
+        # calibration to react when the surrogate is severely underconfident.
+        self._sigma_calib_z2_cap = 100.0  # cap at |z|<=10
+        self._sigma_calib_ema_z2 = 1.0
+        self._sigma_calib_scale_min = 0.2
+        self._sigma_calib_scale_max = 10.0
+
+        # Visit-based novelty (count-based exploration):
+        # add an extra uncertainty term that is *in sigma units* (scale-safe), decaying with visits.
+        # We keep `grid_penalty_lambda` as the single exposed knob; internally we rescale it so the
+        # historical default (~0.1) lands in a useful kappa range (~1.0).
+        self._visit_novelty_tau = 10.0
+        self._visit_novelty_kappa_scale = 10.0
+
+        # Taylor-aware local policy (deterministic defaults).
+        # Used to reduce winner's-curse behavior and force smaller local regions
+        # when the LGS linear fit is clearly poor (e.g., curved valleys).
+        # rel_mse ~= 1 means the linear model is no better than a constant mean model.
+        self._taylor_rel_mse_threshold = 1.0
+        self._taylor_select_top_k = 32
+        self._tr_min_scale = 0.02
+        self._tr_expand = 1.3
+        self._tr_shrink = 0.7
 
         if self._grid_bins < 1:
             raise ValueError("grid_bins must be >= 1")
@@ -232,28 +261,6 @@ class ALBA:
             raise ValueError("categorical_stage must be one of {'post','pre','auto'}")
         if self._categorical_pre_n < 1:
             raise ValueError("categorical_pre_n must be >= 1")
-        if self._surrogate not in {
-            "lgs",
-            "knn",
-            "knn_lgs",
-            "lgs_catadd",
-            "lgs_heatmap_sigma",
-            "lgs_heatmap_blend",
-        }:
-            raise ValueError(
-                "surrogate must be one of "
-                "{'lgs','knn','knn_lgs','lgs_catadd','lgs_heatmap_sigma','lgs_heatmap_blend'}"
-            )
-        if self._knn_k < 1:
-            raise ValueError("knn_k must be >= 1")
-        if self._knn_cat_weight < 0.0:
-            raise ValueError("knn_cat_weight must be >= 0")
-        if self._knn_sigma_mode not in {"var", "dist", "var+dist"}:
-            raise ValueError("knn_sigma_mode must be one of {'var','dist','var+dist'}")
-        if self._knn_dist_scale < 0.0:
-            raise ValueError("knn_dist_scale must be >= 0")
-        if self._catadd_smoothing < 0.0:
-            raise ValueError("catadd_smoothing must be >= 0")
         if self._heatmap_blend_tau <= 0.0:
             raise ValueError("heatmap_blend_tau must be > 0")
         if self._grid_sampling not in {"grid_random", "grid_halton", "halton", "heatmap_ucb"}:
@@ -263,6 +270,8 @@ class ALBA:
             )
         if self._trace_hook is not None and not callable(self._trace_hook):
             raise TypeError("trace_hook must be callable or None")
+        if self._trace_hook_tell is not None and not callable(self._trace_hook_tell):
+            raise TypeError("trace_hook_tell must be callable or None")
 
         # Split parameters
         self._split_trials_min = split_trials_min
@@ -289,10 +298,14 @@ class ALBA:
         self._last_cube: Optional[Cube] = None
         if self._cont_dim_indices:
             cont_bounds = [bounds[i] for i in self._cont_dim_indices]
+            index_dims = self._choose_heatmap_index_dims(self.root)
             self.root.grid_state = LeafGridState(
                 bounds=list(cont_bounds),
                 B=self._grid_bins,
-                index_dims=self._choose_heatmap_index_dims(self.root),
+                B_index=self._choose_heatmap_index_bins(index_dims),
+                index_dims=index_dims,
+                soft_assignment=self._heatmap_soft_assignment,
+                multi_resolution=self._heatmap_multi_resolution,
             )
         else:
             self.root.grid_state = None
@@ -349,6 +362,42 @@ class ALBA:
     # -------------------------------------------------------------------------
     # Grid helpers
     # -------------------------------------------------------------------------
+
+    def _lgs_misfit(self, cube: Cube) -> Tuple[bool, Optional[float]]:
+        """Heuristic: decide whether the local linear surrogate is a poor fit."""
+        model = cube.lgs_model
+        if not isinstance(model, dict):
+            return False, None
+
+        n_pts = int(len(model.get("all_pts", [])))
+
+        rel_mse_f: Optional[float] = None
+        misfit = False
+
+        rel_mse = model.get("rel_mse")
+        if rel_mse is not None:
+            try:
+                rel_mse_f = float(rel_mse)
+                if np.isfinite(rel_mse_f) and n_pts >= 8 and rel_mse_f > float(self._taylor_rel_mse_threshold):
+                    misfit = True
+            except Exception:
+                rel_mse_f = None
+
+        try:
+            noise_var = float(model.get("noise_var", 0.0))
+            if np.isfinite(noise_var) and noise_var >= 9.0:
+                misfit = True
+        except Exception:
+            pass
+
+        try:
+            sigma_scale = float(model.get("sigma_scale", 1.0))
+            if np.isfinite(sigma_scale) and sigma_scale >= 4.5:
+                misfit = True
+        except Exception:
+            pass
+
+        return bool(misfit), rel_mse_f
 
     def _choose_heatmap_index_dims(self, cube: Cube) -> np.ndarray:
         """Choose a fixed subset of continuous dimensions to index the heatmap on.
@@ -436,15 +485,41 @@ class ALBA:
 
         return np.array(uniq[:k], dtype=np.int64)
 
+    def _choose_heatmap_index_bins(self, index_dims: np.ndarray) -> int:
+        """Choose the number of bins used for heatmap indexing (B_index).
+
+        The sampling grid resolution stays at B (self._grid_bins), but the heatmap
+        groups points into fewer, coarser cells via B_index to increase collisions.
+        """
+        B_sample = int(max(int(self._grid_bins), 1))
+        if B_sample <= 1:
+            return 1
+
+        k = int(np.asarray(index_dims, dtype=np.int64).size) if index_dims is not None else 0
+        if k <= 0:
+            return B_sample
+
+        # Target a small number of indexed cells so residual stats stabilize quickly.
+        target_cells = 16.0
+        b = int(np.round(target_cells ** (1.0 / float(k))))
+        b = max(2, b)
+        # Keep indexing coarse (2..4) and never finer than sampling resolution.
+        b = min(b, 4, B_sample)
+        return int(max(1, b))
+
     def _ensure_grid_state(self, cube: Cube) -> LeafGridState:
         if not self._cont_dim_indices:
             raise RuntimeError("Grid sampling requires at least one continuous dimension")
         cont_bounds = [cube.bounds[i] for i in self._cont_dim_indices]
         if cube.grid_state is None or cube.grid_state.B != self._grid_bins or cube.grid_state.bounds != cont_bounds:
+            index_dims = self._choose_heatmap_index_dims(cube)
             cube.grid_state = LeafGridState(
                 bounds=list(cont_bounds),
                 B=self._grid_bins,
-                index_dims=self._choose_heatmap_index_dims(cube),
+                B_index=self._choose_heatmap_index_bins(index_dims),
+                index_dims=index_dims,
+                soft_assignment=self._heatmap_soft_assignment,
+                multi_resolution=self._heatmap_multi_resolution,
             )
             if cube.n_trials > 0:
                 self._rebuild_grid_state_from_pairs(cube, cube.grid_state)
@@ -487,6 +562,17 @@ class ALBA:
     def _to_raw(self, y_internal: float) -> float:
         """Convert internal score back to raw objective value."""
         return y_internal if self.maximize else -y_internal
+
+    def _sigma_calibration_scale(self) -> float:
+        """Return the current global sigma multiplier (>=0)."""
+        try:
+            ema_z2 = float(getattr(self, "_sigma_calib_ema_z2", 1.0))
+            s = float(np.sqrt(max(ema_z2, 1e-12)))
+            s_min = float(getattr(self, "_sigma_calib_scale_min", 0.2))
+            s_max = float(getattr(self, "_sigma_calib_scale_max", 5.0))
+            return float(np.clip(s, s_min, s_max))
+        except Exception:
+            return 1.0
 
     # -------------------------------------------------------------------------
     # Ask interface
@@ -590,31 +676,110 @@ class ALBA:
         # Update cube
         if self._last_cube is not None:
             cube = self._last_cube
+            prev_best_score = float(cube.best_score)
 
-            # Compute base surrogate prediction BEFORE adding the point (avoid self-neighbor effects).
+            # Compute base LGS prediction BEFORE adding the point (avoid self-neighbor effects).
             mu_pred_base: Optional[float] = None
+            sigma_pred_base: Optional[float] = None
+            sigma_pred_base_raw: Optional[float] = None
+            sigma_mul_used: Optional[float] = None
             if cube.grid_state is not None and self._cont_dim_indices:
                 x_row = x.reshape(1, -1)
                 try:
-                    kind = self._surrogate
-                    if kind in {"lgs", "lgs_heatmap_sigma", "lgs_heatmap_blend", "lgs_catadd", "knn_lgs"}:
-                        if cube.n_trials >= 5 and cube.lgs_model is not None and cube.lgs_model.get("inv_cov") is not None:
-                            mu0, _ = cube.predict_bayesian(x_row)
-                            mu_pred_base = float(mu0[0])
-                            if kind == "lgs_catadd":
-                                mu_pred_base += float(self._catadd_adjustment(cube, x_row)[0])
-
-                    if kind in {"knn", "knn_lgs"} and cube.n_trials >= 3:
-                        mu0, _ = self._predict_knn(cube, x_row)
+                    if cube.n_trials >= 5 and cube.lgs_model is not None and cube.lgs_model.get("inv_cov") is not None:
+                        mu0, s0 = cube.predict_bayesian(x_row)
                         mu_pred_base = float(mu0[0])
+                        sigma_pred_base_raw = float(s0[0])
+                        sigma_mul_used = float(self._sigma_calibration_scale())
+                        sigma_pred_base = float(sigma_pred_base_raw) * float(sigma_mul_used)
                 except Exception:
                     mu_pred_base = None
+                    sigma_pred_base = None
+
+            resid_for_grid: Optional[float] = None
+            resid_raw: Optional[float] = None
+            resid_clip: Optional[float] = None
+            resid_clipped: Optional[bool] = None
+            z_val: Optional[float] = None
+            if mu_pred_base is not None and np.isfinite(mu_pred_base):
+                try:
+                    resid_raw = float(y - float(mu_pred_base))
+                    resid = float(resid_raw)
+                    if sigma_pred_base is not None and np.isfinite(sigma_pred_base):
+                        clip = float(self._heatmap_resid_clip_sigma) * float(max(float(sigma_pred_base), 1e-12))
+                        resid_clip = float(clip)
+                        resid_clipped = bool(abs(float(resid)) > float(clip))
+                        resid = float(np.clip(resid, -clip, clip))
+                        z_val = float(float(resid_raw) / max(float(sigma_pred_base), 1e-12))
+                    resid_for_grid = resid if np.isfinite(resid) else None
+                except Exception:
+                    resid_for_grid = None
+
+            # Online global sigma calibration update based on realized z-scores.
+            if z_val is not None and np.isfinite(z_val):
+                try:
+                    alpha = float(getattr(self, "_sigma_calib_alpha", 0.05))
+                    cap = float(getattr(self, "_sigma_calib_z2_cap", 25.0))
+                    z2 = float(z_val) * float(z_val)
+                    if np.isfinite(cap) and cap > 0.0:
+                        z2 = float(min(z2, cap))
+                    prev = float(getattr(self, "_sigma_calib_ema_z2", 1.0))
+                    if not np.isfinite(prev) or prev <= 0.0:
+                        prev = 1.0
+                    if np.isfinite(alpha) and 0.0 < alpha <= 1.0 and np.isfinite(z2) and z2 > 0.0:
+                        self._sigma_calib_ema_z2 = (1.0 - alpha) * prev + alpha * z2
+                except Exception:
+                    pass
+
+            hook_tell = getattr(self, "_trace_hook_tell", None)
+            if hook_tell is not None and callable(hook_tell):
+                try:
+                    tt: Dict[str, Any] = {
+                        "event": "tell",
+                        "iteration": int(self.iteration),
+                        "gamma": float(self.gamma),
+                        "y_raw": float(y_raw),
+                        "y_internal": float(y),
+                        "x": x.copy(),
+                        "cube_depth": int(cube.depth),
+                        "cube_n_trials_pre": int(cube.n_trials),
+                        "mu_pred_base": (float(mu_pred_base) if mu_pred_base is not None else None),
+                        "sigma_pred_base_raw": (float(sigma_pred_base_raw) if sigma_pred_base_raw is not None else None),
+                        "sigma_pred_base": (float(sigma_pred_base) if sigma_pred_base is not None else None),
+                        "resid_raw": (float(resid_raw) if resid_raw is not None else None),
+                        "resid_clip": (float(resid_clip) if resid_clip is not None else None),
+                        "resid_clipped": (bool(resid_clipped) if resid_clipped is not None else None),
+                        "resid_for_grid": (float(resid_for_grid) if resid_for_grid is not None else None),
+                        "sigma_calib_scale": (float(sigma_mul_used) if sigma_mul_used is not None else float(self._sigma_calibration_scale())),
+                    }
+                    if (
+                        resid_raw is not None
+                        and sigma_pred_base is not None
+                        and np.isfinite(resid_raw)
+                        and np.isfinite(sigma_pred_base)
+                    ):
+                        tt["z"] = float(z_val) if z_val is not None else float(float(resid_raw) / max(float(sigma_pred_base), 1e-12))
+                    if cube.grid_state is not None and self._cont_dim_indices:
+                        try:
+                            x_cont = np.asarray(x, dtype=float)[self._cont_dim_indices]
+                            tt["cell_key_fine"] = list(cube.grid_state.cell_index(x_cont))
+                        except Exception:
+                            pass
+                    hook_tell(tt)
+                except Exception:
+                    pass
 
             cube.add_observation(x, y, self.gamma)
+            improved_in_cube = bool(y > prev_best_score)
 
             # Update per-leaf heatmap
             if cube.grid_state is not None and self._cont_dim_indices:
-                cube.grid_state.update(x[self._cont_dim_indices], y, self.gamma, y_pred=mu_pred_base)
+                cube.grid_state.update(
+                    x[self._cont_dim_indices],
+                    y,
+                    self.gamma,
+                    resid=resid_for_grid,
+                )
 
             # Update categorical stats in cube
             for dim_idx, n_choices in self._cat_sampler.categorical_dims:
@@ -630,6 +795,18 @@ class ALBA:
 
             cube.fit_lgs_model(self.gamma, self.dim, self.rng)
 
+            # Taylor-aware trust region update: only activate when local fit is clearly poor.
+            misfit, _ = self._lgs_misfit(cube)
+            if misfit:
+                if improved_in_cube:
+                    cube.tr_scale = float(min(1.0, float(cube.tr_scale) * float(self._tr_expand)))
+                else:
+                    cube.tr_scale = float(
+                        max(float(self._tr_min_scale), float(cube.tr_scale) * float(self._tr_shrink))
+                    )
+            else:
+                cube.tr_scale = 1.0
+
             # Check for split
             if self._should_split(cube):
                 children = self._split_policy.split(cube, self.gamma, self.dim, self.rng)
@@ -638,10 +815,14 @@ class ALBA:
                     # Rebuild children's heatmap from tested pairs (robust to gamma + semantics).
                     if self._cont_dim_indices:
                         cont_bounds = [child.bounds[i] for i in self._cont_dim_indices]
+                        index_dims = self._choose_heatmap_index_dims(child)
                         child.grid_state = LeafGridState(
                             bounds=list(cont_bounds),
                             B=self._grid_bins,
-                            index_dims=self._choose_heatmap_index_dims(child),
+                            B_index=self._choose_heatmap_index_bins(index_dims),
+                            index_dims=index_dims,
+                            soft_assignment=self._heatmap_soft_assignment,
+                            multi_resolution=self._heatmap_multi_resolution,
                         )
                         self._rebuild_grid_state_from_pairs(child, child.grid_state)
                     else:
@@ -784,6 +965,100 @@ class ALBA:
                     trace.setdefault("categorical", {})["key_mismatch"] = bool(
                         tuple(trace["categorical"].get("key_scored", [])) != tuple(key_final)
                     )
+
+            # Predict again after categorical application (helps detect scoring mismatch).
+            try:
+                beta = float(trace.get("beta", 0.0))
+            except Exception:
+                beta = 0.0
+
+            mu_after = 0.0
+            sigma_base_after = 1.0
+            sigma_base_after_raw = 1.0
+            sigma_mul_after = float(self._sigma_calibration_scale())
+            try:
+                mu0, s0 = cube.predict_bayesian(x.reshape(1, -1))
+                mu_after = float(mu0[0])
+                sigma_base_after_raw = float(s0[0])
+                sigma_base_after = float(sigma_base_after_raw) * float(max(float(sigma_mul_after), 1e-12))
+            except Exception:
+                pass
+
+            sigma_adj_after = float(sigma_base_after)
+            cell_after = None
+            visits_after = 0.0
+            if cube.grid_state is not None and self._cont_dim_indices:
+                try:
+                    extra_var, cell_after = self._heatmap_adjustment_for_cont(
+                        cube.grid_state,
+                        np.asarray(x, dtype=float)[self._cont_dim_indices],
+                    )
+                    sigma_adj_after = float(
+                        np.sqrt(max(float(sigma_base_after) * float(sigma_base_after) + float(extra_var), 1e-12))
+                    )
+                    if isinstance(cell_after, dict):
+                        visits_after = float(cell_after.get("visits", 0.0))
+                except Exception:
+                    pass
+
+            ucb_after = float(mu_after) + float(beta) * float(sigma_adj_after)
+
+            # Keep after-cat score consistent with the scoring-time visit-based novelty.
+            try:
+                lam = float(trace.get("grid_penalty_lambda", self._grid_penalty_lambda))
+            except Exception:
+                lam = float(self._grid_penalty_lambda)
+            kappa = float(lam) * float(getattr(self, "_visit_novelty_kappa_scale", 1.0))
+            tau_v = float(getattr(self, "_visit_novelty_tau", 10.0))
+
+            sigma_ref = 0.0
+            try:
+                sigma_ref = float(trace.get("visit_novelty", {}).get("sigma_ref_chosen", 0.0))
+            except Exception:
+                sigma_ref = 0.0
+            if not np.isfinite(sigma_ref) or sigma_ref <= 0.0:
+                try:
+                    sigma_ref = float(trace.get("batch_stats", {}).get("sigma_adj", {}).get("p50", 0.0))
+                except Exception:
+                    sigma_ref = 0.0
+            if not np.isfinite(sigma_ref) or sigma_ref <= 0.0:
+                sigma_ref = float(sigma_adj_after)
+            sigma_ref = float(max(float(sigma_ref), 1e-12))
+
+            w_v = float(tau_v) / float(max(float(visits_after), 0.0) + float(tau_v))
+            sigma_nov_after = float(kappa) * float(sigma_ref) * float(np.sqrt(max(float(w_v), 0.0)))
+            sigma_tot_after = float(
+                np.sqrt(max(float(sigma_adj_after) * float(sigma_adj_after) + sigma_nov_after * sigma_nov_after, 1e-12))
+            )
+            score_after = float(mu_after) + float(beta) * float(sigma_tot_after)
+            novelty_bonus_after = float(score_after) - float(ucb_after)
+            sigma_ratio_after = float(sigma_adj_after / max(float(sigma_base_after), 1e-12))
+            sigma_ratio_tot_after = float(sigma_tot_after / max(float(sigma_base_after), 1e-12))
+
+            trace["chosen_pred_after_cat"] = {
+                "mu": float(mu_after),
+                "sigma_calib_scale": float(sigma_mul_after),
+                "sigma_base_raw": float(sigma_base_after_raw),
+                "sigma_base": float(sigma_base_after),
+                "sigma": float(sigma_adj_after),
+                "sigma_ratio": float(sigma_ratio_after),
+                "sigma_nov": float(sigma_nov_after),
+                "sigma_tot": float(sigma_tot_after),
+                "sigma_ratio_tot": float(sigma_ratio_tot_after),
+                "ucb": float(ucb_after),
+                "novelty_bonus": float(novelty_bonus_after),
+                "score": float(score_after),
+                "visits": float(visits_after),
+            }
+            trace["chosen_cell_after_cat"] = cell_after
+            try:
+                prev = trace.get("chosen_pred", {})
+                if isinstance(prev, dict) and "score" in prev:
+                    trace.setdefault("categorical", {})["delta_score_after_cat"] = float(score_after) - float(
+                        prev.get("score", 0.0)
+                    )
+            except Exception:
+                pass
             hook = self._trace_hook
             if hook is not None:
                 hook(trace)
@@ -803,101 +1078,10 @@ class ALBA:
         np.ndarray
             Sampled point.
         """
-        if self._surrogate in {"knn", "knn_lgs"}:
-            if cube.n_trials < 3:
-                return np.array([self.rng.uniform(lo, hi) for lo, hi in cube.bounds])
-            return self._sample_with_grid_lgs(cube)
-
         if cube.lgs_model is None or cube.n_trials < 5:
             return np.array([self.rng.uniform(lo, hi) for lo, hi in cube.bounds])
 
         return self._sample_with_grid_lgs(cube)
-
-    def _discretize_vec(self, x: np.ndarray, n_choices: int) -> np.ndarray:
-        x = np.asarray(x, dtype=float)
-        if n_choices <= 1:
-            return np.zeros(x.shape[0], dtype=np.int64)
-        idx = np.rint(np.clip(x, 0.0, 1.0) * float(n_choices - 1)).astype(np.int64)
-        return np.clip(idx, 0, n_choices - 1)
-
-    def _predict_knn(self, cube: Cube, X: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
-        pairs = list(cube.tested_pairs)
-        if len(pairs) < 3:
-            return np.zeros(X.shape[0], dtype=float), np.ones(X.shape[0], dtype=float)
-
-        X_tr = np.array([p for p, _ in pairs], dtype=float)
-        y_tr = np.array([s for _, s in pairs], dtype=float)
-        n_tr = int(X_tr.shape[0])
-
-        center = cube.center()
-        widths = np.maximum(cube.widths(), 1e-9)
-
-        if self._cont_dim_indices:
-            Xc = (X[:, self._cont_dim_indices] - center[self._cont_dim_indices]) / widths[self._cont_dim_indices]
-            Tc = (X_tr[:, self._cont_dim_indices] - center[self._cont_dim_indices]) / widths[self._cont_dim_indices]
-            a2 = np.sum(Xc * Xc, axis=1, keepdims=True)
-            b2 = np.sum(Tc * Tc, axis=1, keepdims=True).T
-            d2 = a2 + b2 - 2.0 * (Xc @ Tc.T)
-            d2 = np.maximum(d2, 0.0)
-        else:
-            d2 = np.zeros((X.shape[0], n_tr), dtype=float)
-
-        if self._cat_dim_indices and self._knn_cat_weight > 0.0:
-            mismatch = np.zeros_like(d2, dtype=float)
-            for dim_idx, n_choices in self._cat_sampler.categorical_dims:
-                if dim_idx not in self._cat_dim_indices:
-                    continue
-                cand_cat = self._discretize_vec(X[:, dim_idx], n_choices)
-                train_cat = self._discretize_vec(X_tr[:, dim_idx], n_choices)
-                mismatch += (cand_cat[:, None] != train_cat[None, :]).astype(float)
-            d2 = d2 + float(self._knn_cat_weight) * mismatch
-
-        k = min(int(self._knn_k), n_tr)
-        idx = np.argpartition(d2, kth=k - 1, axis=1)[:, :k]
-        d2k = np.take_along_axis(d2, idx, axis=1)
-        yk = y_tr[idx]
-
-        h2 = np.median(d2k, axis=1) + 1e-9
-        w = np.exp(-0.5 * (d2k / h2[:, None]))
-        w_sum = np.sum(w, axis=1) + 1e-12
-        mu = np.sum(w * yk, axis=1) / w_sum
-        var_y = np.sum(w * (yk - mu[:, None]) ** 2, axis=1) / w_sum
-        sigma_var = np.sqrt(np.maximum(var_y, 1e-8))
-        sigma_dist = float(self._knn_dist_scale) * np.sqrt(np.maximum(h2, 0.0))
-
-        if self._knn_sigma_mode == "var":
-            sigma = sigma_var
-        elif self._knn_sigma_mode == "dist":
-            sigma = np.maximum(sigma_dist, 1e-8)
-        else:
-            sigma = sigma_var + sigma_dist
-        return mu, sigma
-
-    def _catadd_adjustment(self, cube: Cube, X: np.ndarray) -> np.ndarray:
-        if not self._cat_sampler.has_categoricals or not self._cat_dim_indices:
-            return np.zeros(X.shape[0], dtype=float)
-
-        pairs = list(cube.tested_pairs)
-        if len(pairs) < 5:
-            return np.zeros(X.shape[0], dtype=float)
-
-        X_tr = np.array([p for p, _ in pairs], dtype=float)
-        y_tr = np.array([s for _, s in pairs], dtype=float)
-        mu_tr, _ = cube.predict_bayesian(X_tr)
-        resid = y_tr - mu_tr
-
-        alpha = float(self._catadd_smoothing)
-        adj = np.zeros(X.shape[0], dtype=float)
-        for dim_idx, n_choices in self._cat_sampler.categorical_dims:
-            if dim_idx not in self._cat_dim_indices:
-                continue
-            tr_cat = self._discretize_vec(X_tr[:, dim_idx], n_choices)
-            sums = np.bincount(tr_cat, weights=resid, minlength=n_choices).astype(float)
-            cnt = np.bincount(tr_cat, minlength=n_choices).astype(float)
-            eff = sums / (cnt + alpha)
-            cand_cat = self._discretize_vec(X[:, dim_idx], n_choices)
-            adj += eff[cand_cat]
-        return adj
 
     def _predict_candidates(
         self,
@@ -906,71 +1090,131 @@ class ALBA:
         *,
         Xc: np.ndarray,
         grid_state: LeafGridState,
-    ) -> Tuple[np.ndarray, np.ndarray]:
-        kind = self._surrogate
-        if kind == "lgs":
-            return cube.predict_bayesian(X)
-        if kind == "knn":
-            return self._predict_knn(cube, X)
-        if kind == "knn_lgs":
-            mu, _ = self._predict_knn(cube, X)
-            _, sigma = cube.predict_bayesian(X)
-            return mu, sigma
-        if kind == "lgs_catadd":
-            mu, sigma = cube.predict_bayesian(X)
-            mu = mu + self._catadd_adjustment(cube, X)
-            return mu, sigma
-        if kind == "lgs_heatmap_sigma":
-            mu_lgs, sigma = cube.predict_bayesian(X)
-            if Xc.size == 0:
-                return mu_lgs, sigma
-            vars_r = np.zeros(Xc.shape[0], dtype=float)
-            counts = np.zeros(Xc.shape[0], dtype=float)
-            for i in range(Xc.shape[0]):
-                key = grid_state.cell_index(Xc[i])
-                st = grid_state.stats.get(key)
-                if st is None:
-                    continue
-                counts[i] = float(st.n_r)
-                vars_r[i] = float(st.var_r())
-            tau = float(self._heatmap_blend_tau)
-            w = counts / (counts + tau)
-            rep = max(1, int(X.shape[0] // max(1, Xc.shape[0])))
-            w_rep = np.repeat(w, repeats=rep)
-            v_rep = np.repeat(vars_r, repeats=rep)
-            sigma2 = sigma * sigma
-            sigma = np.sqrt(np.maximum(sigma2 + w_rep * v_rep, 1e-12))
-            return mu_lgs, sigma
-        if kind == "lgs_heatmap_blend":
-            mu_lgs, sigma = cube.predict_bayesian(X)
-            if Xc.size == 0:
-                return mu_lgs, sigma
-            means_r = np.zeros(Xc.shape[0], dtype=float)
-            vars_r = np.zeros(Xc.shape[0], dtype=float)
-            counts = np.zeros(Xc.shape[0], dtype=float)
-            for i in range(Xc.shape[0]):
-                key = grid_state.cell_index(Xc[i])
-                st = grid_state.stats.get(key)
-                if st is None:
-                    continue
-                counts[i] = float(st.n_r)
-                means_r[i] = float(st.mean_r())
-                vars_r[i] = float(st.var_r())
-            tau = float(self._heatmap_blend_tau)
-            w = counts / (counts + tau)
-            # Repeat across categorical bases.
-            rep = max(1, int(X.shape[0] // max(1, Xc.shape[0])))
-            w_rep = np.repeat(w, repeats=rep)
-            r_rep = np.repeat(means_r, repeats=rep)
-            v_rep = np.repeat(vars_r, repeats=rep)
+    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, Dict[str, np.ndarray]]:
+        mu_lgs, sigma_base = cube.predict_bayesian(X)
+        # Global sigma calibration is applied at tell-time for residual clipping/z-scores.
+        # At acquisition time we apply the calibration multiplier as well so UCB operates
+        # on approximately calibrated predictive uncertainty.
+        sigma_base = np.asarray(sigma_base, dtype=float)
+        sigma_mul = float(self._sigma_calibration_scale())
+        sigma_base = sigma_base * float(max(sigma_mul, 1e-12))
+        if Xc.size == 0:
+            return (
+                mu_lgs,
+                sigma_base,
+                sigma_base.copy(),
+                {
+                    "counts_used": np.zeros(0, dtype=float),
+                    "vars_r_used": np.zeros(0, dtype=float),
+                    "counts_fine": np.zeros(0, dtype=float),
+                    "vars_r_fine": np.zeros(0, dtype=float),
+                    "used_mode": np.zeros(0, dtype=np.int8),
+                    "w_used": np.zeros(0, dtype=float),
+                },
+            )
 
-            mu = mu_lgs + w_rep * r_rep
-            sigma2 = sigma * sigma
-            sigma = np.sqrt(np.maximum(sigma2 + w_rep * v_rep, 1e-12))
-            return mu, sigma
+        vars_r_used = np.zeros(Xc.shape[0], dtype=float)
+        counts_used = np.zeros(Xc.shape[0], dtype=float)
+        vars_r_fine = np.zeros(Xc.shape[0], dtype=float)
+        counts_fine = np.zeros(Xc.shape[0], dtype=float)
+        used_mode = np.zeros(Xc.shape[0], dtype=np.int8)  # 0 none, 1 fine, 2 coarse, 3 fine_weak
+        use_multi = bool(getattr(grid_state, "multi_resolution", False))
+        B_coarse = int(getattr(grid_state, "B_index_coarse", 0) or getattr(grid_state, "B_index", 0) or grid_state.B)
+        for i in range(Xc.shape[0]):
+            st = None
+            key = grid_state.cell_index(Xc[i])
+            st_f = grid_state.stats.get(key)
+            if st_f is not None:
+                counts_fine[i] = float(getattr(st_f, "n_r", 0.0))
+                vars_r_fine[i] = float(st_f.var_r())
+            if st_f is not None and float(getattr(st_f, "n_r", 0.0)) >= 3.0:
+                st = st_f
+                used_mode[i] = 1
+            elif use_multi:
+                key_c = grid_state.cell_index(Xc[i], B_index=B_coarse)
+                st_c = getattr(grid_state, "stats_coarse", {}).get(key_c)
+                if st_c is not None:
+                    st = st_c
+                    used_mode[i] = 2
+                elif st_f is not None:
+                    st = st_f
+                    used_mode[i] = 3
+            elif st_f is not None:
+                st = st_f
+                used_mode[i] = 3
+            if st is None:
+                continue
+            counts_used[i] = float(getattr(st, "n_r", 0.0))
+            vars_r_used[i] = float(st.var_r())
 
-        # Should be unreachable due to validation.
-        return cube.predict_bayesian(X)
+        tau = float(self._heatmap_blend_tau)
+        w = counts_used / (counts_used + tau)
+        # X is built as: [base0 × Xc, base1 × Xc, ...] so per-Xc vectors must be tiled.
+        n_bases = max(1, int(X.shape[0] // max(1, Xc.shape[0])))
+        w_rep = np.tile(w, n_bases)[: X.shape[0]]
+        v_rep = np.tile(vars_r_used, n_bases)[: X.shape[0]]
+        sigma2 = sigma_base * sigma_base
+        sigma_adj = np.sqrt(np.maximum(sigma2 + w_rep * v_rep, 1e-12))
+        return (
+            mu_lgs,
+            sigma_base,
+            sigma_adj,
+            {
+                "counts_used": counts_used,
+                "vars_r_used": vars_r_used,
+                "counts_fine": counts_fine,
+                "vars_r_fine": vars_r_fine,
+                "used_mode": used_mode,
+                "w_used": w,
+            },
+        )
+
+    def _heatmap_adjustment_for_cont(
+        self,
+        grid_state: LeafGridState,
+        x_cont: np.ndarray,
+    ) -> Tuple[float, Dict[str, Any]]:
+        """Compute heatmap sigma inflation term for one continuous point."""
+        x_cont = np.asarray(x_cont, dtype=float).reshape(-1)
+        key_f = grid_state.cell_index(x_cont)
+        st_f = grid_state.stats.get(key_f)
+
+        use_multi = bool(getattr(grid_state, "multi_resolution", False))
+        B_coarse = int(
+            getattr(grid_state, "B_index_coarse", 0) or getattr(grid_state, "B_index", 0) or grid_state.B
+        )
+        key_c = grid_state.cell_index(x_cont, B_index=B_coarse) if use_multi else None
+        st_c = getattr(grid_state, "stats_coarse", {}).get(key_c) if (use_multi and key_c is not None) else None
+
+        st_used = None
+        mode = "none"
+        if st_f is not None and float(getattr(st_f, "n_r", 0.0)) >= 3.0:
+            st_used = st_f
+            mode = "fine"
+        elif st_c is not None:
+            st_used = st_c
+            mode = "coarse"
+        elif st_f is not None:
+            st_used = st_f
+            mode = "fine_weak"
+
+        tau = float(self._heatmap_blend_tau)
+        n_r_used = float(getattr(st_used, "n_r", 0.0)) if st_used is not None else 0.0
+        var_r_used = float(st_used.var_r()) if st_used is not None else 0.0
+        w = n_r_used / (n_r_used + tau)
+
+        extra_var = float(w * var_r_used)
+        info: Dict[str, Any] = {
+            "mode": str(mode),
+            "tau": float(tau),
+            "key_fine": list(key_f),
+            "key_coarse": (list(key_c) if key_c is not None else None),
+            "n_r": float(n_r_used),
+            "var_r": float(var_r_used),
+            "w": float(w),
+            "visits": float(getattr(st_f, "n", 0.0)) if st_f is not None else 0.0,
+        }
+        return extra_var, info
 
     def _propose_cat_keys(self, cube: Cube, x_template: np.ndarray, n_keys: int) -> List[Tuple[int, ...]]:
         if not self._cat_sampler.has_categoricals:
@@ -1014,7 +1258,7 @@ class ALBA:
         -----
         - Generates candidates from an implicit per-leaf grid (no B^d materialization).
         - Scores many candidates cheaply with LGS (mu/sigma).
-        - Optionally penalizes already-visited cells using the leaf heatmap.
+        - Optionally adds visit-based novelty as extra uncertainty (count-based exploration).
         - Returns exactly 1 point to evaluate.
         """
         if not self._cont_dim_indices:
@@ -1028,9 +1272,13 @@ class ALBA:
         best_score = -np.inf
         best_mu = 0.0
         best_sigma = 0.0
+        best_sigma_base = 0.0
+        best_sigma_nov = 0.0
+        best_sigma_tot = 0.0
         best_ucb = 0.0
-        best_penalty = 0.0
+        best_novelty_bonus = 0.0
         best_visits = 0.0
+        best_sigma_ref = 0.0
 
         beta = float(self._novelty_weight) * 2.0  # keep consistent with UCB definition
         n_scored = 0
@@ -1039,14 +1287,67 @@ class ALBA:
         want_top = want_trace and self._trace_top_k > 0
         top_x_batches: List[np.ndarray] = []
         top_mu_batches: List[np.ndarray] = []
+        top_sigma_base_batches: List[np.ndarray] = []
         top_sigma_batches: List[np.ndarray] = []
+        top_sigma_nov_batches: List[np.ndarray] = []
+        top_sigma_tot_batches: List[np.ndarray] = []
+        top_sigma_ref_batches: List[np.ndarray] = []
         top_ucb_batches: List[np.ndarray] = []
-        top_penalty_batches: List[np.ndarray] = []
+        top_novelty_bonus_batches: List[np.ndarray] = []
         top_score_batches: List[np.ndarray] = []
         top_visits_batches: List[np.ndarray] = []
 
+        # Optional diagnostics over the whole scored batch.
+        diag_mu_batches: List[np.ndarray] = []
+        diag_sigma_base_batches: List[np.ndarray] = []
+        diag_sigma_adj_batches: List[np.ndarray] = []
+        diag_sigma_nov_batches: List[np.ndarray] = []
+        diag_sigma_tot_batches: List[np.ndarray] = []
+        diag_sigma_ref_batches: List[np.ndarray] = []
+        diag_ucb_batches: List[np.ndarray] = []
+        diag_novelty_bonus_batches: List[np.ndarray] = []
+        diag_score_batches: List[np.ndarray] = []
+        diag_visits_batches: List[np.ndarray] = []
+        diag_counts_used_batches: List[np.ndarray] = []
+        diag_vars_r_used_batches: List[np.ndarray] = []
+        diag_used_mode_batches: List[np.ndarray] = []
+        diag_unique_cell_rates: List[float] = []
+        diag_unique_cell_keys: set[Tuple[int, ...]] = set()
+        diag_visits_cont_batches: List[np.ndarray] = []
+
         # Keep categorical dimensions fixed during grid scoring.
         x_template = cube.best_x.copy() if cube.best_x is not None else cube.center()
+
+        misfit, rel_mse = self._lgs_misfit(cube)
+
+        # Candidate selection: sample from a small top-k pool instead of taking a
+        # hard argmax over very large scored batches (reduces winner's-curse bias).
+        selection_mode = "softmax"
+        select_top_k = int(max(2, int(self._taylor_select_top_k)))
+        center_cont = np.asarray(x_template, dtype=float)[self._cont_dim_indices]
+        if misfit:
+            tr_scale = float(getattr(cube, "tr_scale", 1.0))
+            tr_scale = float(np.clip(tr_scale, float(self._tr_min_scale), 1.0))
+
+            half = 0.5 * tr_scale * grid_state._widths
+            lo0 = grid_state._lo
+            hi0 = grid_state._hi
+            tr_lo = center_cont - half
+            tr_hi = center_cont + half
+
+            shift_up = np.maximum(lo0 - tr_lo, 0.0)
+            tr_lo = tr_lo + shift_up
+            tr_hi = tr_hi + shift_up
+            shift_dn = np.maximum(tr_hi - hi0, 0.0)
+            tr_lo = tr_lo - shift_dn
+            tr_hi = tr_hi - shift_dn
+
+            tr_lo = np.maximum(tr_lo, lo0)
+            tr_hi = np.minimum(tr_hi, hi0)
+        else:
+            tr_scale = 1.0
+            tr_lo = grid_state._lo
+            tr_hi = grid_state._hi
 
         cat_keys: List[Tuple[int, ...]] = []
         bases: np.ndarray
@@ -1058,14 +1359,10 @@ class ALBA:
                 cat_mode = "enum"
                 stage_eff = "pre_enum"
             elif self._categorical_stage == "auto":
-                cont_dim = int(len(self._cont_dim_indices))
-                cat_dim = int(len(self._cat_dim_indices))
-                if cont_dim <= 2 and cat_dim >= 4:
-                    cat_mode = "sample"
-                    stage_eff = "auto_sample"
-                else:
-                    cat_mode = "enum"
-                    stage_eff = "auto_enum"
+                # Keep a single, consistent policy: enumerate a small set of
+                # categorical keys and score them jointly with continuous candidates.
+                cat_mode = "enum"
+                stage_eff = "auto_enum"
 
         if cat_mode == "enum":
             cat_keys = self._propose_cat_keys(cube, x_template, self._categorical_pre_n)
@@ -1075,27 +1372,51 @@ class ALBA:
             )
         elif cat_mode == "sample":
             x_base = self._cat_sampler.sample(x_template, cube, self.rng, self.is_stagnating)
+            x_base = self._clip_to_cube(x_base, cube)
             cat_keys = [self._cat_sampler.get_cat_key(x_base)]
             bases = x_base.reshape(1, -1)
         else:
             bases = x_template.reshape(1, -1)
 
+        # Keep total scored candidates roughly stable even when enumerating multiple
+        # categorical bases: score ~grid_batch_size points per batch overall (not per base).
+        n_cont_per_batch = int(max(1, int(self._grid_batch_size) // max(1, int(bases.shape[0]))))
+
+        # Always build a small top-k pool for robust selection.
+        use_pool = True
+        pool_k = int(max(select_top_k, (self._trace_top_k if want_trace else 0), 1))
+        pool_x_batches: List[np.ndarray] = []
+        pool_mu_batches: List[np.ndarray] = []
+        pool_sigma_base_batches: List[np.ndarray] = []
+        pool_sigma_batches: List[np.ndarray] = []
+        pool_sigma_nov_batches: List[np.ndarray] = []
+        pool_sigma_tot_batches: List[np.ndarray] = []
+        pool_sigma_ref_batches: List[np.ndarray] = []
+        pool_ucb_batches: List[np.ndarray] = []
+        pool_novelty_bonus_batches: List[np.ndarray] = []
+        pool_score_batches: List[np.ndarray] = []
+        pool_visits_batches: List[np.ndarray] = []
+
         for _ in range(max(1, self._grid_batches)):
             if self._grid_sampling == "heatmap_ucb":
                 Xc = grid_state.sample_candidates_heatmap_ucb(
                     self.rng,
-                    self._grid_batch_size,
+                    n_cont_per_batch,
                     beta=float(self._heatmap_ucb_beta),
                     explore_prob=float(self._heatmap_ucb_explore_prob),
                     temperature=float(self._heatmap_ucb_temperature),
                     jitter=self._grid_jitter,
+                    lo=tr_lo,
+                    hi=tr_hi,
                 )
             else:
                 Xc = grid_state.sample_candidates(
                     self.rng,
-                    self._grid_batch_size,
+                    n_cont_per_batch,
                     mode=self._grid_sampling,
                     jitter=self._grid_jitter,
+                    lo=tr_lo,
+                    hi=tr_hi,
                 )
             if Xc.size == 0:
                 continue
@@ -1108,32 +1429,81 @@ class ALBA:
             X[:, self._cont_dim_indices] = np.tile(Xc, (C, 1))
             n_scored += int(X.shape[0])
 
-            mu, sigma = self._predict_candidates(cube, X, Xc=Xc, grid_state=grid_state)
-            ucb = mu + beta * sigma
+            mu, sigma_base, sigma_adj, hmap = self._predict_candidates(cube, X, Xc=Xc, grid_state=grid_state)
+            ucb = mu + beta * sigma_adj
 
+            # Visit-based novelty as extra uncertainty (scale-safe and branchless in scoring units).
+            # sigma_tot^2 = sigma_adj^2 + sigma_nov^2
             if self._grid_penalty_lambda > 0.0 or want_trace:
                 visits = grid_state.visits_for_points(Xc)
-                penalty = float(self._grid_penalty_lambda) * np.log1p(visits)
             else:
                 visits = np.zeros(Xc.shape[0], dtype=float)
-                penalty = np.zeros(Xc.shape[0], dtype=float)
 
             visits_rep = np.tile(visits, C)
-            penalty_rep = np.tile(penalty, C)
-            score = ucb - penalty_rep
+            kappa = float(self._grid_penalty_lambda) * float(getattr(self, "_visit_novelty_kappa_scale", 1.0))
+            tau_v = float(getattr(self, "_visit_novelty_tau", 10.0))
+            sigma_ref = float(np.median(sigma_adj[np.isfinite(sigma_adj)])) if sigma_adj.size else 0.0
+            sigma_ref = float(max(sigma_ref, 1e-12))
+            w_v = tau_v / (np.maximum(visits, 0.0) + tau_v)
+            sigma_nov = (kappa * sigma_ref) * np.sqrt(np.maximum(w_v, 0.0))
+            sigma_nov_rep = np.tile(sigma_nov, C)
+            sigma_ref_rep = np.full_like(sigma_nov_rep, float(sigma_ref), dtype=float)
+            sigma_tot = np.sqrt(np.maximum(sigma_adj * sigma_adj + sigma_nov_rep * sigma_nov_rep, 1e-12))
+            score = mu + beta * sigma_tot
+            novelty_bonus_rep = score - ucb
 
-            if want_top and X.shape[0] > 0:
-                k = min(self._trace_top_k, int(X.shape[0]))
+            if want_trace:
+                diag_mu_batches.append(mu.copy())
+                diag_sigma_base_batches.append(sigma_base.copy())
+                diag_sigma_adj_batches.append(sigma_adj.copy())
+                diag_sigma_nov_batches.append(sigma_nov_rep.copy())
+                diag_sigma_tot_batches.append(sigma_tot.copy())
+                diag_sigma_ref_batches.append(sigma_ref_rep.copy())
+                diag_ucb_batches.append(ucb.copy())
+                diag_novelty_bonus_batches.append(novelty_bonus_rep.copy())
+                diag_score_batches.append(score.copy())
+                diag_visits_batches.append(visits_rep.copy())
+                diag_counts_used_batches.append(hmap.get("counts_used", np.zeros(0, dtype=float)).copy())
+                diag_vars_r_used_batches.append(hmap.get("vars_r_used", np.zeros(0, dtype=float)).copy())
+                diag_used_mode_batches.append(hmap.get("used_mode", np.zeros(0, dtype=np.int8)).copy())
+                diag_visits_cont_batches.append(visits.copy())
+
+                try:
+                    keys_batch = [grid_state.cell_index(Xc[i]) for i in range(int(Xc.shape[0]))]
+                    if keys_batch:
+                        diag_unique_cell_rates.append(float(len(set(keys_batch)) / float(len(keys_batch))))
+                        diag_unique_cell_keys.update(keys_batch)
+                except Exception:
+                    pass
+
+            if use_pool and X.shape[0] > 0:
+                k = min(pool_k, int(X.shape[0]))
                 if k >= 1:
                     idxs = np.argpartition(-score, k - 1)[:k]
                     idxs = idxs[np.argsort(-score[idxs])]
-                    top_x_batches.append(X[idxs].copy())
-                    top_mu_batches.append(mu[idxs].copy())
-                    top_sigma_batches.append(sigma[idxs].copy())
-                    top_ucb_batches.append(ucb[idxs].copy())
-                    top_penalty_batches.append(penalty_rep[idxs].copy())
-                    top_score_batches.append(score[idxs].copy())
-                    top_visits_batches.append(visits_rep[idxs].copy())
+                    pool_x_batches.append(X[idxs].copy())
+                    pool_mu_batches.append(mu[idxs].copy())
+                    pool_sigma_base_batches.append(sigma_base[idxs].copy())
+                    pool_sigma_batches.append(sigma_adj[idxs].copy())
+                    pool_sigma_nov_batches.append(sigma_nov_rep[idxs].copy())
+                    pool_sigma_tot_batches.append(sigma_tot[idxs].copy())
+                    pool_sigma_ref_batches.append(sigma_ref_rep[idxs].copy())
+                    pool_ucb_batches.append(ucb[idxs].copy())
+                    pool_novelty_bonus_batches.append(novelty_bonus_rep[idxs].copy())
+                    pool_score_batches.append(score[idxs].copy())
+                    pool_visits_batches.append(visits_rep[idxs].copy())
+                    if want_top:
+                        top_x_batches.append(X[idxs].copy())
+                        top_mu_batches.append(mu[idxs].copy())
+                        top_sigma_base_batches.append(sigma_base[idxs].copy())
+                        top_sigma_batches.append(sigma_adj[idxs].copy())
+                        top_sigma_nov_batches.append(sigma_nov_rep[idxs].copy())
+                        top_sigma_tot_batches.append(sigma_tot[idxs].copy())
+                        top_sigma_ref_batches.append(sigma_ref_rep[idxs].copy())
+                        top_ucb_batches.append(ucb[idxs].copy())
+                        top_novelty_bonus_batches.append(novelty_bonus_rep[idxs].copy())
+                        top_score_batches.append(score[idxs].copy())
+                        top_visits_batches.append(visits_rep[idxs].copy())
 
             idx = int(np.argmax(score))
             sc = float(score[idx])
@@ -1141,10 +1511,58 @@ class ALBA:
                 best_score = sc
                 best_x = X[idx].copy()
                 best_mu = float(mu[idx])
-                best_sigma = float(sigma[idx])
+                best_sigma_base = float(sigma_base[idx])
+                best_sigma = float(sigma_adj[idx])
+                best_sigma_nov = float(sigma_nov_rep[idx])
+                best_sigma_tot = float(sigma_tot[idx])
                 best_ucb = float(ucb[idx])
-                best_penalty = float(penalty_rep[idx])
+                best_novelty_bonus = float(novelty_bonus_rep[idx])
                 best_visits = float(visits_rep[idx])
+                best_sigma_ref = float(sigma_ref_rep[idx])
+
+        if use_pool and pool_x_batches:
+            X_pool = np.concatenate(pool_x_batches, axis=0)
+            mu_pool = np.concatenate(pool_mu_batches, axis=0)
+            sigma_base_pool = np.concatenate(pool_sigma_base_batches, axis=0)
+            sigma_pool = np.concatenate(pool_sigma_batches, axis=0)
+            sigma_nov_pool = np.concatenate(pool_sigma_nov_batches, axis=0)
+            sigma_tot_pool = np.concatenate(pool_sigma_tot_batches, axis=0)
+            sigma_ref_pool = np.concatenate(pool_sigma_ref_batches, axis=0)
+            ucb_pool = np.concatenate(pool_ucb_batches, axis=0)
+            novelty_bonus_pool = np.concatenate(pool_novelty_bonus_batches, axis=0)
+            score_pool = np.concatenate(pool_score_batches, axis=0)
+            visits_pool = np.concatenate(pool_visits_batches, axis=0)
+
+            if score_pool.size > 1:
+                # Softmax selection over standardized scores (scale-free).
+                score_std = float(np.std(score_pool))
+                if score_std > 1e-12:
+                    score_z = (score_pool - float(np.mean(score_pool))) / score_std
+                else:
+                    score_z = np.zeros_like(score_pool, dtype=float)
+                logits = 3.0 * score_z
+                logits = logits - float(np.max(logits))
+                probs = np.exp(logits)
+                probs_sum = float(np.sum(probs))
+                if probs_sum > 0.0 and np.isfinite(probs_sum):
+                    probs = probs / probs_sum
+                    pick = int(self.rng.choice(int(score_pool.size), p=probs))
+                else:
+                    pick = int(np.argmax(score_pool))
+            else:
+                pick = 0
+
+            best_x = X_pool[pick].copy()
+            best_mu = float(mu_pool[pick])
+            best_sigma_base = float(sigma_base_pool[pick])
+            best_sigma = float(sigma_pool[pick])
+            best_sigma_nov = float(sigma_nov_pool[pick])
+            best_sigma_tot = float(sigma_tot_pool[pick])
+            best_sigma_ref = float(sigma_ref_pool[pick])
+            best_ucb = float(ucb_pool[pick])
+            best_novelty_bonus = float(novelty_bonus_pool[pick])
+            best_score = float(score_pool[pick])
+            best_visits = float(visits_pool[pick])
 
         if best_x is None:
             best_x = np.array([self.rng.uniform(lo, hi) for lo, hi in cube.bounds])
@@ -1154,7 +1572,110 @@ class ALBA:
             chosen_cat_key = self._cat_sampler.get_cat_key(best_x)
 
         if want_trace:
+            eps = 1e-12
+            sigma_ratio = float(best_sigma / max(best_sigma_base, eps))
+            sigma_ratio_tot = float(best_sigma_tot / max(best_sigma_base, eps))
+            chosen_x_cont = (
+                np.asarray(best_x, dtype=float)[self._cont_dim_indices] if (best_x is not None) else None
+            )
+            chosen_cell = None
+            if chosen_x_cont is not None:
+                try:
+                    _, chosen_cell = self._heatmap_adjustment_for_cont(grid_state, chosen_x_cont)
+                except Exception:
+                    chosen_cell = None
+
+            def _pct(x: np.ndarray) -> Dict[str, float]:
+                x = np.asarray(x, dtype=float).reshape(-1)
+                x = x[np.isfinite(x)]
+                if x.size == 0:
+                    return {"mean": 0.0, "p50": 0.0, "p90": 0.0, "p99": 0.0, "min": 0.0, "max": 0.0}
+                p50, p90, p99 = np.percentile(x, [50, 90, 99])
+                return {
+                    "mean": float(np.mean(x)),
+                    "p50": float(p50),
+                    "p90": float(p90),
+                    "p99": float(p99),
+                    "min": float(np.min(x)),
+                    "max": float(np.max(x)),
+                }
+
+            mu_all = np.concatenate(diag_mu_batches, axis=0) if diag_mu_batches else np.zeros(0, dtype=float)
+            sigma_base_all = (
+                np.concatenate(diag_sigma_base_batches, axis=0) if diag_sigma_base_batches else np.zeros(0, dtype=float)
+            )
+            sigma_adj_all = (
+                np.concatenate(diag_sigma_adj_batches, axis=0) if diag_sigma_adj_batches else np.zeros(0, dtype=float)
+            )
+            sigma_nov_all = (
+                np.concatenate(diag_sigma_nov_batches, axis=0) if diag_sigma_nov_batches else np.zeros(0, dtype=float)
+            )
+            sigma_tot_all = (
+                np.concatenate(diag_sigma_tot_batches, axis=0) if diag_sigma_tot_batches else np.zeros(0, dtype=float)
+            )
+            sigma_ref_all = (
+                np.concatenate(diag_sigma_ref_batches, axis=0) if diag_sigma_ref_batches else np.zeros(0, dtype=float)
+            )
+            ucb_all = np.concatenate(diag_ucb_batches, axis=0) if diag_ucb_batches else np.zeros(0, dtype=float)
+            novelty_bonus_all = (
+                np.concatenate(diag_novelty_bonus_batches, axis=0)
+                if diag_novelty_bonus_batches
+                else np.zeros(0, dtype=float)
+            )
+            score_all = np.concatenate(diag_score_batches, axis=0) if diag_score_batches else np.zeros(0, dtype=float)
+            visits_all = (
+                np.concatenate(diag_visits_batches, axis=0) if diag_visits_batches else np.zeros(0, dtype=float)
+            )
+            counts_used_all = (
+                np.concatenate(diag_counts_used_batches, axis=0)
+                if diag_counts_used_batches
+                else np.zeros(0, dtype=float)
+            )
+            vars_r_used_all = (
+                np.concatenate(diag_vars_r_used_batches, axis=0)
+                if diag_vars_r_used_batches
+                else np.zeros(0, dtype=float)
+            )
+            used_mode_all = (
+                np.concatenate(diag_used_mode_batches, axis=0)
+                if diag_used_mode_batches
+                else np.zeros(0, dtype=np.int8)
+            )
+            visits_cont_all = (
+                np.concatenate(diag_visits_cont_batches, axis=0)
+                if diag_visits_cont_batches
+                else np.zeros(0, dtype=float)
+            )
+
+            sigma_ratio_all = sigma_adj_all / np.maximum(sigma_base_all, eps)
+            novelty_to_abs_ucb_all = novelty_bonus_all / np.maximum(np.abs(ucb_all), eps)
+
+            cells_total = int(len(getattr(grid_state, "stats", {})))
+            cells_with_resid = 0
+            cells_with_resid_ge3 = 0
+            try:
+                for st in getattr(grid_state, "stats", {}).values():
+                    n_r = float(getattr(st, "n_r", 0.0))
+                    if n_r > 0.0:
+                        cells_with_resid += 1
+                    if n_r >= 3.0:
+                        cells_with_resid_ge3 += 1
+            except Exception:
+                cells_with_resid = 0
+                cells_with_resid_ge3 = 0
+
+            cells_total_coarse = int(len(getattr(grid_state, "stats_coarse", {}))) if grid_state.multi_resolution else 0
+            cells_with_resid_coarse = 0
+            try:
+                if grid_state.multi_resolution:
+                    for st in getattr(grid_state, "stats_coarse", {}).values():
+                        if float(getattr(st, "n_r", 0.0)) > 0.0:
+                            cells_with_resid_coarse += 1
+            except Exception:
+                cells_with_resid_coarse = 0
+
             trace: Dict[str, Any] = {
+                "event": "ask",
                 "iteration": int(self.iteration),
                 "cube_depth": int(cube.depth),
                 "cube_n_trials": int(cube.n_trials),
@@ -1166,12 +1687,21 @@ class ALBA:
                 "grid_sampling": str(self._grid_sampling),
                 "grid_jitter": bool(self._grid_jitter),
                 "grid_penalty_lambda": float(self._grid_penalty_lambda),
+                "visit_novelty": {
+                    "tau": float(getattr(self, "_visit_novelty_tau", 10.0)),
+                    "kappa_scale": float(getattr(self, "_visit_novelty_kappa_scale", 1.0)),
+                    "sigma_ref_chosen": float(best_sigma_ref),
+                },
                 "heatmap_ucb": {
                     "beta": float(self._heatmap_ucb_beta),
                     "explore_prob": float(self._heatmap_ucb_explore_prob),
                     "temperature": float(self._heatmap_ucb_temperature),
                 },
                 "heatmap_index": {
+                    "B_index": int(getattr(grid_state, "B_index", grid_state.B)),
+                    "B_index_coarse": (
+                        int(getattr(grid_state, "B_index_coarse", 0) or 0) if grid_state.multi_resolution else None
+                    ),
                     "index_dims_cont": (
                         grid_state.index_dims.tolist() if grid_state.index_dims is not None else None
                     ),
@@ -1180,21 +1710,79 @@ class ALBA:
                         if grid_state.index_dims is not None
                         else list(self._cont_dim_indices)
                     ),
+                    "soft_assignment": bool(getattr(grid_state, "soft_assignment", False)),
+                    "multi_resolution": bool(getattr(grid_state, "multi_resolution", False)),
                     "unique_cells": int(len(grid_state.stats)),
                     "avg_occ": float(
                         float(grid_state.total_visits) / float(max(1, len(grid_state.stats)))
                     ),
+                    "cells_with_resid": int(cells_with_resid),
+                    "cells_with_resid_ge3": int(cells_with_resid_ge3),
+                    "frac_cells_with_resid": float(cells_with_resid) / float(max(1, cells_total)),
+                    "unique_cells_coarse": int(cells_total_coarse),
+                    "cells_with_resid_coarse": int(cells_with_resid_coarse),
+                    "frac_cells_with_resid_coarse": float(cells_with_resid_coarse)
+                    / float(max(1, cells_total_coarse)),
+                },
+                "taylor": {
+                    "misfit": bool(misfit),
+                    "rel_mse": (float(rel_mse) if rel_mse is not None else None),
+                    "tr_scale": float(tr_scale),
+                    "tr_lo_cont": tr_lo.copy(),
+                    "tr_hi_cont": tr_hi.copy(),
+                    "selection_mode": str(selection_mode),
+                    "select_top_k": int(select_top_k),
                 },
                 "surrogate": {
-                    "kind": str(self._surrogate),
-                    "knn_k": int(self._knn_k),
-                    "knn_cat_weight": float(self._knn_cat_weight),
-                    "knn_sigma_mode": str(self._knn_sigma_mode),
-                    "knn_dist_scale": float(self._knn_dist_scale),
-                    "catadd_smoothing": float(self._catadd_smoothing),
-                    "heatmap_blend_tau": float(self._heatmap_blend_tau),
+                    "kind": "lgs_heatmap_sigma",
+                    "heatmap_tau": float(self._heatmap_blend_tau),
+                    "resid_clip_sigma": float(self._heatmap_resid_clip_sigma),
+                    "sigma_calib_scale": float(self._sigma_calibration_scale()),
                 },
                 "n_scored": int(n_scored),
+                "batch_stats": {
+                    "mu": _pct(mu_all),
+                    "sigma_base": _pct(sigma_base_all),
+                    "sigma_adj": _pct(sigma_adj_all),
+                    "sigma_nov": _pct(sigma_nov_all),
+                    "sigma_tot": _pct(sigma_tot_all),
+                    "sigma_ref": _pct(sigma_ref_all),
+                    "sigma_ratio": _pct(sigma_ratio_all),
+                    "ucb": _pct(ucb_all),
+                    "novelty_bonus": _pct(novelty_bonus_all),
+                    "score": _pct(score_all),
+                    "visits": _pct(visits_all),
+                    "novelty_to_abs_ucb": _pct(novelty_to_abs_ucb_all),
+                },
+                "heatmap_usage": {
+                    "frac_candidates_n_r_gt0": float(np.mean(counts_used_all > 0.0))
+                    if counts_used_all.size
+                    else 0.0,
+                    "frac_candidates_n_r_ge3": float(np.mean(counts_used_all >= 3.0))
+                    if counts_used_all.size
+                    else 0.0,
+                    "frac_candidates_used_fine": float(np.mean(used_mode_all == 1))
+                    if used_mode_all.size
+                    else 0.0,
+                    "frac_candidates_used_coarse": float(np.mean(used_mode_all == 2))
+                    if used_mode_all.size
+                    else 0.0,
+                    "frac_candidates_used_fine_weak": float(np.mean(used_mode_all == 3))
+                    if used_mode_all.size
+                    else 0.0,
+                    "unique_cell_rate_overall": float(len(diag_unique_cell_keys))
+                    / float(max(1, int(counts_used_all.size))),
+                    "unique_cell_rate_per_batch": _pct(np.asarray(diag_unique_cell_rates, dtype=float))
+                    if diag_unique_cell_rates
+                    else _pct(np.zeros(0, dtype=float)),
+                    "frac_candidates_visits0": float(np.mean(visits_cont_all <= 0.0))
+                    if visits_cont_all.size
+                    else 0.0,
+                    "n_candidates_cont": int(visits_cont_all.size),
+                    "counts_used": _pct(counts_used_all),
+                    "vars_r_used": _pct(vars_r_used_all),
+                },
+                "chosen_cell": chosen_cell,
                 "categorical": {
                     "sampling_enabled": bool(self._categorical_sampling),
                     "stage": str(self._categorical_stage),
@@ -1207,9 +1795,14 @@ class ALBA:
                 "x_chosen_raw": best_x.copy(),
                 "chosen_pred": {
                     "mu": float(best_mu),
+                    "sigma_base": float(best_sigma_base),
                     "sigma": float(best_sigma),
+                    "sigma_ratio": float(sigma_ratio),
+                    "sigma_nov": float(best_sigma_nov),
+                    "sigma_tot": float(best_sigma_tot),
+                    "sigma_ratio_tot": float(sigma_ratio_tot),
                     "ucb": float(best_ucb),
-                    "penalty": float(best_penalty),
+                    "novelty_bonus": float(best_novelty_bonus),
                     "score": float(best_score),
                     "visits": float(best_visits),
                 },
@@ -1220,6 +1813,12 @@ class ALBA:
                 trace["lgs"] = {
                     "n_pts": int(len(cube.lgs_model.get("all_pts", []))),
                     "noise_var": float(cube.lgs_model.get("noise_var", 0.0)),
+                    "sigma_scale": float(cube.lgs_model.get("sigma_scale", 1.0)),
+                    "rel_mse": (
+                        float(cube.lgs_model.get("rel_mse"))
+                        if cube.lgs_model.get("rel_mse") is not None
+                        else None
+                    ),
                     "grad_norm": grad_norm,
                     "has_gradient_dir": cube.lgs_model.get("gradient_dir") is not None,
                 }
@@ -1227,9 +1826,13 @@ class ALBA:
             if want_top and top_x_batches:
                 X_top = np.concatenate(top_x_batches, axis=0)
                 mu_top = np.concatenate(top_mu_batches, axis=0)
+                sigma_base_top = np.concatenate(top_sigma_base_batches, axis=0)
                 sigma_top = np.concatenate(top_sigma_batches, axis=0)
+                sigma_nov_top = np.concatenate(top_sigma_nov_batches, axis=0)
+                sigma_tot_top = np.concatenate(top_sigma_tot_batches, axis=0)
+                sigma_ref_top = np.concatenate(top_sigma_ref_batches, axis=0)
                 ucb_top = np.concatenate(top_ucb_batches, axis=0)
-                penalty_top = np.concatenate(top_penalty_batches, axis=0)
+                novelty_bonus_top = np.concatenate(top_novelty_bonus_batches, axis=0)
                 score_top = np.concatenate(top_score_batches, axis=0)
                 visits_top = np.concatenate(top_visits_batches, axis=0)
 
@@ -1239,9 +1842,13 @@ class ALBA:
                 trace["top"] = {
                     "x": X_top[order],
                     "mu": mu_top[order],
+                    "sigma_base": sigma_base_top[order],
                     "sigma": sigma_top[order],
+                    "sigma_nov": sigma_nov_top[order],
+                    "sigma_tot": sigma_tot_top[order],
+                    "sigma_ref": sigma_ref_top[order],
                     "ucb": ucb_top[order],
-                    "penalty": penalty_top[order],
+                    "novelty_bonus": novelty_bonus_top[order],
                     "score": score_top[order],
                     "visits": visits_top[order],
                 }

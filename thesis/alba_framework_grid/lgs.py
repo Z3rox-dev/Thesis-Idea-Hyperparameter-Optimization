@@ -182,6 +182,8 @@ def fit_lgs_model(
 
         num = float(np.mean(err2))
         den = float(np.mean(pred_var))
+        var_y = float(np.var(all_scores))
+        rel_mse = float(num / (var_y + 1e-12))
 
         prev = getattr(cube, "lgs_model", None)
         prev_num = float(prev.get("sigma_ema_num")) if isinstance(prev, dict) and "sigma_ema_num" in prev else None
@@ -202,6 +204,8 @@ def fit_lgs_model(
         sigma_scale = 1.0
         ema_num = None
         ema_den = None
+        rel_mse = None
+        var_y = None
 
     return {
         "all_pts": all_pts,
@@ -217,6 +221,8 @@ def fit_lgs_model(
         "sigma_scale": float(sigma_scale),
         "sigma_ema_num": (float(ema_num) if ema_num is not None else None),
         "sigma_ema_den": (float(ema_den) if ema_den is not None else None),
+        "rel_mse": (float(rel_mse) if rel_mse is not None else None),
+        "var_y": (float(var_y) if var_y is not None else None),
     }
 
 

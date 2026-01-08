@@ -107,18 +107,28 @@ class CellStats:
     sum_r: float = 0.0
     sum_r2: float = 0.0
 
-    def add(self, y: float, is_good: bool, resid: Optional[float] = None) -> None:
+    def add(
+        self,
+        y: float,
+        is_good: bool,
+        resid: Optional[float] = None,
+        *,
+        weight: float = 1.0,
+    ) -> None:
         yv = float(y)
-        self.n += 1.0
-        self.sum_y += yv
-        self.sum_y2 += yv * yv
-        self.n_good += 1.0 if is_good else 0.0
+        w = float(weight)
+        if not np.isfinite(w) or w <= 0.0:
+            return
+        self.n += w
+        self.sum_y += w * yv
+        self.sum_y2 += w * yv * yv
+        self.n_good += w if is_good else 0.0
         if resid is not None:
             rv = float(resid)
             if np.isfinite(rv):
-                self.n_r += 1.0
-                self.sum_r += rv
-                self.sum_r2 += rv * rv
+                self.n_r += w
+                self.sum_r += w * rv
+                self.sum_r2 += w * rv * rv
 
     def mean_y(self) -> float:
         if self.n <= 0:
@@ -152,9 +162,15 @@ class LeafGridState:
 
     bounds: List[Tuple[float, float]]
     B: int
+    B_index: Optional[int] = None  # bins per indexed dim for cell indexing; defaults to B
+    B_index_coarse: Optional[int] = None  # optional coarser indexing (multi-resolution)
     index_dims: Optional[np.ndarray] = None  # indices in [0..dim-1] used for cell indexing
+    soft_assignment: bool = False  # update neighboring cells with soft weights
+    multi_resolution: bool = False  # maintain coarse residual stats alongside fine stats
     stats: Dict[CellIndex, CellStats] = field(default_factory=dict)
+    stats_coarse: Dict[CellIndex, CellStats] = field(default_factory=dict)
     total_visits: float = 0.0
+    total_visits_coarse: float = 0.0
     seq_index: int = 0  # for low-discrepancy streaming (Halton)
 
     _lo: np.ndarray = field(init=False, repr=False)
@@ -164,6 +180,26 @@ class LeafGridState:
     def __post_init__(self) -> None:
         if self.B < 1:
             raise ValueError("LeafGridState requires B >= 1")
+        if self.B_index is None:
+            self.B_index = int(self.B)
+        self.B_index = int(self.B_index)
+        if self.B_index < 1:
+            raise ValueError("LeafGridState requires B_index >= 1")
+        if self.B_index > self.B:
+            raise ValueError("LeafGridState requires B_index <= B")
+        self.soft_assignment = bool(self.soft_assignment)
+        self.multi_resolution = bool(self.multi_resolution)
+        if self.multi_resolution:
+            if self.B_index_coarse is None:
+                if self.B_index <= 2:
+                    self.B_index_coarse = int(self.B_index)
+                else:
+                    self.B_index_coarse = max(2, int(self.B_index // 2))
+            self.B_index_coarse = int(self.B_index_coarse)
+            if self.B_index_coarse < 1:
+                raise ValueError("LeafGridState requires B_index_coarse >= 1")
+            if self.B_index_coarse > self.B_index:
+                raise ValueError("LeafGridState requires B_index_coarse <= B_index")
         self._lo = np.array([lo for lo, _ in self.bounds], dtype=float)
         self._hi = np.array([hi for _, hi in self.bounds], dtype=float)
         self._widths = np.maximum(self._hi - self._lo, 1e-12)
@@ -194,9 +230,10 @@ class LeafGridState:
     # Binning
     # ---------------------------------------------------------------------
 
-    def cell_index(self, x: np.ndarray) -> CellIndex:
+    def cell_index(self, x: np.ndarray, *, B_index: Optional[int] = None) -> CellIndex:
         x = np.asarray(x, dtype=float)
         idx: List[int] = []
+        B_i = int(self.B_index) if B_index is None else int(B_index)
         dims: Iterable[int]
         if self.index_dims is None:
             dims = range(self.dim)
@@ -210,13 +247,72 @@ class LeafGridState:
                 continue
             t = float((x[int(j)] - lo) / denom)
             t = float(np.clip(t, 0.0, 1.0))
-            ij = int(np.floor(t * self.B))
-            if ij >= self.B:
-                ij = self.B - 1
+            ij = int(np.floor(t * B_i))
+            if ij >= B_i:
+                ij = B_i - 1
             elif ij < 0:
                 ij = 0
             idx.append(ij)
         return tuple(idx)
+
+    def _soft_keys_and_weights(self, x: np.ndarray, *, B_index: int) -> List[Tuple[CellIndex, float]]:
+        x = np.asarray(x, dtype=float)
+        B_i = int(max(int(B_index), 1))
+        if B_i <= 1:
+            return [(self.cell_index(x, B_index=B_i), 1.0)]
+
+        dims: List[int]
+        if self.index_dims is None:
+            dims = list(range(self.dim))
+        else:
+            dims = [int(j) for j in self.index_dims.tolist()]
+
+        per_dim: List[List[Tuple[int, float]]] = []
+        for j in dims:
+            lo, hi = self.bounds[j]
+            denom = hi - lo
+            if abs(denom) < 1e-12:
+                per_dim.append([(0, 1.0)])
+                continue
+            t = float((x[j] - lo) / denom)
+            t = float(np.clip(t, 0.0, 1.0))
+            u = t * float(B_i)
+            i0 = int(np.floor(u))
+            if i0 < 0:
+                i0 = 0
+                frac = 0.0
+            elif i0 >= B_i - 1:
+                i0 = B_i - 1
+                frac = 0.0
+            else:
+                frac = float(u - float(i0))
+                frac = float(np.clip(frac, 0.0, 1.0))
+
+            i1 = min(i0 + 1, B_i - 1)
+            if i1 == i0 or frac <= 1e-12 or frac >= 1.0 - 1e-12:
+                per_dim.append([(i0, 1.0)])
+            else:
+                per_dim.append([(i0, 1.0 - frac), (i1, frac)])
+
+        out: Dict[CellIndex, float] = {}
+        keys: List[Tuple[int, ...]] = [tuple()]
+        weights: List[float] = [1.0]
+        for opts in per_dim:
+            new_keys: List[Tuple[int, ...]] = []
+            new_w: List[float] = []
+            for base_key, base_w in zip(keys, weights):
+                for bin_idx, w in opts:
+                    new_keys.append(base_key + (int(bin_idx),))
+                    new_w.append(float(base_w) * float(w))
+            keys, weights = new_keys, new_w
+
+        w_sum = float(np.sum(np.asarray(weights, dtype=float))) if weights else 0.0
+        if w_sum <= 0.0:
+            return [(self.cell_index(x, B_index=B_i), 1.0)]
+
+        for k, w in zip(keys, weights):
+            out[k] = out.get(k, 0.0) + float(w) / w_sum
+        return [(k, float(w)) for k, w in out.items()]
 
     def visits_for_points(self, X: np.ndarray) -> np.ndarray:
         X = np.asarray(X, dtype=float)
@@ -240,15 +336,49 @@ class LeafGridState:
         gamma: float,
         *,
         y_pred: Optional[float] = None,
+        resid: Optional[float] = None,
     ) -> None:
-        key = self.cell_index(x)
-        st = self.stats.get(key)
-        if st is None:
-            st = CellStats()
-            self.stats[key] = st
-        resid = None if y_pred is None else float(y_internal - float(y_pred))
-        st.add(y_internal, bool(y_internal >= gamma), resid=resid)
+        if resid is None:
+            resid = None if y_pred is None else float(y_internal - float(y_pred))
+        else:
+            resid = float(resid)
+        is_good = bool(y_internal >= gamma)
+
+        if self.soft_assignment:
+            for key, w in self._soft_keys_and_weights(x, B_index=int(self.B_index or self.B)):
+                st = self.stats.get(key)
+                if st is None:
+                    st = CellStats()
+                    self.stats[key] = st
+                st.add(y_internal, is_good, resid=resid, weight=w)
+        else:
+            key = self.cell_index(x)
+            st = self.stats.get(key)
+            if st is None:
+                st = CellStats()
+                self.stats[key] = st
+            st.add(y_internal, is_good, resid=resid)
+
+        if self.multi_resolution:
+            B_c = int(self.B_index_coarse or self.B_index or self.B)
+            if self.soft_assignment:
+                for key, w in self._soft_keys_and_weights(x, B_index=B_c):
+                    st = self.stats_coarse.get(key)
+                    if st is None:
+                        st = CellStats()
+                        self.stats_coarse[key] = st
+                    st.add(y_internal, is_good, resid=resid, weight=w)
+            else:
+                key = self.cell_index(x, B_index=B_c)
+                st = self.stats_coarse.get(key)
+                if st is None:
+                    st = CellStats()
+                    self.stats_coarse[key] = st
+                st.add(y_internal, is_good, resid=resid)
+
         self.total_visits += 1.0
+        if self.multi_resolution:
+            self.total_visits_coarse += 1.0
 
     def rebuild_from_tested_pairs(
         self,
@@ -256,7 +386,9 @@ class LeafGridState:
         gamma: float,
     ) -> None:
         self.stats = {}
+        self.stats_coarse = {}
         self.total_visits = 0.0
+        self.total_visits_coarse = 0.0
         for x, y_internal in tested_pairs:
             self.update(x, float(y_internal), gamma)
 
@@ -271,6 +403,8 @@ class LeafGridState:
         *,
         mode: str = "grid_random",
         jitter: bool = True,
+        lo: Optional[np.ndarray] = None,
+        hi: Optional[np.ndarray] = None,
     ) -> np.ndarray:
         """
         Sample candidate points inside the leaf bounds.
@@ -288,10 +422,24 @@ class LeafGridState:
         if mode not in {"grid_random", "grid_halton", "halton"}:
             raise ValueError(f"Unknown sampling mode: {mode}")
 
+        lo_s = self._lo
+        hi_s = self._hi
+        if lo is not None:
+            lo_in = np.asarray(lo, dtype=float).reshape(-1)
+            if lo_in.shape[0] != self.dim:
+                raise ValueError(f"lo must have shape ({self.dim},), got {tuple(lo_in.shape)}")
+            lo_s = np.maximum(lo_s, lo_in)
+        if hi is not None:
+            hi_in = np.asarray(hi, dtype=float).reshape(-1)
+            if hi_in.shape[0] != self.dim:
+                raise ValueError(f"hi must have shape ({self.dim},), got {tuple(hi_in.shape)}")
+            hi_s = np.minimum(hi_s, hi_in)
+        widths_s = np.maximum(hi_s - lo_s, 1e-12)
+
         if mode == "halton":
             u = halton_sequence(self.dim, n, start_index=self.seq_index)
             self.seq_index += n
-            return self._lo + u * self._widths
+            return lo_s + u * widths_s
 
         if mode == "grid_random":
             idx = rng.integers(0, self.B, size=(n, self.dim), dtype=np.int64)
@@ -307,8 +455,8 @@ class LeafGridState:
             frac = np.full((n, self.dim), 0.5, dtype=float)
 
         u_cell = (idx.astype(float) + frac) / float(self.B)
-        X = self._lo + u_cell * self._widths
-        X = np.minimum(np.maximum(X, self._lo), self._hi)
+        X = lo_s + u_cell * widths_s
+        X = np.minimum(np.maximum(X, lo_s), hi_s)
         return X
 
     def sample_candidates_heatmap_ucb(
@@ -320,6 +468,8 @@ class LeafGridState:
         explore_prob: float = 0.25,
         temperature: float = 1.0,
         jitter: bool = True,
+        lo: Optional[np.ndarray] = None,
+        hi: Optional[np.ndarray] = None,
     ) -> np.ndarray:
         """Sample candidates using a heatmap-driven cell bandit (UCB on visited cells).
 
@@ -348,6 +498,21 @@ class LeafGridState:
             if self.index_dims is None
             else np.asarray(self.index_dims, dtype=np.int64)
         )
+        B_index = int(self.B_index) if self.B_index is not None else int(self.B)
+
+        lo_s = self._lo
+        hi_s = self._hi
+        if lo is not None:
+            lo_in = np.asarray(lo, dtype=float).reshape(-1)
+            if lo_in.shape[0] != self.dim:
+                raise ValueError(f"lo must have shape ({self.dim},), got {tuple(lo_in.shape)}")
+            lo_s = np.maximum(lo_s, lo_in)
+        if hi is not None:
+            hi_in = np.asarray(hi, dtype=float).reshape(-1)
+            if hi_in.shape[0] != self.dim:
+                raise ValueError(f"hi must have shape ({self.dim},), got {tuple(hi_in.shape)}")
+            hi_s = np.minimum(hi_s, hi_in)
+        widths_s = np.maximum(hi_s - lo_s, 1e-12)
 
         visited = list(self.stats.items())
         keys: List[CellIndex] = []
@@ -379,26 +544,43 @@ class LeafGridState:
         else:
             probs = np.zeros(0, dtype=float)
 
-        # Always sample full-dimensional indices; constrain only index_dims when exploiting a visited cell.
-        idx = rng.integers(0, self.B, size=(n, self.dim), dtype=np.int64)
+        X = np.empty((n, self.dim), dtype=float)
         for i in range(n):
-            if not keys or float(rng.random()) < explore_prob:
+            explore = (not keys) or float(rng.random()) < explore_prob
+            if explore:
+                X[i] = self.sample_candidates(
+                    rng,
+                    1,
+                    mode="grid_random",
+                    jitter=jitter,
+                    lo=lo_s,
+                    hi=hi_s,
+                )[0]
                 continue
+
+            key: CellIndex
             if probs.size == 1:
                 key = keys[0]
             else:
                 j = int(rng.choice(len(keys), p=probs))
                 key = keys[j]
 
+            # Sample within trust-region bounds; additionally constrain the indexed dims to the chosen cell
+            # (intersection with trust region). Non-indexed dims remain uniformly sampled in trust region.
+            x = lo_s + rng.random(self.dim) * widths_s
             if index_dims.size:
-                idx[i, index_dims] = np.asarray(key, dtype=np.int64)
+                for pos, dim_j in enumerate(index_dims.tolist()):
+                    bin_idx = int(key[pos])
+                    cell_lo = self._lo[dim_j] + (float(bin_idx) / float(B_index)) * self._widths[dim_j]
+                    cell_hi = self._lo[dim_j] + (float(bin_idx + 1) / float(B_index)) * self._widths[dim_j]
+                    lo_j = max(float(lo_s[dim_j]), float(cell_lo))
+                    hi_j = min(float(hi_s[dim_j]), float(cell_hi))
+                    if hi_j <= lo_j + 1e-15:
+                        continue
+                    if jitter:
+                        x[dim_j] = float(lo_j + rng.random() * (hi_j - lo_j))
+                    else:
+                        x[dim_j] = float(0.5 * (lo_j + hi_j))
+            X[i] = np.minimum(np.maximum(x, lo_s), hi_s)
 
-        if jitter:
-            frac = rng.random((n, self.dim))
-        else:
-            frac = np.full((n, self.dim), 0.5, dtype=float)
-
-        u_cell = (idx.astype(float) + frac) / float(self.B)
-        X = self._lo + u_cell * self._widths
-        X = np.minimum(np.maximum(X, self._lo), self._hi)
         return X
