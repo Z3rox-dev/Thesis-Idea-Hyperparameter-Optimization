@@ -49,3 +49,11 @@ miniconda.sh
 algo_logs/
 HPOBench/
 !benchmark_synthetic.py
+# Allow the gravity framework package
+!thesis/alba_framework_gravity/
+!thesis/alba_framework_gravity/**
+thesis/alba_framework_gravity/__pycache__/
+thesis/alba_framework_gravity/**/*.pyc
+
+# Allow LLR gradient test
+!thesis/test_alba_llr_gradient.py
