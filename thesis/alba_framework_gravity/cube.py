@@ -61,6 +61,7 @@ class Cube:
     lgs_model: Optional[Dict] = field(default=None, init=False)
     depth: int = 0
     cat_stats: Dict[int, Dict[int, Tuple[int, int]]] = field(default_factory=dict)
+    categorical_dims: Tuple[int, ...] = field(default_factory=tuple, repr=False)
 
     # -------------------------------------------------------------------------
     # Geometry helpers
@@ -167,13 +168,23 @@ class Cube:
             Index of the dimension to split along.
         """
         widths = self.widths()
+        cat_dims = set(int(i) for i in self.categorical_dims)
+        cont_dims = [i for i in range(len(widths)) if i not in cat_dims]
 
         # Primary: gradient direction (if available and reliable)
         if self.lgs_model is not None and self.lgs_model["gradient_dir"] is not None:
             grad_dir = np.abs(self.lgs_model["gradient_dir"])
             # Only trust gradient if it's reasonably strong in one direction
             if grad_dir.max() > 0.3:
-                return int(np.argmax(grad_dir))
+                if cont_dims:
+                    grad_dir = grad_dir.copy()
+                    for i in cat_dims:
+                        if 0 <= i < grad_dir.shape[0]:
+                            grad_dir[i] = 0.0
+                    if grad_dir.max() > 1e-12:
+                        return int(np.argmax(grad_dir))
+                else:
+                    return int(np.argmax(grad_dir))
 
         # Secondary: variance of good points (split where good configs spread most)
         good_pts = np.array(
@@ -185,10 +196,25 @@ class Cube:
             # Prefer dimensions with high variance AND reasonable width
             score = var_per_dim * (widths / (widths.max() + 1e-9))
             if score.max() > 0.01:
-                return int(np.argmax(score))
+                if cont_dims:
+                    score = score.copy()
+                    for i in cat_dims:
+                        if 0 <= i < score.shape[0]:
+                            score[i] = 0.0
+                    if score.max() > 1e-12:
+                        return int(np.argmax(score))
+                else:
+                    return int(np.argmax(score))
 
         # Fallback: widest dimension
-        return int(np.argmax(widths))
+        if cont_dims:
+            widths = widths.copy()
+            for i in cat_dims:
+                if 0 <= i < widths.shape[0]:
+                    widths[i] = 0.0
+            if widths.max() > 1e-12:
+                return int(np.argmax(widths))
+        return int(np.argmax(self.widths()))
 
     def split(
         self,
@@ -253,6 +279,8 @@ class Cube:
         child_hi = Cube(bounds=bounds_hi, parent=self)
         child_lo.depth = self.depth + 1
         child_hi.depth = self.depth + 1
+        child_lo.categorical_dims = tuple(self.categorical_dims)
+        child_hi.categorical_dims = tuple(self.categorical_dims)
 
         for pt, sc in self._tested_pairs:
             child = child_lo if pt[axis] < cut else child_hi

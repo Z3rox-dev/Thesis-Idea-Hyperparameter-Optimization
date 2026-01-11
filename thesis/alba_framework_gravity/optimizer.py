@@ -15,6 +15,7 @@ hyperparameter optimization in mixed continuous-categorical spaces.
 from __future__ import annotations
 
 import warnings
+from dataclasses import dataclass
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 import numpy as np
@@ -37,6 +38,13 @@ from .splitting import (
 )
 
 warnings.filterwarnings("ignore")
+
+
+@dataclass
+class _CatKeyStats:
+    n: int = 0
+    ema_y: float = 0.0
+    best_y: float = float("-inf")
 
 
 class ALBA:
@@ -213,6 +221,21 @@ class ALBA:
             curiosity_bonus=0.3,
             crossover_rate=0.15,
         )
+        try:
+            self.root.categorical_dims = tuple(int(i) for i, _ in self._cat_sampler.categorical_dims)
+        except Exception:
+            pass
+
+        # -----------------------------------------------------------------
+        # Categorical "GravJump" state.
+        #
+        # Idea: treat each categorical combination (cat_key) as a discrete
+        # planet with learned quality; we optimize continuous variables inside
+        # a chosen key, and only "jump" keys when enough evidence accumulates.
+        # -----------------------------------------------------------------
+        self._cat_active_key: Optional[Tuple[int, ...]] = None
+        self._cat_jump_momentum: float = 0.0
+        self._cat_key_stats: Dict[Tuple[int, ...], _CatKeyStats] = {}
 
         # Strategy components (defaults reproduce the current baseline behavior)
         self._gamma_scheduler: GammaScheduler = (
@@ -358,6 +381,10 @@ class ALBA:
         if self.rng.random() < local_search_prob:
             x = self._local_search_sample(progress)
             self._last_cube = self._find_containing_leaf(x)
+            # Apply categorical sampling using Thompson Sampling + Elite Crossover
+            if self._last_cube is not None and self._cat_sampler.has_categoricals:
+                x = self._cat_sampler.sample(x, self._last_cube, self.rng, self.is_stagnating)
+                x = self._clip_to_cube(x, self._last_cube)
         else:
             self._update_gamma()
             self._recount_good()
@@ -405,6 +432,7 @@ class ALBA:
 
         # Update categorical tracking
         self._cat_sampler.record_observation(x, y)
+        self._update_cat_key_stats(x, y)
 
         # Update free geometry estimator if enabled
         if self._free_geometry is not None:
@@ -532,6 +560,164 @@ class ALBA:
         return self._leaf_selector.select(self.leaves, self.dim, self.is_stagnating, self.rng)
 
     # -------------------------------------------------------------------------
+    # Categorical "GravJump" (discrete gravity) helpers
+    # -------------------------------------------------------------------------
+
+    def _cat_global_baseline(self) -> Tuple[float, float]:
+        """Return (mean, std) of internal scores for scale-safe key comparisons."""
+        if len(self.y_all) >= 2:
+            y = np.asarray(self.y_all, dtype=float)
+            mu = float(np.mean(y))
+            std = float(np.std(y))
+            span = float(np.max(y) - np.min(y))
+            # Robust floor to avoid tiny scales early (prevents runaway z-scores).
+            sigma = float(max(std, 0.25 * span, 1e-3))
+            return mu, sigma
+        if len(self.y_all) == 1:
+            return float(self.y_all[0]), 1.0
+        return 0.0, 1.0
+
+    def _cat_allowed_values_in_cube(self, cube: Cube) -> List[List[int]]:
+        """Allowed categorical indices per categorical dim (respecting cube bounds when possible)."""
+        allowed: List[List[int]] = []
+        for dim_idx, n_ch in self._cat_sampler.categorical_dims:
+            dim_idx_i = int(dim_idx)
+            n_ch_i = int(n_ch)
+            lo, hi = cube.bounds[dim_idx_i]
+            vals: List[int] = []
+            for i in range(n_ch_i):
+                v = float(self._cat_sampler.to_continuous(i, n_ch_i))
+                if (float(lo) - 1e-12) <= v <= (float(hi) + 1e-12):
+                    vals.append(int(i))
+            if not vals:
+                vals = list(range(n_ch_i))
+            allowed.append(vals)
+        return allowed
+
+    def _cat_sanitize_key_for_cube(self, cat_key: Tuple[int, ...], cube: Cube) -> Tuple[int, ...]:
+        """Snap cat_key components to values allowed in this cube (closest in encoded value)."""
+        allowed = self._cat_allowed_values_in_cube(cube)
+        if not allowed:
+            return tuple()
+
+        dims = self._cat_sampler.categorical_dims
+        out: List[int] = []
+        for i, vals in enumerate(allowed):
+            dim_idx, n_ch = dims[i]
+            n_ch_i = int(n_ch)
+            cur = int(cat_key[i]) if i < len(cat_key) else int(vals[0])
+            if cur in vals:
+                out.append(cur)
+                continue
+            cur_v = float(self._cat_sampler.to_continuous(cur, n_ch_i))
+            best = min(vals, key=lambda j: abs(float(self._cat_sampler.to_continuous(int(j), n_ch_i)) - cur_v))
+            out.append(int(best))
+        return tuple(out)
+
+    def _cat_force_neighbor(
+        self,
+        current_key: Tuple[int, ...],
+        neighbor_key: Tuple[int, ...],
+        *,
+        y_mean: float,
+        y_std: float,
+    ) -> float:
+        """
+        Compute a dimensionless "force" to move from current_key -> neighbor_key.
+
+        - Uses z-scored EMA improvement for scale invariance.
+        - Adds a small curiosity term that decays with visits to promote early exploration.
+        """
+        cur_stats = self._cat_key_stats.get(current_key)
+        nbr_stats = self._cat_key_stats.get(neighbor_key)
+
+        # For key-level decisions we care more about "does this key have potential?"
+        # than the average. Use best_y (optimistic) to avoid punishing a key
+        # because a few random continuous samples were bad.
+        cur_val = float(y_mean) if cur_stats is None or cur_stats.n <= 0 else float(cur_stats.best_y)
+        nbr_val = float(y_mean) if nbr_stats is None or nbr_stats.n <= 0 else float(nbr_stats.best_y)
+        nbr_n = 0 if nbr_stats is None else int(nbr_stats.n)
+
+        delta_z = float((nbr_val - cur_val) / max(float(y_std), 1e-12))
+        conf = float(nbr_n) / float(nbr_n + 5.0)  # confidence ramp (no external knob)
+        curiosity = float(self._cat_sampler.curiosity_bonus) / float(np.sqrt(1.0 + float(nbr_n)))
+        return conf * delta_z + curiosity
+
+    def _choose_cat_key_gravjump(self, cube: Cube) -> Optional[Tuple[int, ...]]:
+        """Select (and possibly update) the active categorical key for this ask()."""
+        if not self._cat_sampler.has_categoricals:
+            return None
+
+        allowed = self._cat_allowed_values_in_cube(cube)
+        if not allowed:
+            return None
+
+        if self._cat_active_key is None or len(self._cat_active_key) != len(allowed):
+            self._cat_active_key = tuple(int(self.rng.choice(vals)) for vals in allowed)
+            self._cat_jump_momentum = 0.0
+            return self._cat_active_key
+
+        current_key = self._cat_sanitize_key_for_cube(self._cat_active_key, cube)
+        if current_key != self._cat_active_key:
+            self._cat_active_key = current_key
+            self._cat_jump_momentum = 0.0
+
+        y_mean, y_std = self._cat_global_baseline()
+
+        # Enumerate Hamming-1 neighbors within this cube.
+        best_key = current_key
+        best_force = float("-inf")
+        current_list = list(current_key)
+        for i, vals in enumerate(allowed):
+            cur_val = int(current_list[i])
+            for v in vals:
+                vv = int(v)
+                if vv == cur_val:
+                    continue
+                cand = list(current_list)
+                cand[i] = vv
+                k2 = tuple(cand)
+                f = self._cat_force_neighbor(current_key, k2, y_mean=y_mean, y_std=y_std)
+                if f > best_force:
+                    best_force = f
+                    best_key = k2
+
+        # Stick-slip via momentum + friction: requires sustained positive force to switch keys.
+        rho = 0.90
+        stagn = float(np.clip(float(self.stagnation) / float(max(1, self._stagnation_threshold)), 0.0, 1.0))
+        friction = 0.15 - 0.10 * stagn  # 0.15 when improving, down to 0.05 when stagnating
+        progress = float(np.clip(float(self.iteration) / float(max(1, self.total_budget - 1)), 0.0, 1.0))
+        threshold = 0.2 + 0.8 * progress  # explore keys early, stick more later
+
+        self._cat_jump_momentum = max(
+            0.0,
+            float(rho) * float(self._cat_jump_momentum) + float(best_force) - float(friction),
+        )
+        if best_key != current_key and self._cat_jump_momentum >= threshold:
+            self._cat_active_key = best_key
+            self._cat_jump_momentum = 0.0
+
+        return self._cat_active_key
+
+    def _update_cat_key_stats(self, x: np.ndarray, y_internal: float) -> None:
+        if not self._cat_sampler.has_categoricals:
+            return
+        try:
+            key = self._cat_sampler.get_cat_key(np.asarray(x, dtype=float))
+        except Exception:
+            return
+
+        st = self._cat_key_stats.get(key)
+        if st is None:
+            self._cat_key_stats[key] = _CatKeyStats(n=1, ema_y=float(y_internal), best_y=float(y_internal))
+            return
+
+        st.n = int(st.n) + 1
+        alpha = 0.20
+        st.ema_y = float((1.0 - alpha) * float(st.ema_y) + alpha * float(y_internal))
+        st.best_y = float(max(float(st.best_y), float(y_internal)))
+
+    # -------------------------------------------------------------------------
     # Sampling within cubes
     # -------------------------------------------------------------------------
 
@@ -550,16 +736,15 @@ class ALBA:
             Sampled point.
         """
         if self.iteration < 15:
-            x = np.array([self.rng.uniform(lo, hi) for lo, hi in cube.bounds])
+            x = np.array([self.rng.uniform(lo, hi) for lo, hi in cube.bounds], dtype=float)
         else:
             x = self._sample_with_lgs(cube)
 
-        # Apply categorical sampling
+        # Apply categorical sampling using Thompson Sampling + Elite Crossover (from experimental)
         x = self._cat_sampler.sample(x, cube, self.rng, self.is_stagnating)
 
-        # Re-clip to cube bounds
-        x = self._clip_to_cube(x, cube)
-        return x
+        # Re-clip to cube bounds (categorical sampling may have moved outside)
+        return self._clip_to_cube(x, cube)
 
     def _sample_with_lgs(self, cube: Cube) -> np.ndarray:
         """
@@ -576,7 +761,7 @@ class ALBA:
             Sampled point.
         """
         if cube.lgs_model is None or cube.n_trials < 5:
-            return np.array([self.rng.uniform(lo, hi) for lo, hi in cube.bounds])
+            return np.array([self.rng.uniform(lo, hi) for lo, hi in cube.bounds], dtype=float)
 
         candidates = self._generate_candidates(cube, self.n_candidates)
         mu, sigma = cube.predict_bayesian(candidates)
