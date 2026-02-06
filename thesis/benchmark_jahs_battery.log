@@ -1,0 +1,52 @@
+nohup: ignoring input
+Starting JAHS Benchmark Battery
+Tasks: ['cifar10', 'fashion_mnist', 'colorectal_histology']
+Budget: 2000, Seeds: 10
+Results file: /mnt/workspace/thesis/benchmark_results/jahs_benchmark_20260101_213934.json
+============================================================
+
+>>> Running CIFAR10
+  Seed 42... ALBA=91.93% Optuna=91.45% -> ALBA (60.1s)
+  Seed 43... ALBA=91.83% Optuna=91.43% -> ALBA (57.6s)
+  Seed 44... ALBA=91.92% Optuna=91.68% -> ALBA (58.4s)
+  Seed 45... ALBA=91.87% Optuna=91.41% -> ALBA (57.9s)
+  Seed 46... ALBA=91.95% Optuna=91.52% -> ALBA (54.2s)
+  Seed 47... ALBA=91.98% Optuna=91.54% -> ALBA (53.6s)
+  Seed 48... ALBA=91.74% Optuna=91.53% -> ALBA (54.4s)
+  Seed 49... ALBA=91.86% Optuna=91.40% -> ALBA (53.5s)
+  Seed 50... ALBA=91.85% Optuna=91.36% -> ALBA (54.7s)
+  Seed 51... ALBA=91.92% Optuna=91.53% -> ALBA (55.3s)
+
+>>> Running FASHION_MNIST
+  Seed 42... ALBA=95.47% Optuna=95.35% -> ALBA (55.3s)
+  Seed 43... ALBA=95.39% Optuna=95.28% -> ALBA (54.6s)
+  Seed 44... ALBA=95.40% Optuna=95.42% -> Optuna (54.2s)
+  Seed 45... ALBA=95.35% Optuna=95.34% -> ALBA (55.2s)
+  Seed 46... ALBA=95.36% Optuna=95.40% -> Optuna (54.5s)
+  Seed 47... ALBA=95.35% Optuna=95.29% -> ALBA (54.2s)
+  Seed 48... ALBA=95.32% Optuna=95.47% -> Optuna (54.2s)
+  Seed 49... ALBA=95.48% Optuna=95.35% -> ALBA (54.1s)
+  Seed 50... ALBA=95.48% Optuna=95.33% -> ALBA (54.3s)
+  Seed 51... ALBA=95.49% Optuna=95.45% -> ALBA (54.5s)
+
+>>> Running COLORECTAL_HISTOLOGY
+  Seed 42... ALBA=96.20% Optuna=96.14% -> ALBA (54.9s)
+  Seed 43... ALBA=96.37% Optuna=96.12% -> ALBA (54.8s)
+  Seed 44... ALBA=96.24% Optuna=96.07% -> ALBA (54.3s)
+  Seed 45... ALBA=96.22% Optuna=96.27% -> Optuna (54.5s)
+  Seed 46... ALBA=96.13% Optuna=96.18% -> Optuna (54.9s)
+  Seed 47... ALBA=96.16% Optuna=96.03% -> ALBA (54.5s)
+  Seed 48... ALBA=96.15% Optuna=96.03% -> ALBA (54.9s)
+  Seed 49... ALBA=96.08% Optuna=96.05% -> ALBA (53.8s)
+  Seed 50... ALBA=96.24% Optuna=96.09% -> ALBA (54.2s)
+  Seed 51... ALBA=96.14% Optuna=96.12% -> ALBA (54.6s)
+
+============================================================
+FINAL SUMMARY JAHS
+============================================================
+Traceback (most recent call last):
+  File "/mnt/workspace/thesis/benchmark_jahs_battery.py", line 185, in <module>
+    main()
+  File "/mnt/workspace/thesis/benchmark_jahs_battery.py", line 166, in main
+    if 'error' not in data:
+TypeError: argument of type 'int' is not iterable

@@ -1,0 +1,82 @@
+Warning: nevergrad not installed.
+Starting Benchmark Suite (Test=False)...
+Function     Dim  Opt        Mean       Std        Time(s)  Best(all) 
+--------------------------------------------------------------------------------
+Fallback to local implementation for Sphere
+
+--- Benchmark: Sphere (20D), Budget 500 ---
+Sphere       20   Random     78.8339    6.0413     0.00     73.1048   
+Sphere       20   ALBA       13.9176    0.0000     9.46     13.9176   
+Sphere       20   ALBA_Cov   11.6237    0.0000     5.32     11.6237   
+Sphere       20   ALBA_Drill 5.9910     0.0000     1.33     5.9910    
+Sphere       20   ALBA_Hybrid_Drill 2.4821     0.0000     0.64     2.4821    
+Sphere       20   Optuna     35.3536    2.1831     12.06    32.3758   
+Sphere       20   ECFS       22.2052    5.4580     0.32     14.5485   
+Fallback to local implementation for Rastrigin
+
+--- Benchmark: Rastrigin (20D), Budget 500 ---
+Rastrigin    20   Random     231.7096   10.8872    0.01     222.2674  
+Rastrigin    20   ALBA       152.0995   0.0000     6.48     152.0995  
+Rastrigin    20   ALBA_Cov   152.0995   0.0000     9.79     152.0995  
+Rastrigin    20   ALBA_Drill 105.7807   0.0000     3.64     105.7807  
+Rastrigin    20   ALBA_Hybrid_Drill 84.5852    0.0000     4.56     84.5852   
+Rastrigin    20   Optuna     158.4968   3.3184     11.67    153.8082  
+Rastrigin    20   ECFS       181.3226   20.5553    0.55     152.2832  
+Fallback to local implementation for Ackley
+
+--- Benchmark: Ackley (20D), Budget 500 ---
+Ackley       20   Random     20.0887    0.1699     0.01     19.8974   
+Ackley       20   ALBA       16.4852    0.0000     5.56     16.4852   
+Ackley       20   ALBA_Cov   13.5938    0.0000     4.77     13.5938   
+Ackley       20   ALBA_Drill 17.0975    0.0000     1.88     17.0975   
+Ackley       20   ALBA_Hybrid_Drill 17.0161    0.0000     1.35     17.0161   
+Ackley       20   Optuna     17.6563    0.3092     11.40    17.2194   
+Ackley       20   ECFS       16.6867    1.2023     0.31     15.1229   
+Fallback to local implementation for Rosenbrock
+
+--- Benchmark: Rosenbrock (20D), Budget 500 ---
+Rosenbrock   20   Random     477892.1625 99169.0861 0.01     372907.1001
+Rosenbrock   20   ALBA       6383.9198  0.0000     5.45     6383.9198 
+Rosenbrock   20   ALBA_Cov   13596.4477 0.0000     5.54     13596.4477
+Rosenbrock   20   ALBA_Drill 35568.3897 0.0000     2.14     35568.3897
+Rosenbrock   20   ALBA_Hybrid_Drill 14069.9219 0.0000     1.90     14069.9219
+Rosenbrock   20   Optuna     38463.5332 18022.2565 11.52    23657.9171
+Rosenbrock   20   ECFS       58722.3711 22844.7013 0.31     30372.7731
+Fallback to local implementation for Ellipsoid
+Unknown function Ellipsoid, defaulting to Sphere.
+
+--- Benchmark: Ellipsoid (20D), Budget 500 ---
+Ellipsoid    20   Random     73.2506    10.1188    0.00     60.5440   
+Ellipsoid    20   ALBA       13.9176    0.0000     5.78     13.9176   
+Ellipsoid    20   ALBA_Cov   11.6237    0.0000     5.80     11.6237   
+Ellipsoid    20   ALBA_Drill 5.9910     0.0000     2.38     5.9910    
+Ellipsoid    20   ALBA_Hybrid_Drill 2.4821     0.0000     0.97     2.4821    
+Ellipsoid    20   Optuna     35.4767    2.9534     11.56    31.6544   
+Ellipsoid    20   ECFS       26.8883    5.7531     0.32     19.0170   
+Fallback to local implementation for Cigar
+Unknown function Cigar, defaulting to Sphere.
+
+--- Benchmark: Cigar (20D), Budget 500 ---
+Cigar        20   Random     67.8214    9.4873     0.01     54.6581   
+Cigar        20   ALBA       13.9176    0.0000     4.23     13.9176   
+Cigar        20   ALBA_Cov   11.6237    0.0000     9.74     11.6237   
+Cigar        20   ALBA_Drill 5.9910     0.0000     1.00     5.9910    
+Cigar        20   ALBA_Hybrid_Drill 2.4821     0.0000     0.57     2.4821    
+Cigar        20   Optuna     26.6477    2.7470     11.76    24.2407   
+Cigar        20   ECFS       22.8387    1.6619     0.32     21.1975   
+Fallback to local implementation for Discus
+Unknown function Discus, defaulting to Sphere.
+
+--- Benchmark: Discus (20D), Budget 500 ---
+Discus       20   Random     71.0589    5.6940     0.01     63.3150   
+Discus       20   ALBA       13.9176    0.0000     6.82     13.9176   
+Discus       20   ALBA_Cov   11.6237    0.0000     7.90     11.6237   
+Discus       20   ALBA_Drill 5.9910     0.0000     1.79     5.9910    
+Discus       20   ALBA_Hybrid_Drill 2.4821     0.0000     0.62     2.4821    
+Discus       20   Optuna     27.4617    1.3893     11.64    25.7632   
+Discus       20   ECFS       22.3076    3.5116     0.25     17.7674   
+Fallback to local implementation for BentCigar
+Unknown function BentCigar, defaulting to Sphere.
+
+--- Benchmark: BentCigar (20D), Budget 500 ---
+BentCigar    20   Random     81.8555    3.5817     0.01     76.7951   

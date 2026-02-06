@@ -12,7 +12,7 @@ search spaces common in hyperparameter optimization.
 
 from __future__ import annotations
 
-from typing import Dict, List, Optional, Tuple, TYPE_CHECKING
+from typing import Any, Dict, List, Optional, Tuple, TYPE_CHECKING
 
 import numpy as np
 
@@ -68,6 +68,11 @@ class CategoricalSampler:
 
         # Track visit counts for curiosity
         self._visit_counts: Dict[Tuple[int, ...], int] = {}
+
+        # Per-key score history (internal score y; higher is better).
+        # Used for key-level Thompson Sampling on "good-rate" vs current gamma.
+        self._key_scores: Dict[Tuple[int, ...], List[float]] = {}
+        self._all_scores: List[float] = []
 
         # Elite pool: [(cat_key, score), ...] sorted by score descending
         self._elite_configs: List[Tuple[Tuple[int, ...], float]] = []
@@ -188,14 +193,119 @@ class CategoricalSampler:
         # Update visit counts
         self._visit_counts[cat_key] = self._visit_counts.get(cat_key, 0) + 1
 
-        # Update elite pool
-        self._elite_configs.append((cat_key, score))
-        self._elite_configs.sort(key=lambda p: p[1], reverse=True)
-        self._elite_configs = self._elite_configs[: self.elite_size]
+        # Track score history for key-level TS.
+        try:
+            self._all_scores.append(float(score))
+            self._key_scores.setdefault(cat_key, []).append(float(score))
+        except Exception:
+            pass
+
+        # Update elite pool (unique keys; keep best score per key).
+        # Duplicates here can cause downstream key enumeration to waste slots and
+        # fall back to sampling many unseen keys, increasing key thrashing.
+        best_by_key: Dict[Tuple[int, ...], float] = {}
+        for k, s in self._elite_configs:
+            prev = best_by_key.get(k)
+            if prev is None or float(s) > float(prev):
+                best_by_key[k] = float(s)
+        prev = best_by_key.get(cat_key)
+        if prev is None or float(score) > float(prev):
+            best_by_key[cat_key] = float(score)
+        self._elite_configs = sorted(best_by_key.items(), key=lambda p: p[1], reverse=True)[: self.elite_size]
 
     def get_visit_count(self, cat_key: Tuple[int, ...]) -> int:
         """Get the number of times a categorical combination was visited."""
         return self._visit_counts.get(cat_key, 0)
+
+    def choose_key_ts_goodrate(
+        self,
+        candidate_keys: List[Tuple[int, ...]],
+        *,
+        gamma: float,
+        rng: np.random.Generator,
+    ) -> Tuple[Tuple[int, ...], Dict[str, Any]]:
+        """
+        Choose a categorical key via Thompson Sampling on good-rate.
+
+        We treat each evaluated point as a Bernoulli outcome:
+            success = 1{score >= gamma}
+
+        For each key k, we maintain a history of observed internal scores and
+        compute n_good/n_total relative to the *current* gamma (so gamma updates
+        do not require rebuilding persistent counters).
+
+        Returns
+        -------
+        (key, info)
+            key: chosen categorical key.
+            info: diagnostics for tracing.
+        """
+        if not candidate_keys:
+            return tuple(), {"method": "ts_goodrate", "chosen": None, "candidates": []}
+
+        # Empirical Bayes prior: anchor unvisited keys to the observed global
+        # good-rate under the *current* gamma to avoid pathological optimism
+        # (e.g., Beta(1,1) mean=0.5 when true success rates are ~0.1).
+        g = float(gamma)
+        scores_all = np.asarray(self._all_scores, dtype=float)
+        scores_all = scores_all[np.isfinite(scores_all)]
+        n_all = int(scores_all.size)
+        p0 = float(np.mean(scores_all >= g)) if n_all > 0 else 0.2
+        p0 = float(np.clip(p0, 1e-3, 1.0 - 1e-3))
+
+        strength = float(np.sqrt(float(n_all))) if n_all > 0 else 4.0
+        strength = float(np.clip(strength, 4.0, 20.0))
+        alpha0 = 1.0 + p0 * strength
+        beta0 = 1.0 + (1.0 - p0) * strength
+
+        cand_info: List[Dict[str, Any]] = []
+        best_key = candidate_keys[0]
+        best_sample = -1.0
+
+        for k in candidate_keys:
+            scores = self._key_scores.get(k, [])
+            n_total = int(len(scores))
+            if n_total > 0:
+                try:
+                    n_good = int(np.sum(np.asarray(scores, dtype=float) >= g))
+                except Exception:
+                    n_good = int(sum(1 for s in scores if float(s) >= g))
+            else:
+                n_good = 0
+
+            a = float(alpha0 + float(n_good))
+            b = float(beta0 + float(max(n_total - n_good, 0)))
+            p = float(rng.beta(a, b))
+
+            cand_info.append(
+                {
+                    "key": list(k),
+                    "n_total": int(n_total),
+                    "n_good": int(n_good),
+                    "alpha": float(a),
+                    "beta": float(b),
+                    "p_sample": float(p),
+                }
+            )
+            if p > best_sample or best_key is None:
+                best_sample = p
+                best_key = k
+
+        info: Dict[str, Any] = {
+            "method": "ts_goodrate",
+            "prior": {
+                "alpha0": float(alpha0),
+                "beta0": float(beta0),
+                "p0": float(p0),
+                "strength": float(strength),
+                "n_all": int(n_all),
+            },
+            "gamma": float(gamma),
+            "chosen": list(best_key),
+            "p_chosen": float(best_sample),
+            "candidates": cand_info,
+        }
+        return best_key, info
 
     def elite_keys(self) -> List[Tuple[int, ...]]:
         """Return current elite categorical keys (best first)."""

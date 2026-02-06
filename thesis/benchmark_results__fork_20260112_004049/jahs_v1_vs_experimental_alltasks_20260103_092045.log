@@ -1,0 +1,8 @@
+Benchmark tasks: ['cifar10', 'fashion_mnist', 'colorectal_histology'] | budget=2000 | seeds=[20, 21, 22, 23, 24, 25, 26, 27, 28, 29]
+Checkpoints: [100, 250, 500, 1000, 1500, 2000]
+Saving to: /mnt/workspace/thesis/benchmark_results/jahs_v1_vs_experimental_alltasks_20260103_092045.json
+Logging to: /mnt/workspace/thesis/benchmark_results/jahs_v1_vs_experimental_alltasks_20260103_092045.log
+
+=== TASK cifar10 ===
+
+Task cifar10 | Seed 20...

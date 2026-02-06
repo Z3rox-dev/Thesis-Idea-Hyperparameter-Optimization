@@ -1,0 +1,69 @@
+{
+  "config": {
+    "datasets": [
+      "letter",
+      "mnist"
+    ],
+    "budget": 200,
+    "checkpoints": [
+      200
+    ],
+    "seeds": [
+      80,
+      81
+    ],
+    "step": 50,
+    "framework": {
+      "grid_bins": 8,
+      "grid_batch_size": 512,
+      "grid_batches": 4,
+      "grid_sampling": "grid_random",
+      "grid_jitter": true,
+      "grid_penalty_lambda": 0.06,
+      "heatmap_blend_tau": 3.0,
+      "heatmap_soft_assignment": true,
+      "heatmap_multi_resolution": true
+    },
+    "timestamp": "20260108_144151"
+  },
+  "datasets": {
+    "letter": {
+      "framework": {
+        "80": {
+          "200": 0.0427408397170765
+        },
+        "81": {
+          "200": 0.035052014637295334
+        }
+      },
+      "experimental": {
+        "80": {
+          "200": 0.036047044152428466
+        },
+        "81": {
+          "200": 0.03439620357732977
+        }
+      },
+      "errors": {}
+    },
+    "mnist": {
+      "framework": {
+        "80": {
+          "200": 0.015520000891685471
+        },
+        "81": {
+          "200": 0.015160001754164699
+        }
+      },
+      "experimental": {
+        "80": {
+          "200": 0.014740001019835459
+        },
+        "81": {
+          "200": 0.01528999727964403
+        }
+      },
+      "errors": {}
+    }
+  }
+}

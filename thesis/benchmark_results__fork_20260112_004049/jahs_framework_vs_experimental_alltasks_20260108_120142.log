@@ -1,0 +1,21 @@
+Benchmark tasks: ['cifar10', 'colorectal_histology'] | budget=400 | seeds=[70]
+Checkpoints: [100, 200, 400]
+Framework config: grid_bins=8 grid_batch_size=512 grid_batches=4 grid_sampling=grid_random grid_jitter=True grid_penalty_lambda=0.06 heatmap_ucb_beta=1.0 heatmap_ucb_explore_prob=0.25 heatmap_ucb_temperature=1.0
+Saving to: /mnt/workspace/thesis/benchmark_results/jahs_framework_vs_experimental_alltasks_20260108_120142.json
+Logging to: /mnt/workspace/thesis/benchmark_results/jahs_framework_vs_experimental_alltasks_20260108_120142.log
+
+=== TASK cifar10 ===
+
+Task cifar10 | Seed 70...
+  FW=91.07%  EXP=91.45%  -> EXP (22.0s)
+
+=== TASK colorectal_histology ===
+
+Task colorectal_histology | Seed 70...
+  FW=96.10%  EXP=96.11%  -> EXP (25.1s)
+
+=== SUMMARY (final checkpoint) ===
+cifar10: FW mean=91.07% std=0.00 | EXP mean=91.45% std=0.00 | wins FW=0 ties=0
+colorectal_histology: FW mean=96.10% std=0.00 | EXP mean=96.11% std=0.00 | wins FW=0 ties=0
+
+Saved: /mnt/workspace/thesis/benchmark_results/jahs_framework_vs_experimental_alltasks_20260108_120142.json

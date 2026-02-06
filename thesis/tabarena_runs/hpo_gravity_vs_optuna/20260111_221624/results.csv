@@ -1,0 +1,5 @@
+method,trial,metric_error,best_so_far,wall_time_s,params
+gravity,0,0.23596437730187997,0.23596437730187997,10.74989366531372,"{""extra_trees"": false, ""feature_fraction"": 0.8692891674401906, ""lambda_l2"": 0.002882185851410413, ""learning_rate"": 0.0012424568294055701, ""min_data_in_leaf"": 92, ""num_leaves"": 8}"
+gravity,1,0.21026548381086493,0.21026548381086493,8.397175312042236,"{""extra_trees"": true, ""feature_fraction"": 0.9025346508956871, ""lambda_l2"": 0.6617852707758096, ""learning_rate"": 0.004486143658705246, ""min_data_in_leaf"": 87, ""num_leaves"": 43}"
+optuna,0,0.1434683952305476,0.1434683952305476,2.9390509128570557,"{""extra_trees"": false, ""feature_fraction"": 0.7219343632501507, ""lambda_l2"": 6.499698237449666e-05, ""learning_rate"": 0.018316240381848904, ""min_data_in_leaf"": 57, ""num_leaves"": 184}"
+optuna,1,0.14320116083308126,0.14320116083308126,5.263523578643799,"{""extra_trees"": true, ""feature_fraction"": 0.5684090631780443, ""lambda_l2"": 0.0005755118598534656, ""learning_rate"": 0.11271881751387774, ""min_data_in_leaf"": 81, ""num_leaves"": 247}"

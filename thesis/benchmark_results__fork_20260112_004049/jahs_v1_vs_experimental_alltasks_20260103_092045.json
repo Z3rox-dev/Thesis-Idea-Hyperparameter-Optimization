@@ -1,0 +1,39 @@
+{
+  "config": {
+    "tasks": [
+      "cifar10",
+      "fashion_mnist",
+      "colorectal_histology"
+    ],
+    "budget": 2000,
+    "checkpoints": [
+      100,
+      250,
+      500,
+      1000,
+      1500,
+      2000
+    ],
+    "nepochs": 200,
+    "seeds": [
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29
+    ],
+    "timestamp": "20260103_092045"
+  },
+  "tasks": {
+    "cifar10": {
+      "v1_param_space": {},
+      "experimental": {},
+      "errors": {}
+    }
+  }
+}

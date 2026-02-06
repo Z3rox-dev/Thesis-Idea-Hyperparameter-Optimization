@@ -1,0 +1,15 @@
+{
+  "config": {
+    "n_trials": 100,
+    "n_seeds": 5
+  },
+  "results": {},
+  "summary": {
+    "counts": {
+      "Base": 0,
+      "RelDens": 0,
+      "DensNorm": 0
+    },
+    "overall_winner": "N/A"
+  }
+}

@@ -146,7 +146,7 @@ class ALBA:
         categorical_sampling: bool = True,
         categorical_stage: str = "auto",
         categorical_pre_n: int = 8,
-        heatmap_blend_tau: float = 3.0,
+        heatmap_blend_tau: float = 1e9,
         heatmap_soft_assignment: bool = True,
         heatmap_multi_resolution: bool = True,
         trace_top_k: int = 0,
@@ -214,22 +214,25 @@ class ALBA:
         self._heatmap_resid_clip_sigma = 2.5
 
         # Global sigma calibration (online, branchless):
-        # We track the realized z-scores on evaluated points:
-        #   z = (y - mu_pred_base) / sigma_pred_base
-        # If the model is well-calibrated, E[z^2] ~= 1. Selection bias (winner's curse)
-        # tends to inflate |z| and we compensate by scaling future sigmas by sqrt(EMA[z^2]).
+        # We keep two EMAs:
+        # - `ema_z2` (acquisition): updated on z-scores computed with the *acquisition*
+        #   sigma multiplier. This intentionally under-corrects and is more robust for
+        #   optimization under selection bias (winner's curse).
+        # - `ema_z2_raw` (full): updated on z-scores computed against the *raw* surrogate
+        #   sigma, and used for tell-time residual clipping and diagnostics.
         self._sigma_calib_alpha = 0.05
         # Cap the z^2 contribution to keep the EMA robust while still allowing
         # calibration to react when the surrogate is severely underconfident.
         self._sigma_calib_z2_cap = 100.0  # cap at |z|<=10
         self._sigma_calib_ema_z2 = 1.0
+        self._sigma_calib_ema_z2_raw = 1.0
         self._sigma_calib_scale_min = 0.2
         self._sigma_calib_scale_max = 10.0
 
         # Visit-based novelty (count-based exploration):
-        # add an extra uncertainty term that is *in sigma units* (scale-safe), decaying with visits.
-        # We keep `grid_penalty_lambda` as the single exposed knob; internally we rescale it so the
-        # historical default (~0.1) lands in a useful kappa range (~1.0).
+        # Add an extra uncertainty term that is *in sigma units* (scale-safe), decaying with visits.
+        # Mixed categorical spaces already get diversity via categorical handling, so we keep the
+        # novelty scaling weaker there (internal, deterministic; no extra user knobs).
         self._visit_novelty_tau = 10.0
         self._visit_novelty_kappa_scale = 10.0
 
@@ -238,7 +241,9 @@ class ALBA:
         # when the LGS linear fit is clearly poor (e.g., curved valleys).
         # rel_mse ~= 1 means the linear model is no better than a constant mean model.
         self._taylor_rel_mse_threshold = 1.0
-        self._taylor_select_top_k = 32
+        # Candidate pool size for selection. Kept independent of tracing so that enabling
+        # trace hooks does not change optimization behavior.
+        self._taylor_select_top_k = 64
         self._tr_min_scale = 0.02
         self._tr_expand = 1.3
         self._tr_shrink = 0.7
@@ -294,6 +299,12 @@ class ALBA:
 
         # Initialize cube tree
         self.root = Cube(bounds=list(bounds))
+        # Attach categorical dimension metadata to cubes so the LGS can condition on cat keys.
+        # This does not change the external API: categorical_dims is already provided to ALBA.
+        try:
+            self.root.categorical_dims = list(categorical_dims or [])  # type: ignore[attr-defined]
+        except Exception:
+            pass
         self.leaves: List[Cube] = [self.root]
         self._last_cube: Optional[Cube] = None
         if self._cont_dim_indices:
@@ -382,13 +393,6 @@ class ALBA:
                     misfit = True
             except Exception:
                 rel_mse_f = None
-
-        try:
-            noise_var = float(model.get("noise_var", 0.0))
-            if np.isfinite(noise_var) and noise_var >= 9.0:
-                misfit = True
-        except Exception:
-            pass
 
         try:
             sigma_scale = float(model.get("sigma_scale", 1.0))
@@ -564,7 +568,7 @@ class ALBA:
         return y_internal if self.maximize else -y_internal
 
     def _sigma_calibration_scale(self) -> float:
-        """Return the current global sigma multiplier (>=0)."""
+        """Return the current sigma multiplier used for acquisition (>=0)."""
         try:
             ema_z2 = float(getattr(self, "_sigma_calib_ema_z2", 1.0))
             s = float(np.sqrt(max(ema_z2, 1e-12)))
@@ -573,6 +577,40 @@ class ALBA:
             return float(np.clip(s, s_min, s_max))
         except Exception:
             return 1.0
+
+    def _sigma_calibration_scale_full(self) -> float:
+        """Return the current sigma multiplier used for tell-time clipping/diagnostics (>=0)."""
+        try:
+            ema_z2 = float(
+                getattr(self, "_sigma_calib_ema_z2_raw", getattr(self, "_sigma_calib_ema_z2", 1.0))
+            )
+            s = float(np.sqrt(max(ema_z2, 1e-12)))
+            s_min = float(getattr(self, "_sigma_calib_scale_min", 0.2))
+            s_max = float(getattr(self, "_sigma_calib_scale_max", 5.0))
+            return float(np.clip(s, s_min, s_max))
+        except Exception:
+            return 1.0
+
+    def _heatmap_effective_tau(self) -> Tuple[float, Dict[str, Any]]:
+        """Return (tau_eff, info) for heatmap sigma inflation.
+
+        We keep a single global heatmap knob (`heatmap_blend_tau`) but gate its use
+        deterministically to improve robustness across tasks:
+        - Only enable heatmap during the exploration phase
+        - Only when the optimizer is stagnating (no improvements for a while)
+        """
+        tau_on = float(self._heatmap_blend_tau)
+        enabled = bool(self.iteration < self.exploration_budget and self.stagnation > self._stagnation_threshold)
+        tau_eff = tau_on if enabled else 1e9
+        info: Dict[str, Any] = {
+            "enabled": bool(enabled),
+            "tau_on": float(tau_on),
+            "tau_eff": float(tau_eff),
+            "stagnation": int(self.stagnation),
+            "stagnation_threshold": int(self._stagnation_threshold),
+            "phase": ("exploration" if self.iteration < self.exploration_budget else "local_search"),
+        }
+        return float(tau_eff), info
 
     # -------------------------------------------------------------------------
     # Ask interface
@@ -682,7 +720,8 @@ class ALBA:
             mu_pred_base: Optional[float] = None
             sigma_pred_base: Optional[float] = None
             sigma_pred_base_raw: Optional[float] = None
-            sigma_mul_used: Optional[float] = None
+            sigma_mul_used_acq: Optional[float] = None
+            sigma_mul_used_full: Optional[float] = None
             if cube.grid_state is not None and self._cont_dim_indices:
                 x_row = x.reshape(1, -1)
                 try:
@@ -690,8 +729,9 @@ class ALBA:
                         mu0, s0 = cube.predict_bayesian(x_row)
                         mu_pred_base = float(mu0[0])
                         sigma_pred_base_raw = float(s0[0])
-                        sigma_mul_used = float(self._sigma_calibration_scale())
-                        sigma_pred_base = float(sigma_pred_base_raw) * float(sigma_mul_used)
+                        sigma_mul_used_acq = float(self._sigma_calibration_scale())
+                        sigma_mul_used_full = float(self._sigma_calibration_scale_full())
+                        sigma_pred_base = float(sigma_pred_base_raw) * float(sigma_mul_used_full)
                 except Exception:
                     mu_pred_base = None
                     sigma_pred_base = None
@@ -701,10 +741,19 @@ class ALBA:
             resid_clip: Optional[float] = None
             resid_clipped: Optional[bool] = None
             z_val: Optional[float] = None
+            z_raw_val: Optional[float] = None
+            z_acq_val: Optional[float] = None
             if mu_pred_base is not None and np.isfinite(mu_pred_base):
                 try:
                     resid_raw = float(y - float(mu_pred_base))
                     resid = float(resid_raw)
+                    if sigma_pred_base_raw is not None and np.isfinite(sigma_pred_base_raw):
+                        z_raw_val = float(float(resid_raw) / max(float(sigma_pred_base_raw), 1e-12))
+                        if sigma_mul_used_acq is not None and np.isfinite(sigma_mul_used_acq):
+                            z_acq_val = float(
+                                float(resid_raw)
+                                / max(float(sigma_pred_base_raw) * float(sigma_mul_used_acq), 1e-12)
+                            )
                     if sigma_pred_base is not None and np.isfinite(sigma_pred_base):
                         clip = float(self._heatmap_resid_clip_sigma) * float(max(float(sigma_pred_base), 1e-12))
                         resid_clip = float(clip)
@@ -716,11 +765,32 @@ class ALBA:
                     resid_for_grid = None
 
             # Online global sigma calibration update based on realized z-scores.
-            if z_val is not None and np.isfinite(z_val):
+            # We keep two EMAs:
+            # - Full: update on z_raw (against raw sigma) for diagnostics/clipping.
+            # - Acquisition: update on z_acq (against raw sigma * acq scale) to be robust
+            #   under selection bias (this converges to an intentionally smaller correction).
+            try:
+                alpha = float(getattr(self, "_sigma_calib_alpha", 0.05))
+                cap = float(getattr(self, "_sigma_calib_z2_cap", 25.0))
+            except Exception:
+                alpha, cap = 0.05, 25.0
+
+            if z_raw_val is not None and np.isfinite(z_raw_val):
                 try:
-                    alpha = float(getattr(self, "_sigma_calib_alpha", 0.05))
-                    cap = float(getattr(self, "_sigma_calib_z2_cap", 25.0))
-                    z2 = float(z_val) * float(z_val)
+                    z2 = float(z_raw_val) * float(z_raw_val)
+                    if np.isfinite(cap) and cap > 0.0:
+                        z2 = float(min(z2, cap))
+                    prev = float(getattr(self, "_sigma_calib_ema_z2_raw", 1.0))
+                    if not np.isfinite(prev) or prev <= 0.0:
+                        prev = 1.0
+                    if np.isfinite(alpha) and 0.0 < alpha <= 1.0 and np.isfinite(z2) and z2 > 0.0:
+                        self._sigma_calib_ema_z2_raw = (1.0 - alpha) * prev + alpha * z2
+                except Exception:
+                    pass
+
+            if z_acq_val is not None and np.isfinite(z_acq_val):
+                try:
+                    z2 = float(z_acq_val) * float(z_acq_val)
                     if np.isfinite(cap) and cap > 0.0:
                         z2 = float(min(z2, cap))
                     prev = float(getattr(self, "_sigma_calib_ema_z2", 1.0))
@@ -750,7 +820,16 @@ class ALBA:
                         "resid_clip": (float(resid_clip) if resid_clip is not None else None),
                         "resid_clipped": (bool(resid_clipped) if resid_clipped is not None else None),
                         "resid_for_grid": (float(resid_for_grid) if resid_for_grid is not None else None),
-                        "sigma_calib_scale": (float(sigma_mul_used) if sigma_mul_used is not None else float(self._sigma_calibration_scale())),
+                        "sigma_calib_scale": (
+                            float(sigma_mul_used_full)
+                            if sigma_mul_used_full is not None
+                            else float(self._sigma_calibration_scale_full())
+                        ),
+                        "sigma_calib_scale_acq": (
+                            float(sigma_mul_used_acq)
+                            if sigma_mul_used_acq is not None
+                            else float(self._sigma_calibration_scale())
+                        ),
                     }
                     if (
                         resid_raw is not None
@@ -759,6 +838,13 @@ class ALBA:
                         and np.isfinite(sigma_pred_base)
                     ):
                         tt["z"] = float(z_val) if z_val is not None else float(float(resid_raw) / max(float(sigma_pred_base), 1e-12))
+                    if (
+                        resid_raw is not None
+                        and sigma_pred_base_raw is not None
+                        and np.isfinite(resid_raw)
+                        and np.isfinite(sigma_pred_base_raw)
+                    ):
+                        tt["z_raw"] = float(z_raw_val) if z_raw_val is not None else float(float(resid_raw) / max(float(sigma_pred_base_raw), 1e-12))
                     if cube.grid_state is not None and self._cont_dim_indices:
                         try:
                             x_cont = np.asarray(x, dtype=float)[self._cont_dim_indices]
@@ -1008,7 +1094,10 @@ class ALBA:
                 lam = float(trace.get("grid_penalty_lambda", self._grid_penalty_lambda))
             except Exception:
                 lam = float(self._grid_penalty_lambda)
-            kappa = float(lam) * float(getattr(self, "_visit_novelty_kappa_scale", 1.0))
+            kappa_scale = float(getattr(self, "_visit_novelty_kappa_scale", 1.0))
+            if self._categorical_sampling and self._cat_sampler.has_categoricals:
+                kappa_scale = 1.0
+            kappa = float(lam) * float(kappa_scale)
             tau_v = float(getattr(self, "_visit_novelty_tau", 10.0))
 
             sigma_ref = 0.0
@@ -1092,12 +1181,12 @@ class ALBA:
         grid_state: LeafGridState,
     ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, Dict[str, np.ndarray]]:
         mu_lgs, sigma_base = cube.predict_bayesian(X)
-        # Global sigma calibration is applied at tell-time for residual clipping/z-scores.
-        # At acquisition time we apply the calibration multiplier as well so UCB operates
-        # on approximately calibrated predictive uncertainty.
+        # Apply global sigma calibration for acquisition.
+        # This uses the "acquisition" EMA which is intentionally conservative under
+        # selection bias (winner's curse).
         sigma_base = np.asarray(sigma_base, dtype=float)
-        sigma_mul = float(self._sigma_calibration_scale())
-        sigma_base = sigma_base * float(max(sigma_mul, 1e-12))
+        sigma_mul_acq = float(self._sigma_calibration_scale())
+        sigma_base = sigma_base * float(max(sigma_mul_acq, 1e-12))
         if Xc.size == 0:
             return (
                 mu_lgs,
@@ -1147,7 +1236,7 @@ class ALBA:
             counts_used[i] = float(getattr(st, "n_r", 0.0))
             vars_r_used[i] = float(st.var_r())
 
-        tau = float(self._heatmap_blend_tau)
+        tau, _ = self._heatmap_effective_tau()
         w = counts_used / (counts_used + tau)
         # X is built as: [base0 × Xc, base1 × Xc, ...] so per-Xc vectors must be tiled.
         n_bases = max(1, int(X.shape[0] // max(1, Xc.shape[0])))
@@ -1198,7 +1287,7 @@ class ALBA:
             st_used = st_f
             mode = "fine_weak"
 
-        tau = float(self._heatmap_blend_tau)
+        tau, _ = self._heatmap_effective_tau()
         n_r_used = float(getattr(st_used, "n_r", 0.0)) if st_used is not None else 0.0
         var_r_used = float(st_used.var_r()) if st_used is not None else 0.0
         w = n_r_used / (n_r_used + tau)
@@ -1221,6 +1310,13 @@ class ALBA:
             return [tuple()]
 
         want = max(1, int(n_keys))
+        # Always leave a small fraction of slots for exploratory keys so categorical
+        # search does not collapse too early onto a tiny elite set (key-space is huge).
+        n_explore = 0
+        if want >= 4:
+            n_explore = max(1, want // 4)
+        target_before_explore = max(0, want - n_explore)
+
         seen: set[Tuple[int, ...]] = set()
         keys: List[Tuple[int, ...]] = []
 
@@ -1238,8 +1334,8 @@ class ALBA:
 
         for key in self._cat_sampler.elite_keys():
             _add(key)
-            if len(keys) >= want:
-                return keys[:want]
+            if len(keys) >= target_before_explore:
+                break
 
         attempts = 0
         max_attempts = want * 25
@@ -1378,13 +1474,35 @@ class ALBA:
         else:
             bases = x_template.reshape(1, -1)
 
+        chosen_cat_key: Optional[Tuple[int, ...]] = None
+        cat_bandit: Optional[Dict[str, Any]] = None
+        chosen_base_idx: Optional[int] = None
+        if cat_mode == "enum" and self._categorical_stage == "auto" and cat_keys:
+            # Hierarchical categorical handling: choose a categorical key first (bandit),
+            # then do continuous selection within that key. Still score cross-key so
+            # we can trace/top-K diagnostics.
+            try:
+                chosen_cat_key, cat_bandit = self._cat_sampler.choose_key_ts_goodrate(
+                    cat_keys, gamma=float(self.gamma), rng=self.rng
+                )
+                chosen_base_idx = int(cat_keys.index(chosen_cat_key))
+                stage_eff = "auto_enum_ts_masked"
+            except Exception:
+                chosen_cat_key = None
+                cat_bandit = None
+                chosen_base_idx = None
+
         # Keep total scored candidates roughly stable even when enumerating multiple
         # categorical bases: score ~grid_batch_size points per batch overall (not per base).
         n_cont_per_batch = int(max(1, int(self._grid_batch_size) // max(1, int(bases.shape[0]))))
 
         # Always build a small top-k pool for robust selection.
         use_pool = True
-        pool_k = int(max(select_top_k, (self._trace_top_k if want_trace else 0), 1))
+        # IMPORTANT: keep selection behavior independent of tracing.
+        # - selection pool uses select_top_k
+        # - trace top-K uses trace_top_k (stored separately)
+        pool_k_sel = int(max(select_top_k, 1))
+        pool_k_trace = int(max(self._trace_top_k, 0)) if want_trace else 0
         pool_x_batches: List[np.ndarray] = []
         pool_mu_batches: List[np.ndarray] = []
         pool_sigma_base_batches: List[np.ndarray] = []
@@ -1440,7 +1558,10 @@ class ALBA:
                 visits = np.zeros(Xc.shape[0], dtype=float)
 
             visits_rep = np.tile(visits, C)
-            kappa = float(self._grid_penalty_lambda) * float(getattr(self, "_visit_novelty_kappa_scale", 1.0))
+            kappa_scale = float(getattr(self, "_visit_novelty_kappa_scale", 1.0))
+            if self._categorical_sampling and self._cat_sampler.has_categoricals:
+                kappa_scale = 1.0
+            kappa = float(self._grid_penalty_lambda) * float(kappa_scale)
             tau_v = float(getattr(self, "_visit_novelty_tau", 10.0))
             sigma_ref = float(np.median(sigma_adj[np.isfinite(sigma_adj)])) if sigma_adj.size else 0.0
             sigma_ref = float(max(sigma_ref, 1e-12))
@@ -1477,35 +1598,64 @@ class ALBA:
                     pass
 
             if use_pool and X.shape[0] > 0:
-                k = min(pool_k, int(X.shape[0]))
-                if k >= 1:
-                    idxs = np.argpartition(-score, k - 1)[:k]
-                    idxs = idxs[np.argsort(-score[idxs])]
-                    pool_x_batches.append(X[idxs].copy())
-                    pool_mu_batches.append(mu[idxs].copy())
-                    pool_sigma_base_batches.append(sigma_base[idxs].copy())
-                    pool_sigma_batches.append(sigma_adj[idxs].copy())
-                    pool_sigma_nov_batches.append(sigma_nov_rep[idxs].copy())
-                    pool_sigma_tot_batches.append(sigma_tot[idxs].copy())
-                    pool_sigma_ref_batches.append(sigma_ref_rep[idxs].copy())
-                    pool_ucb_batches.append(ucb[idxs].copy())
-                    pool_novelty_bonus_batches.append(novelty_bonus_rep[idxs].copy())
-                    pool_score_batches.append(score[idxs].copy())
-                    pool_visits_batches.append(visits_rep[idxs].copy())
-                    if want_top:
-                        top_x_batches.append(X[idxs].copy())
-                        top_mu_batches.append(mu[idxs].copy())
-                        top_sigma_base_batches.append(sigma_base[idxs].copy())
-                        top_sigma_batches.append(sigma_adj[idxs].copy())
-                        top_sigma_nov_batches.append(sigma_nov_rep[idxs].copy())
-                        top_sigma_tot_batches.append(sigma_tot[idxs].copy())
-                        top_sigma_ref_batches.append(sigma_ref_rep[idxs].copy())
-                        top_ucb_batches.append(ucb[idxs].copy())
-                        top_novelty_bonus_batches.append(novelty_bonus_rep[idxs].copy())
-                        top_score_batches.append(score[idxs].copy())
-                        top_visits_batches.append(visits_rep[idxs].copy())
+                # Selection pool (potentially masked to a chosen categorical key).
+                sel_lo = 0
+                sel_hi = int(score.shape[0])
+                if chosen_base_idx is not None and int(bases.shape[0]) > 1:
+                    try:
+                        lo = int(chosen_base_idx) * int(n)
+                        hi = lo + int(n)
+                        if 0 <= lo < hi <= int(score.shape[0]):
+                            sel_lo, sel_hi = lo, hi
+                    except Exception:
+                        sel_lo, sel_hi = 0, int(score.shape[0])
 
+                k_sel = min(pool_k_sel, max(0, int(sel_hi - sel_lo)))
+                if k_sel >= 1:
+                    score_sel = score[sel_lo:sel_hi]
+                    idxs_local = np.argpartition(-score_sel, k_sel - 1)[:k_sel]
+                    idxs_local = idxs_local[np.argsort(-score_sel[idxs_local])]
+                    idxs_sel = sel_lo + idxs_local
+                    pool_x_batches.append(X[idxs_sel].copy())
+                    pool_mu_batches.append(mu[idxs_sel].copy())
+                    pool_sigma_base_batches.append(sigma_base[idxs_sel].copy())
+                    pool_sigma_batches.append(sigma_adj[idxs_sel].copy())
+                    pool_sigma_nov_batches.append(sigma_nov_rep[idxs_sel].copy())
+                    pool_sigma_tot_batches.append(sigma_tot[idxs_sel].copy())
+                    pool_sigma_ref_batches.append(sigma_ref_rep[idxs_sel].copy())
+                    pool_ucb_batches.append(ucb[idxs_sel].copy())
+                    pool_novelty_bonus_batches.append(novelty_bonus_rep[idxs_sel].copy())
+                    pool_score_batches.append(score[idxs_sel].copy())
+                    pool_visits_batches.append(visits_rep[idxs_sel].copy())
+
+                # Trace top-K (cross-key, unmasked).
+                if want_top:
+                    k_top = min(pool_k_trace, int(X.shape[0]))
+                    if k_top >= 1:
+                        idxs_top = np.argpartition(-score, k_top - 1)[:k_top]
+                        idxs_top = idxs_top[np.argsort(-score[idxs_top])]
+                        top_x_batches.append(X[idxs_top].copy())
+                        top_mu_batches.append(mu[idxs_top].copy())
+                        top_sigma_base_batches.append(sigma_base[idxs_top].copy())
+                        top_sigma_batches.append(sigma_adj[idxs_top].copy())
+                        top_sigma_nov_batches.append(sigma_nov_rep[idxs_top].copy())
+                        top_sigma_tot_batches.append(sigma_tot[idxs_top].copy())
+                        top_sigma_ref_batches.append(sigma_ref_rep[idxs_top].copy())
+                        top_ucb_batches.append(ucb[idxs_top].copy())
+                        top_novelty_bonus_batches.append(novelty_bonus_rep[idxs_top].copy())
+                        top_score_batches.append(score[idxs_top].copy())
+                        top_visits_batches.append(visits_rep[idxs_top].copy())
+
+            # Track best-by-score within the (possibly masked) selection slice.
             idx = int(np.argmax(score))
+            if chosen_base_idx is not None and int(bases.shape[0]) > 1:
+                try:
+                    lo = int(chosen_base_idx) * int(n)
+                    hi = lo + int(n)
+                    if 0 <= lo < hi <= int(score.shape[0]):
+                        idx = lo + int(np.argmax(score[lo:hi]))
+                except Exception:
+                    idx = int(np.argmax(score))
             sc = float(score[idx])
             if sc > best_score or best_x is None:
                 best_score = sc
@@ -1567,8 +1717,7 @@ class ALBA:
         if best_x is None:
             best_x = np.array([self.rng.uniform(lo, hi) for lo, hi in cube.bounds])
 
-        chosen_cat_key: Optional[Tuple[int, ...]] = None
-        if cat_keys:
+        if cat_keys and chosen_cat_key is None:
             chosen_cat_key = self._cat_sampler.get_cat_key(best_x)
 
         if want_trace:
@@ -1674,6 +1823,8 @@ class ALBA:
             except Exception:
                 cells_with_resid_coarse = 0
 
+            tau_eff, heatmap_gate = self._heatmap_effective_tau()
+
             trace: Dict[str, Any] = {
                 "event": "ask",
                 "iteration": int(self.iteration),
@@ -1733,11 +1884,14 @@ class ALBA:
                     "selection_mode": str(selection_mode),
                     "select_top_k": int(select_top_k),
                 },
+                "heatmap_gate": heatmap_gate,
                 "surrogate": {
                     "kind": "lgs_heatmap_sigma",
+                    "heatmap_tau_eff": float(tau_eff),
                     "heatmap_tau": float(self._heatmap_blend_tau),
                     "resid_clip_sigma": float(self._heatmap_resid_clip_sigma),
                     "sigma_calib_scale": float(self._sigma_calibration_scale()),
+                    "sigma_calib_scale_full": float(self._sigma_calibration_scale_full()),
                 },
                 "n_scored": int(n_scored),
                 "batch_stats": {
@@ -1791,6 +1945,7 @@ class ALBA:
                     "n_bases": int(bases.shape[0]),
                     "keys_considered": [list(k) for k in cat_keys],
                     "key_chosen": (list(chosen_cat_key) if chosen_cat_key is not None else None),
+                    "bandit": (cat_bandit if cat_bandit is not None else None),
                 },
                 "x_chosen_raw": best_x.copy(),
                 "chosen_pred": {
@@ -1814,10 +1969,32 @@ class ALBA:
                     "n_pts": int(len(cube.lgs_model.get("all_pts", []))),
                     "noise_var": float(cube.lgs_model.get("noise_var", 0.0)),
                     "sigma_scale": float(cube.lgs_model.get("sigma_scale", 1.0)),
-                    "rel_mse": (
-                        float(cube.lgs_model.get("rel_mse"))
-                        if cube.lgs_model.get("rel_mse") is not None
+                    "feature_kind": (
+                        str(cube.lgs_model.get("feature_kind")) if cube.lgs_model.get("feature_kind") is not None else None
+                    ),
+                    "selected_kind": (
+                        str(cube.lgs_model.get("selected_kind")) if cube.lgs_model.get("selected_kind") is not None else None
+                    ),
+                    "gcv": (float(cube.lgs_model.get("gcv")) if cube.lgs_model.get("gcv") is not None else None),
+                    "df": (float(cube.lgs_model.get("df")) if cube.lgs_model.get("df") is not None else None),
+                    "n_feat": cube.lgs_model.get("n_feat"),
+                    "candidates_gcv": cube.lgs_model.get("candidates_gcv"),
+                    "loo_regret": (
+                        float(cube.lgs_model.get("loo_regret")) if cube.lgs_model.get("loo_regret") is not None else None
+                    ),
+                    "loo_topk_overlap": (
+                        float(cube.lgs_model.get("loo_topk_overlap"))
+                        if cube.lgs_model.get("loo_topk_overlap") is not None
                         else None
+                    ),
+                    "loo_spearman": (
+                        float(cube.lgs_model.get("loo_spearman")) if cube.lgs_model.get("loo_spearman") is not None else None
+                    ),
+                    "candidates_loo_regret": cube.lgs_model.get("candidates_loo_regret"),
+                    "candidates_loo_topk_overlap": cube.lgs_model.get("candidates_loo_topk_overlap"),
+                    "candidates_loo_spearman": cube.lgs_model.get("candidates_loo_spearman"),
+                    "rel_mse": (
+                        float(cube.lgs_model.get("rel_mse")) if cube.lgs_model.get("rel_mse") is not None else None
                     ),
                     "grad_norm": grad_norm,
                     "has_gradient_dir": cube.lgs_model.get("gradient_dir") is not None,
@@ -1852,6 +2029,28 @@ class ALBA:
                     "score": score_top[order],
                     "visits": visits_top[order],
                 }
+
+            # Also expose the within-key pool used for selection (helps decompose regret).
+            if use_pool and pool_x_batches:
+                try:
+                    order_pool = np.argsort(-score_pool)
+                    k_pool = min(self._trace_top_k, int(order_pool.shape[0]))
+                    order_pool = order_pool[:k_pool]
+                    trace["top_within_key"] = {
+                        "x": X_pool[order_pool],
+                        "mu": mu_pool[order_pool],
+                        "sigma_base": sigma_base_pool[order_pool],
+                        "sigma": sigma_pool[order_pool],
+                        "sigma_nov": sigma_nov_pool[order_pool],
+                        "sigma_tot": sigma_tot_pool[order_pool],
+                        "sigma_ref": sigma_ref_pool[order_pool],
+                        "ucb": ucb_pool[order_pool],
+                        "novelty_bonus": novelty_bonus_pool[order_pool],
+                        "score": score_pool[order_pool],
+                        "visits": visits_pool[order_pool],
+                    }
+                except Exception:
+                    pass
 
             self._pending_trace = trace
 

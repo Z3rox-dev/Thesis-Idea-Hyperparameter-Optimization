@@ -1,0 +1,1082 @@
+[
+  {
+    "method": "ALBA-Coherence",
+    "function": "sphere",
+    "dim": 10,
+    "seed": 42,
+    "best_score": 2.660498795692321,
+    "time_seconds": 0.6311895847320557,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-Potential",
+    "function": "sphere",
+    "dim": 10,
+    "seed": 42,
+    "best_score": 2.3766340260087397,
+    "time_seconds": 0.5681674480438232,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-V1",
+    "function": "sphere",
+    "dim": 10,
+    "seed": 42,
+    "best_score": 3.708982299379296,
+    "time_seconds": 0.8195860385894775,
+    "evaluations": 400
+  },
+  {
+    "method": "HPO-LGS",
+    "function": "sphere",
+    "dim": 10,
+    "seed": 42,
+    "best_score": 0.7468176250524042,
+    "time_seconds": 0.9400653839111328,
+    "evaluations": 400
+  },
+  {
+    "method": "Random",
+    "function": "sphere",
+    "dim": 10,
+    "seed": 42,
+    "best_score": 23.165929374851263,
+    "time_seconds": 0.004651069641113281,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-Coherence",
+    "function": "sphere",
+    "dim": 10,
+    "seed": 43,
+    "best_score": 3.769010704786768,
+    "time_seconds": 0.6803977489471436,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-Potential",
+    "function": "sphere",
+    "dim": 10,
+    "seed": 43,
+    "best_score": 1.2705496542309362,
+    "time_seconds": 0.5971484184265137,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-V1",
+    "function": "sphere",
+    "dim": 10,
+    "seed": 43,
+    "best_score": 4.0415780173286535,
+    "time_seconds": 0.8134989738464355,
+    "evaluations": 400
+  },
+  {
+    "method": "HPO-LGS",
+    "function": "sphere",
+    "dim": 10,
+    "seed": 43,
+    "best_score": 1.1301757878221292,
+    "time_seconds": 0.955824613571167,
+    "evaluations": 400
+  },
+  {
+    "method": "Random",
+    "function": "sphere",
+    "dim": 10,
+    "seed": 43,
+    "best_score": 25.114811590775375,
+    "time_seconds": 0.00731348991394043,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-Coherence",
+    "function": "sphere",
+    "dim": 10,
+    "seed": 44,
+    "best_score": 4.4666473556665185,
+    "time_seconds": 0.6235039234161377,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-Potential",
+    "function": "sphere",
+    "dim": 10,
+    "seed": 44,
+    "best_score": 1.7897870757703158,
+    "time_seconds": 0.6731894016265869,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-V1",
+    "function": "sphere",
+    "dim": 10,
+    "seed": 44,
+    "best_score": 3.498965261640349,
+    "time_seconds": 0.9081284999847412,
+    "evaluations": 400
+  },
+  {
+    "method": "HPO-LGS",
+    "function": "sphere",
+    "dim": 10,
+    "seed": 44,
+    "best_score": 1.4731958875683109,
+    "time_seconds": 0.9526786804199219,
+    "evaluations": 400
+  },
+  {
+    "method": "Random",
+    "function": "sphere",
+    "dim": 10,
+    "seed": 44,
+    "best_score": 16.921980482959746,
+    "time_seconds": 0.005163669586181641,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-Coherence",
+    "function": "rosenbrock",
+    "dim": 10,
+    "seed": 42,
+    "best_score": 81.92610101002595,
+    "time_seconds": 0.6903793811798096,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-Potential",
+    "function": "rosenbrock",
+    "dim": 10,
+    "seed": 42,
+    "best_score": 76.01358169140562,
+    "time_seconds": 0.593787431716919,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-V1",
+    "function": "rosenbrock",
+    "dim": 10,
+    "seed": 42,
+    "best_score": 69.04874137203223,
+    "time_seconds": 0.8262059688568115,
+    "evaluations": 400
+  },
+  {
+    "method": "HPO-LGS",
+    "function": "rosenbrock",
+    "dim": 10,
+    "seed": 42,
+    "best_score": 69.32288534094413,
+    "time_seconds": 1.0582127571105957,
+    "evaluations": 400
+  },
+  {
+    "method": "Random",
+    "function": "rosenbrock",
+    "dim": 10,
+    "seed": 42,
+    "best_score": 402.48671844778755,
+    "time_seconds": 0.00603795051574707,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-Coherence",
+    "function": "rosenbrock",
+    "dim": 10,
+    "seed": 43,
+    "best_score": 112.85247159725567,
+    "time_seconds": 0.6345338821411133,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-Potential",
+    "function": "rosenbrock",
+    "dim": 10,
+    "seed": 43,
+    "best_score": 32.23352385767444,
+    "time_seconds": 0.6090197563171387,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-V1",
+    "function": "rosenbrock",
+    "dim": 10,
+    "seed": 43,
+    "best_score": 159.4469904971106,
+    "time_seconds": 0.8697311878204346,
+    "evaluations": 400
+  },
+  {
+    "method": "HPO-LGS",
+    "function": "rosenbrock",
+    "dim": 10,
+    "seed": 43,
+    "best_score": 39.74840300238894,
+    "time_seconds": 1.0647366046905518,
+    "evaluations": 400
+  },
+  {
+    "method": "Random",
+    "function": "rosenbrock",
+    "dim": 10,
+    "seed": 43,
+    "best_score": 644.6470067195123,
+    "time_seconds": 0.0056915283203125,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-Coherence",
+    "function": "rosenbrock",
+    "dim": 10,
+    "seed": 44,
+    "best_score": 86.06291482833561,
+    "time_seconds": 0.744786262512207,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-Potential",
+    "function": "rosenbrock",
+    "dim": 10,
+    "seed": 44,
+    "best_score": 42.10254180677522,
+    "time_seconds": 0.6743097305297852,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-V1",
+    "function": "rosenbrock",
+    "dim": 10,
+    "seed": 44,
+    "best_score": 66.8998306733406,
+    "time_seconds": 0.9051403999328613,
+    "evaluations": 400
+  },
+  {
+    "method": "HPO-LGS",
+    "function": "rosenbrock",
+    "dim": 10,
+    "seed": 44,
+    "best_score": 91.1244374523098,
+    "time_seconds": 1.0741651058197021,
+    "evaluations": 400
+  },
+  {
+    "method": "Random",
+    "function": "rosenbrock",
+    "dim": 10,
+    "seed": 44,
+    "best_score": 318.6575478317749,
+    "time_seconds": 0.007435321807861328,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-Coherence",
+    "function": "ackley",
+    "dim": 10,
+    "seed": 42,
+    "best_score": 10.10080932484093,
+    "time_seconds": 0.6790645122528076,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-Potential",
+    "function": "ackley",
+    "dim": 10,
+    "seed": 42,
+    "best_score": 10.232363957791609,
+    "time_seconds": 0.756019115447998,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-V1",
+    "function": "ackley",
+    "dim": 10,
+    "seed": 42,
+    "best_score": 12.445591171282924,
+    "time_seconds": 0.8867340087890625,
+    "evaluations": 400
+  },
+  {
+    "method": "HPO-LGS",
+    "function": "ackley",
+    "dim": 10,
+    "seed": 42,
+    "best_score": 12.229622016546584,
+    "time_seconds": 0.9762508869171143,
+    "evaluations": 400
+  },
+  {
+    "method": "Random",
+    "function": "ackley",
+    "dim": 10,
+    "seed": 42,
+    "best_score": 18.85820989915128,
+    "time_seconds": 0.006799459457397461,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-Coherence",
+    "function": "ackley",
+    "dim": 10,
+    "seed": 43,
+    "best_score": 11.233701390605482,
+    "time_seconds": 0.7328743934631348,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-Potential",
+    "function": "ackley",
+    "dim": 10,
+    "seed": 43,
+    "best_score": 12.847932449697769,
+    "time_seconds": 0.7438077926635742,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-V1",
+    "function": "ackley",
+    "dim": 10,
+    "seed": 43,
+    "best_score": 10.94555378525,
+    "time_seconds": 0.9622969627380371,
+    "evaluations": 400
+  },
+  {
+    "method": "HPO-LGS",
+    "function": "ackley",
+    "dim": 10,
+    "seed": 43,
+    "best_score": 10.78679102837411,
+    "time_seconds": 1.0755717754364014,
+    "evaluations": 400
+  },
+  {
+    "method": "Random",
+    "function": "ackley",
+    "dim": 10,
+    "seed": 43,
+    "best_score": 18.16822863217376,
+    "time_seconds": 0.010228872299194336,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-Coherence",
+    "function": "ackley",
+    "dim": 10,
+    "seed": 44,
+    "best_score": 13.146611898984924,
+    "time_seconds": 0.6770429611206055,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-Potential",
+    "function": "ackley",
+    "dim": 10,
+    "seed": 44,
+    "best_score": 14.179155672338606,
+    "time_seconds": 0.642772912979126,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-V1",
+    "function": "ackley",
+    "dim": 10,
+    "seed": 44,
+    "best_score": 12.879368821939245,
+    "time_seconds": 0.898993730545044,
+    "evaluations": 400
+  },
+  {
+    "method": "HPO-LGS",
+    "function": "ackley",
+    "dim": 10,
+    "seed": 44,
+    "best_score": 9.032742320155482,
+    "time_seconds": 1.065218210220337,
+    "evaluations": 400
+  },
+  {
+    "method": "Random",
+    "function": "ackley",
+    "dim": 10,
+    "seed": 44,
+    "best_score": 17.933019528392194,
+    "time_seconds": 0.010036945343017578,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-Coherence",
+    "function": "rastrigin",
+    "dim": 10,
+    "seed": 42,
+    "best_score": 53.06727465719774,
+    "time_seconds": 0.6995382308959961,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-Potential",
+    "function": "rastrigin",
+    "dim": 10,
+    "seed": 42,
+    "best_score": 78.65380704451037,
+    "time_seconds": 0.6467463970184326,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-V1",
+    "function": "rastrigin",
+    "dim": 10,
+    "seed": 42,
+    "best_score": 72.86710153857419,
+    "time_seconds": 0.856370210647583,
+    "evaluations": 400
+  },
+  {
+    "method": "HPO-LGS",
+    "function": "rastrigin",
+    "dim": 10,
+    "seed": 42,
+    "best_score": 74.70885140509287,
+    "time_seconds": 1.0522313117980957,
+    "evaluations": 400
+  },
+  {
+    "method": "Random",
+    "function": "rastrigin",
+    "dim": 10,
+    "seed": 42,
+    "best_score": 108.09393810299802,
+    "time_seconds": 0.006002187728881836,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-Coherence",
+    "function": "rastrigin",
+    "dim": 10,
+    "seed": 43,
+    "best_score": 73.51380182021605,
+    "time_seconds": 0.6795406341552734,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-Potential",
+    "function": "rastrigin",
+    "dim": 10,
+    "seed": 43,
+    "best_score": 67.3478992992607,
+    "time_seconds": 0.6932117938995361,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-V1",
+    "function": "rastrigin",
+    "dim": 10,
+    "seed": 43,
+    "best_score": 73.51380182021605,
+    "time_seconds": 0.9724645614624023,
+    "evaluations": 400
+  },
+  {
+    "method": "HPO-LGS",
+    "function": "rastrigin",
+    "dim": 10,
+    "seed": 43,
+    "best_score": 66.1382180161335,
+    "time_seconds": 1.0885820388793945,
+    "evaluations": 400
+  },
+  {
+    "method": "Random",
+    "function": "rastrigin",
+    "dim": 10,
+    "seed": 43,
+    "best_score": 95.8416418060923,
+    "time_seconds": 0.008076667785644531,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-Coherence",
+    "function": "rastrigin",
+    "dim": 10,
+    "seed": 44,
+    "best_score": 72.23573914715219,
+    "time_seconds": 0.6559407711029053,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-Potential",
+    "function": "rastrigin",
+    "dim": 10,
+    "seed": 44,
+    "best_score": 51.99763881313834,
+    "time_seconds": 0.6999506950378418,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-V1",
+    "function": "rastrigin",
+    "dim": 10,
+    "seed": 44,
+    "best_score": 82.4655384030258,
+    "time_seconds": 0.8816936016082764,
+    "evaluations": 400
+  },
+  {
+    "method": "HPO-LGS",
+    "function": "rastrigin",
+    "dim": 10,
+    "seed": 44,
+    "best_score": 72.35061705776316,
+    "time_seconds": 1.0703468322753906,
+    "evaluations": 400
+  },
+  {
+    "method": "Random",
+    "function": "rastrigin",
+    "dim": 10,
+    "seed": 44,
+    "best_score": 110.5991541887132,
+    "time_seconds": 0.005457162857055664,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-Coherence",
+    "function": "sphere",
+    "dim": 20,
+    "seed": 42,
+    "best_score": 11.933334688036389,
+    "time_seconds": 2.697711706161499,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-Potential",
+    "function": "sphere",
+    "dim": 20,
+    "seed": 42,
+    "best_score": 15.027747922689594,
+    "time_seconds": 2.1444239616394043,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-V1",
+    "function": "sphere",
+    "dim": 20,
+    "seed": 42,
+    "best_score": 25.874668580734518,
+    "time_seconds": 3.3643157482147217,
+    "evaluations": 400
+  },
+  {
+    "method": "HPO-LGS",
+    "function": "sphere",
+    "dim": 20,
+    "seed": 42,
+    "best_score": 8.578923515988068,
+    "time_seconds": 2.040846109390259,
+    "evaluations": 400
+  },
+  {
+    "method": "Random",
+    "function": "sphere",
+    "dim": 20,
+    "seed": 42,
+    "best_score": 71.47829564247797,
+    "time_seconds": 0.01093149185180664,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-Coherence",
+    "function": "sphere",
+    "dim": 20,
+    "seed": 43,
+    "best_score": 13.093572002758243,
+    "time_seconds": 2.4776058197021484,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-Potential",
+    "function": "sphere",
+    "dim": 20,
+    "seed": 43,
+    "best_score": 10.288555146585761,
+    "time_seconds": 2.2662274837493896,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-V1",
+    "function": "sphere",
+    "dim": 20,
+    "seed": 43,
+    "best_score": 11.779899158025556,
+    "time_seconds": 2.7796716690063477,
+    "evaluations": 400
+  },
+  {
+    "method": "HPO-LGS",
+    "function": "sphere",
+    "dim": 20,
+    "seed": 43,
+    "best_score": 9.039758694923934,
+    "time_seconds": 1.9844059944152832,
+    "evaluations": 400
+  },
+  {
+    "method": "Random",
+    "function": "sphere",
+    "dim": 20,
+    "seed": 43,
+    "best_score": 94.73229618232772,
+    "time_seconds": 0.012967348098754883,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-Coherence",
+    "function": "sphere",
+    "dim": 20,
+    "seed": 44,
+    "best_score": 13.049846986951497,
+    "time_seconds": 5.161852598190308,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-Potential",
+    "function": "sphere",
+    "dim": 20,
+    "seed": 44,
+    "best_score": 15.908010987801164,
+    "time_seconds": 3.151041030883789,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-V1",
+    "function": "sphere",
+    "dim": 20,
+    "seed": 44,
+    "best_score": 10.33113752750441,
+    "time_seconds": 4.241878986358643,
+    "evaluations": 400
+  },
+  {
+    "method": "HPO-LGS",
+    "function": "sphere",
+    "dim": 20,
+    "seed": 44,
+    "best_score": 8.13708418528758,
+    "time_seconds": 2.396904706954956,
+    "evaluations": 400
+  },
+  {
+    "method": "Random",
+    "function": "sphere",
+    "dim": 20,
+    "seed": 44,
+    "best_score": 51.079132914997174,
+    "time_seconds": 0.011904478073120117,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-Coherence",
+    "function": "rosenbrock",
+    "dim": 20,
+    "seed": 42,
+    "best_score": 195.9730031189718,
+    "time_seconds": 5.379914999008179,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-Potential",
+    "function": "rosenbrock",
+    "dim": 20,
+    "seed": 42,
+    "best_score": 149.1355782614722,
+    "time_seconds": 4.217071056365967,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-V1",
+    "function": "rosenbrock",
+    "dim": 20,
+    "seed": 42,
+    "best_score": 493.8613122095386,
+    "time_seconds": 2.891895294189453,
+    "evaluations": 400
+  },
+  {
+    "method": "HPO-LGS",
+    "function": "rosenbrock",
+    "dim": 20,
+    "seed": 42,
+    "best_score": 303.8985657115532,
+    "time_seconds": 1.9330816268920898,
+    "evaluations": 400
+  },
+  {
+    "method": "Random",
+    "function": "rosenbrock",
+    "dim": 20,
+    "seed": 42,
+    "best_score": 2269.3338385915526,
+    "time_seconds": 0.0174257755279541,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-Coherence",
+    "function": "rosenbrock",
+    "dim": 20,
+    "seed": 43,
+    "best_score": 307.6730543453629,
+    "time_seconds": 2.8201186656951904,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-Potential",
+    "function": "rosenbrock",
+    "dim": 20,
+    "seed": 43,
+    "best_score": 132.93323786732114,
+    "time_seconds": 2.4384803771972656,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-V1",
+    "function": "rosenbrock",
+    "dim": 20,
+    "seed": 43,
+    "best_score": 319.0509951700889,
+    "time_seconds": 2.93719220161438,
+    "evaluations": 400
+  },
+  {
+    "method": "HPO-LGS",
+    "function": "rosenbrock",
+    "dim": 20,
+    "seed": 43,
+    "best_score": 185.35433915986226,
+    "time_seconds": 1.934912919998169,
+    "evaluations": 400
+  },
+  {
+    "method": "Random",
+    "function": "rosenbrock",
+    "dim": 20,
+    "seed": 43,
+    "best_score": 2770.9436135614424,
+    "time_seconds": 0.017305374145507812,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-Coherence",
+    "function": "rosenbrock",
+    "dim": 20,
+    "seed": 44,
+    "best_score": 487.87616171813966,
+    "time_seconds": 2.459638833999634,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-Potential",
+    "function": "rosenbrock",
+    "dim": 20,
+    "seed": 44,
+    "best_score": 159.53626444807375,
+    "time_seconds": 2.065328359603882,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-V1",
+    "function": "rosenbrock",
+    "dim": 20,
+    "seed": 44,
+    "best_score": 365.04898335371223,
+    "time_seconds": 2.8469042778015137,
+    "evaluations": 400
+  },
+  {
+    "method": "HPO-LGS",
+    "function": "rosenbrock",
+    "dim": 20,
+    "seed": 44,
+    "best_score": 214.16116653287813,
+    "time_seconds": 2.0256710052490234,
+    "evaluations": 400
+  },
+  {
+    "method": "Random",
+    "function": "rosenbrock",
+    "dim": 20,
+    "seed": 44,
+    "best_score": 1541.1723376071027,
+    "time_seconds": 0.01885247230529785,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-Coherence",
+    "function": "ackley",
+    "dim": 20,
+    "seed": 42,
+    "best_score": 15.969689394778467,
+    "time_seconds": 2.8611435890197754,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-Potential",
+    "function": "ackley",
+    "dim": 20,
+    "seed": 42,
+    "best_score": 15.541766930840874,
+    "time_seconds": 2.257908582687378,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-V1",
+    "function": "ackley",
+    "dim": 20,
+    "seed": 42,
+    "best_score": 16.813560976982167,
+    "time_seconds": 3.0760140419006348,
+    "evaluations": 400
+  },
+  {
+    "method": "HPO-LGS",
+    "function": "ackley",
+    "dim": 20,
+    "seed": 42,
+    "best_score": 15.732340815622155,
+    "time_seconds": 1.9444482326507568,
+    "evaluations": 400
+  },
+  {
+    "method": "Random",
+    "function": "ackley",
+    "dim": 20,
+    "seed": 42,
+    "best_score": 19.798942424872997,
+    "time_seconds": 0.012944459915161133,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-Coherence",
+    "function": "ackley",
+    "dim": 20,
+    "seed": 43,
+    "best_score": 15.196317577875769,
+    "time_seconds": 2.6567399501800537,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-Potential",
+    "function": "ackley",
+    "dim": 20,
+    "seed": 43,
+    "best_score": 14.265500736728363,
+    "time_seconds": 2.1649820804595947,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-V1",
+    "function": "ackley",
+    "dim": 20,
+    "seed": 43,
+    "best_score": 14.820117177707907,
+    "time_seconds": 2.9863386154174805,
+    "evaluations": 400
+  },
+  {
+    "method": "HPO-LGS",
+    "function": "ackley",
+    "dim": 20,
+    "seed": 43,
+    "best_score": 14.539120794537158,
+    "time_seconds": 1.9608726501464844,
+    "evaluations": 400
+  },
+  {
+    "method": "Random",
+    "function": "ackley",
+    "dim": 20,
+    "seed": 43,
+    "best_score": 20.181316174338853,
+    "time_seconds": 0.015716075897216797,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-Coherence",
+    "function": "ackley",
+    "dim": 20,
+    "seed": 44,
+    "best_score": 15.641012903310898,
+    "time_seconds": 2.1497139930725098,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-Potential",
+    "function": "ackley",
+    "dim": 20,
+    "seed": 44,
+    "best_score": 16.888476619960937,
+    "time_seconds": 1.4327795505523682,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-V1",
+    "function": "ackley",
+    "dim": 20,
+    "seed": 44,
+    "best_score": 14.729259778473965,
+    "time_seconds": 1.9922797679901123,
+    "evaluations": 400
+  },
+  {
+    "method": "HPO-LGS",
+    "function": "ackley",
+    "dim": 20,
+    "seed": 44,
+    "best_score": 12.75056887399984,
+    "time_seconds": 2.041505813598633,
+    "evaluations": 400
+  },
+  {
+    "method": "Random",
+    "function": "ackley",
+    "dim": 20,
+    "seed": 44,
+    "best_score": 19.132599303579134,
+    "time_seconds": 0.012964487075805664,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-Coherence",
+    "function": "rastrigin",
+    "dim": 20,
+    "seed": 42,
+    "best_score": 187.3914604081167,
+    "time_seconds": 2.669607162475586,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-Potential",
+    "function": "rastrigin",
+    "dim": 20,
+    "seed": 42,
+    "best_score": 175.18631065286428,
+    "time_seconds": 2.214235544204712,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-V1",
+    "function": "rastrigin",
+    "dim": 20,
+    "seed": 42,
+    "best_score": 157.34573906274073,
+    "time_seconds": 2.918487310409546,
+    "evaluations": 400
+  },
+  {
+    "method": "HPO-LGS",
+    "function": "rastrigin",
+    "dim": 20,
+    "seed": 42,
+    "best_score": 169.80407678384515,
+    "time_seconds": 1.8885726928710938,
+    "evaluations": 400
+  },
+  {
+    "method": "Random",
+    "function": "rastrigin",
+    "dim": 20,
+    "seed": 42,
+    "best_score": 247.07905915797363,
+    "time_seconds": 0.01484537124633789,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-Coherence",
+    "function": "rastrigin",
+    "dim": 20,
+    "seed": 43,
+    "best_score": 177.83599571746328,
+    "time_seconds": 2.7709736824035645,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-Potential",
+    "function": "rastrigin",
+    "dim": 20,
+    "seed": 43,
+    "best_score": 162.86164284543136,
+    "time_seconds": 2.2937233448028564,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-V1",
+    "function": "rastrigin",
+    "dim": 20,
+    "seed": 43,
+    "best_score": 157.2455916449717,
+    "time_seconds": 3.1020312309265137,
+    "evaluations": 400
+  },
+  {
+    "method": "HPO-LGS",
+    "function": "rastrigin",
+    "dim": 20,
+    "seed": 43,
+    "best_score": 153.00033404788428,
+    "time_seconds": 1.9751837253570557,
+    "evaluations": 400
+  },
+  {
+    "method": "Random",
+    "function": "rastrigin",
+    "dim": 20,
+    "seed": 43,
+    "best_score": 255.88410673008437,
+    "time_seconds": 0.013392448425292969,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-Coherence",
+    "function": "rastrigin",
+    "dim": 20,
+    "seed": 44,
+    "best_score": 178.45300490323413,
+    "time_seconds": 2.597306489944458,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-Potential",
+    "function": "rastrigin",
+    "dim": 20,
+    "seed": 44,
+    "best_score": 174.41794286937505,
+    "time_seconds": 2.2690141201019287,
+    "evaluations": 400
+  },
+  {
+    "method": "ALBA-V1",
+    "function": "rastrigin",
+    "dim": 20,
+    "seed": 44,
+    "best_score": 178.45300490323413,
+    "time_seconds": 2.7733469009399414,
+    "evaluations": 400
+  },
+  {
+    "method": "HPO-LGS",
+    "function": "rastrigin",
+    "dim": 20,
+    "seed": 44,
+    "best_score": 136.235884503235,
+    "time_seconds": 1.9700729846954346,
+    "evaluations": 400
+  },
+  {
+    "method": "Random",
+    "function": "rastrigin",
+    "dim": 20,
+    "seed": 44,
+    "best_score": 233.5612843089782,
+    "time_seconds": 0.0152435302734375,
+    "evaluations": 400
+  }
+]

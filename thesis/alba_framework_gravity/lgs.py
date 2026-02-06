@@ -75,7 +75,15 @@ def fit_lgs_model(
         y_centered = (all_scores - y_mean) / y_std
 
         try:
-            dists_sq = np.sum(X_norm**2, axis=1)
+            w = None
+            try:
+                w = cube.get_warp_multipliers()
+            except Exception:
+                w = None
+            if w is not None and getattr(w, "shape", None) == (dim,):
+                dists_sq = np.sum((X_norm * np.asarray(w, dtype=float)) ** 2, axis=1)
+            else:
+                dists_sq = np.sum(X_norm**2, axis=1)
             sigma_sq = np.mean(dists_sq) + 1e-6
             weights = np.exp(-dists_sq / (2 * sigma_sq))
 

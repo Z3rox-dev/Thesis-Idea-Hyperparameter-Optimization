@@ -1,0 +1,13 @@
+Running Real Tabular XGBoost Benchmark (Evals=400, Seeds=3)
+------------------------------------------------------------
+Running Random...
+Traceback (most recent call last):
+  File "/mnt/workspace/miniconda3/envs/py39/lib/python3.9/runpy.py", line 197, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/mnt/workspace/miniconda3/envs/py39/lib/python3.9/runpy.py", line 87, in _run_code
+    exec(code, run_globals)
+  File "/mnt/workspace/thesis/alba_framework_potential/benchmark_tabular_real.py", line 246, in <module>
+    run_benchmark()
+  File "/mnt/workspace/thesis/alba_framework_potential/benchmark_tabular_real.py", line 243, in run_benchmark
+    print(f"  {name}: {mean:.4f} error")
+ValueError: I/O operation on closed file.

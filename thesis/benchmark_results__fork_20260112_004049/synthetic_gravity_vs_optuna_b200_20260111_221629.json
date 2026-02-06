@@ -1,0 +1,73 @@
+{
+  "benchmark": "synthetic_gravity_vs_optuna",
+  "methods": {
+    "alba_framework_gravity": {
+      "kind": "alba_framework_gravity"
+    },
+    "optuna_tpe": {
+      "kind": "optuna_TPE"
+    }
+  },
+  "config": {
+    "budget": 200,
+    "seeds": [
+      70,
+      71,
+      72,
+      73
+    ],
+    "dims": [
+      4
+    ],
+    "funcs": [
+      "sphere",
+      "rosenbrock"
+    ]
+  },
+  "tasks": {
+    "sphere_4D": [
+      {
+        "seed": 70,
+        "alba_framework_gravity": 0.4569163140569785,
+        "optuna_tpe": 0.1950817293149938
+      },
+      {
+        "seed": 71,
+        "alba_framework_gravity": 0.5947084195123138,
+        "optuna_tpe": 0.19711572410796852
+      },
+      {
+        "seed": 72,
+        "alba_framework_gravity": 0.2984094485709221,
+        "optuna_tpe": 0.12714677604235575
+      },
+      {
+        "seed": 73,
+        "alba_framework_gravity": 0.5174844339697781,
+        "optuna_tpe": 0.06750768933863065
+      }
+    ],
+    "rosenbrock_4D": [
+      {
+        "seed": 70,
+        "alba_framework_gravity": 432.340303730011,
+        "optuna_tpe": 9.027932098982324
+      },
+      {
+        "seed": 71,
+        "alba_framework_gravity": 136.9425548307026,
+        "optuna_tpe": 6.9187186587823355
+      },
+      {
+        "seed": 72,
+        "alba_framework_gravity": 91.61602196116534,
+        "optuna_tpe": 27.736304910810503
+      },
+      {
+        "seed": 73,
+        "alba_framework_gravity": 581.8858560061874,
+        "optuna_tpe": 15.291486832264068
+      }
+    ]
+  }
+}

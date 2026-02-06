@@ -1,0 +1,20 @@
+Warning: nevergrad not installed.
+Running in TEST mode (reduced budget/repeats)
+Starting Benchmark Suite (Test=True)...
+Function     Dim  Opt        Mean       Std        Time(s)  Best(all) 
+--------------------------------------------------------------------------------
+Error creating nevergrad function 'Sphere': name 'ng_funcs' is not defined. Falling back to manual.
+Traceback (most recent call last):
+  File "/mnt/workspace/miniconda3/envs/py39/lib/python3.9/runpy.py", line 197, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/mnt/workspace/miniconda3/envs/py39/lib/python3.9/runpy.py", line 87, in _run_code
+    exec(code, run_globals)
+  File "/mnt/workspace/thesis/alba_framework_potential/benchmark_suite_synthetic.py", line 547, in <module>
+    run_all(test_run=args.test_run)
+  File "/mnt/workspace/thesis/alba_framework_potential/benchmark_suite_synthetic.py", line 471, in run_all
+    func, bounds, optimum = get_function(name, dim)
+  File "/mnt/workspace/thesis/alba_framework_potential/benchmark_suite_synthetic.py", line 167, in get_function
+    raise e
+  File "/mnt/workspace/thesis/alba_framework_potential/benchmark_suite_synthetic.py", line 164, in get_function
+    ng_func = ng_funcs.ArtificialFunction(base_name.lower(), block_dimension=dim, rotation=False, translation_factor=0.0)
+NameError: name 'ng_funcs' is not defined

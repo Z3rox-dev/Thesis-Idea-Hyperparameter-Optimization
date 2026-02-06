@@ -1,0 +1,30 @@
+{
+  "config": {
+    "datasets": [
+      "letter",
+      "mnist"
+    ],
+    "budget": 80,
+    "checkpoints": [
+      80
+    ],
+    "seeds": [
+      70,
+      71
+    ],
+    "step": 50,
+    "framework": {
+      "grid_bins": 8,
+      "grid_batch_size": 512,
+      "grid_batches": 4,
+      "grid_sampling": "grid_random",
+      "grid_jitter": true,
+      "grid_penalty_lambda": 0.06,
+      "heatmap_blend_tau": 3.0,
+      "heatmap_soft_assignment": true,
+      "heatmap_multi_resolution": true
+    },
+    "timestamp": "20260108_231505"
+  },
+  "datasets": {}
+}

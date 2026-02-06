@@ -1,0 +1,118 @@
+{
+  "benchmark": "synthetic_gravity_vs_optuna",
+  "methods": {
+    "alba_framework_gravity": {
+      "kind": "alba_framework_gravity"
+    },
+    "optuna_tpe": {
+      "kind": "optuna_TPE"
+    }
+  },
+  "config": {
+    "budget": 1000,
+    "seeds": [
+      80,
+      81,
+      82,
+      83,
+      84,
+      85,
+      86,
+      87,
+      88,
+      89,
+      90
+    ],
+    "dims": [
+      4,
+      15
+    ],
+    "funcs": [
+      "sphere",
+      "rosenbrock",
+      "rastrigin",
+      "ackley",
+      "levy",
+      "griewank",
+      "schwefel",
+      "zakharov",
+      "styblinski_tang"
+    ]
+  },
+  "tasks": {
+    "sphere_4D": [
+      {
+        "seed": 80,
+        "alba_framework_gravity": 0.025630247798561517,
+        "optuna_tpe": 0.12277052438732758
+      },
+      {
+        "seed": 81,
+        "alba_framework_gravity": 0.011308075325269014,
+        "optuna_tpe": 0.018981683211840062
+      },
+      {
+        "seed": 82,
+        "alba_framework_gravity": 0.04850356298614147,
+        "optuna_tpe": 0.05948591180645819
+      },
+      {
+        "seed": 83,
+        "alba_framework_gravity": 0.044053115654509714,
+        "optuna_tpe": 0.040170410369668876
+      },
+      {
+        "seed": 84,
+        "alba_framework_gravity": 0.04438281190575445,
+        "optuna_tpe": 0.033367771444804864
+      },
+      {
+        "seed": 85,
+        "alba_framework_gravity": 0.0671860725942103,
+        "optuna_tpe": 0.062429158658120334
+      },
+      {
+        "seed": 86,
+        "alba_framework_gravity": 0.13944515934385418,
+        "optuna_tpe": 0.11138347340389326
+      },
+      {
+        "seed": 87,
+        "alba_framework_gravity": 0.045641821543740135,
+        "optuna_tpe": 0.04914937557256311
+      },
+      {
+        "seed": 88,
+        "alba_framework_gravity": 0.10564828451085295,
+        "optuna_tpe": 0.034855474179353904
+      },
+      {
+        "seed": 89,
+        "alba_framework_gravity": 0.23592455272853285,
+        "optuna_tpe": 0.03669045285890488
+      },
+      {
+        "seed": 90,
+        "alba_framework_gravity": 0.0023439611884468877,
+        "optuna_tpe": 0.08678619413983966
+      }
+    ],
+    "sphere_15D": [
+      {
+        "seed": 80,
+        "alba_framework_gravity": 4.4828751984988235,
+        "optuna_tpe": 12.598225570411067
+      },
+      {
+        "seed": 81,
+        "alba_framework_gravity": 2.7250614450292465,
+        "optuna_tpe": 11.739777106735318
+      },
+      {
+        "seed": 82,
+        "alba_framework_gravity": 2.853996310938093,
+        "optuna_tpe": 18.46937064509733
+      }
+    ]
+  }
+}

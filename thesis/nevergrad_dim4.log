@@ -1,0 +1,538 @@
+======================================================================
+NEVERGRAD BENCHMARK: ALBA vs Optuna
+======================================================================
+Budget: 400
+Seeds: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+Dimension: 4
+Functions: 32
+
+
+==================================================
+Function: sphere
+==================================================
+  [1/320] Seed 0... ALBA=0.0904 vs Optuna=0.0154 → OPTUNA
+  [2/320] Seed 1... ALBA=0.2527 vs Optuna=0.0359 → OPTUNA
+  [3/320] Seed 2... ALBA=0.1453 vs Optuna=0.0219 → OPTUNA
+  [4/320] Seed 3... ALBA=0.0475 vs Optuna=0.0371 → OPTUNA
+  [5/320] Seed 4... ALBA=0.0925 vs Optuna=0.0119 → OPTUNA
+  [6/320] Seed 5... ALBA=0.1690 vs Optuna=0.0534 → OPTUNA
+  [7/320] Seed 6... ALBA=0.1535 vs Optuna=0.0177 → OPTUNA
+  [8/320] Seed 7... ALBA=0.1700 vs Optuna=0.0027 → OPTUNA
+  [9/320] Seed 8... ALBA=0.2379 vs Optuna=0.0187 → OPTUNA
+  [10/320] Seed 9... ALBA=0.0711 vs Optuna=0.0474 → OPTUNA
+  → sphere: ALBA 0/10 (0%)
+
+==================================================
+Function: sphere1
+==================================================
+  [11/320] Seed 0... ALBA=0.0542 vs Optuna=0.0490 → OPTUNA
+  [12/320] Seed 1... ALBA=0.2688 vs Optuna=0.0332 → OPTUNA
+  [13/320] Seed 2... ALBA=0.1757 vs Optuna=0.0307 → OPTUNA
+  [14/320] Seed 3... ALBA=0.2737 vs Optuna=0.0059 → OPTUNA
+  [15/320] Seed 4... ALBA=0.5357 vs Optuna=0.0071 → OPTUNA
+  [16/320] Seed 5... ALBA=0.2672 vs Optuna=0.0532 → OPTUNA
+  [17/320] Seed 6... ALBA=0.0284 vs Optuna=0.0111 → OPTUNA
+  [18/320] Seed 7... ALBA=0.2646 vs Optuna=0.0357 → OPTUNA
+  [19/320] Seed 8... ALBA=0.2064 vs Optuna=0.0074 → OPTUNA
+  [20/320] Seed 9... ALBA=0.1364 vs Optuna=0.0291 → OPTUNA
+  → sphere1: ALBA 0/10 (0%)
+
+==================================================
+Function: sphere2
+==================================================
+  [21/320] Seed 0... ALBA=0.2223 vs Optuna=0.0601 → OPTUNA
+  [22/320] Seed 1... ALBA=0.2628 vs Optuna=0.0092 → OPTUNA
+  [23/320] Seed 2... ALBA=0.0851 vs Optuna=0.0393 → OPTUNA
+  [24/320] Seed 3... ALBA=0.3132 vs Optuna=0.0063 → OPTUNA
+  [25/320] Seed 4... ALBA=0.1102 vs Optuna=0.0444 → OPTUNA
+  [26/320] Seed 5... ALBA=0.0478 vs Optuna=0.0065 → OPTUNA
+  [27/320] Seed 6... ALBA=0.1099 vs Optuna=0.0315 → OPTUNA
+  [28/320] Seed 7... ALBA=0.0213 vs Optuna=0.0337 → ALBA
+  [29/320] Seed 8... ALBA=0.1777 vs Optuna=0.0141 → OPTUNA
+  [30/320] Seed 9... ALBA=0.0766 vs Optuna=0.0174 → OPTUNA
+  → sphere2: ALBA 1/10 (10%)
+
+==================================================
+Function: sphere4
+==================================================
+  [31/320] Seed 0... ALBA=0.0235 vs Optuna=0.0097 → OPTUNA
+  [32/320] Seed 1... ALBA=0.3579 vs Optuna=0.0178 → OPTUNA
+  [33/320] Seed 2... ALBA=0.2677 vs Optuna=0.4357 → ALBA
+  [34/320] Seed 3... ALBA=0.7290 vs Optuna=0.7678 → ALBA
+  [35/320] Seed 4... ALBA=1.8490 vs Optuna=2.1712 → ALBA
+  [36/320] Seed 5... ALBA=0.0638 vs Optuna=0.0070 → OPTUNA
+  [37/320] Seed 6... ALBA=0.0190 vs Optuna=0.0259 → ALBA
+  [38/320] Seed 7... ALBA=0.0708 vs Optuna=0.1685 → ALBA
+  [39/320] Seed 8... ALBA=3.0425 vs Optuna=3.0953 → ALBA
+  [40/320] Seed 9... ALBA=0.0931 vs Optuna=0.1043 → ALBA
+  → sphere4: ALBA 7/10 (70%)
+
+==================================================
+Function: rosenbrock
+==================================================
+  [41/320] Seed 0... ALBA=9.7876 vs Optuna=0.8938 → OPTUNA
+  [42/320] Seed 1... ALBA=23.7047 vs Optuna=1.7772 → OPTUNA
+  [43/320] Seed 2... ALBA=7.8165 vs Optuna=2.0958 → OPTUNA
+  [44/320] Seed 3... ALBA=11.3483 vs Optuna=3.2286 → OPTUNA
+  [45/320] Seed 4... ALBA=14.5779 vs Optuna=2.4339 → OPTUNA
+  [46/320] Seed 5... ALBA=14.6104 vs Optuna=3.5429 → OPTUNA
+  [47/320] Seed 6... ALBA=69.7178 vs Optuna=2.5850 → OPTUNA
+  [48/320] Seed 7... ALBA=27.9514 vs Optuna=3.6303 → OPTUNA
+  [49/320] Seed 8... ALBA=11.2074 vs Optuna=3.9924 → OPTUNA
+  [50/320] Seed 9... ALBA=2.8693 vs Optuna=4.6910 → ALBA
+  → rosenbrock: ALBA 1/10 (10%)
+
+==================================================
+Function: ellipsoid
+==================================================
+  [51/320] Seed 0... ALBA=726.5603 vs Optuna=581.9687 → OPTUNA
+  [52/320] Seed 1... ALBA=3066.3458 vs Optuna=587.8091 → OPTUNA
+  [53/320] Seed 2... ALBA=465.2932 vs Optuna=19.9660 → OPTUNA
+  [54/320] Seed 3... ALBA=2306.5739 vs Optuna=723.7764 → OPTUNA
+  [55/320] Seed 4... ALBA=2167.7334 vs Optuna=1002.3344 → OPTUNA
+  [56/320] Seed 5... ALBA=2116.4648 vs Optuna=295.2042 → OPTUNA
+  [57/320] Seed 6... ALBA=751.9731 vs Optuna=69.7076 → OPTUNA
+  [58/320] Seed 7... ALBA=2795.3432 vs Optuna=75.8031 → OPTUNA
+  [59/320] Seed 8... ALBA=2078.9275 vs Optuna=408.1296 → OPTUNA
+  [60/320] Seed 9... ALBA=1956.4064 vs Optuna=188.9664 → OPTUNA
+  → ellipsoid: ALBA 0/10 (0%)
+
+==================================================
+Function: cigar
+==================================================
+  [61/320] Seed 0... ALBA=6147.8872 vs Optuna=12366.6099 → ALBA
+  [62/320] Seed 1... ALBA=35427.2747 vs Optuna=8950.0662 → OPTUNA
+  [63/320] Seed 2... ALBA=196151.7309 vs Optuna=10733.8560 → OPTUNA
+  [64/320] Seed 3... ALBA=48840.9597 vs Optuna=5742.3038 → OPTUNA
+  [65/320] Seed 4... ALBA=12771.6461 vs Optuna=2249.3346 → OPTUNA
+  [66/320] Seed 5... ALBA=46984.2909 vs Optuna=13982.9452 → OPTUNA
+  [67/320] Seed 6... ALBA=30320.7703 vs Optuna=7698.7062 → OPTUNA
+  [68/320] Seed 7... ALBA=101607.5262 vs Optuna=2366.0988 → OPTUNA
+  [69/320] Seed 8... ALBA=46310.7702 vs Optuna=6732.8637 → OPTUNA
+  [70/320] Seed 9... ALBA=51153.0818 vs Optuna=10697.5518 → OPTUNA
+  → cigar: ALBA 1/10 (10%)
+
+==================================================
+Function: altcigar
+==================================================
+  [71/320] Seed 0... ALBA=107548.3764 vs Optuna=5168.5599 → OPTUNA
+  [72/320] Seed 1... ALBA=20367.7678 vs Optuna=10093.4173 → OPTUNA
+  [73/320] Seed 2... ALBA=91313.2810 vs Optuna=2369.6570 → OPTUNA
+  [74/320] Seed 3... ALBA=34399.2546 vs Optuna=9656.7005 → OPTUNA
+  [75/320] Seed 4... ALBA=37498.3057 vs Optuna=2012.6162 → OPTUNA
+  [76/320] Seed 5... ALBA=78623.9216 vs Optuna=437.2688 → OPTUNA
+  [77/320] Seed 6... ALBA=96394.5889 vs Optuna=2053.9878 → OPTUNA
+  [78/320] Seed 7... ALBA=19565.3903 vs Optuna=826.7314 → OPTUNA
+  [79/320] Seed 8... ALBA=137653.5747 vs Optuna=4084.3129 → OPTUNA
+  [80/320] Seed 9... ALBA=45999.2474 vs Optuna=945.7851 → OPTUNA
+  → altcigar: ALBA 0/10 (0%)
+
+==================================================
+Function: altellipsoid
+==================================================
+  [81/320] Seed 0... ALBA=1117.9796 vs Optuna=70.6792 → OPTUNA
+  [82/320] Seed 1... ALBA=299.7954 vs Optuna=348.4022 → ALBA
+  [83/320] Seed 2... ALBA=715.1496 vs Optuna=91.5989 → OPTUNA
+  [84/320] Seed 3... ALBA=401.5914 vs Optuna=134.6070 → OPTUNA
+  [85/320] Seed 4... ALBA=13.1922 vs Optuna=55.5369 → ALBA
+  [86/320] Seed 5... ALBA=852.1513 vs Optuna=352.3375 → OPTUNA
+  [87/320] Seed 6... ALBA=268.8028 vs Optuna=272.9016 → ALBA
+  [88/320] Seed 7... ALBA=2262.1466 vs Optuna=126.8263 → OPTUNA
+  [89/320] Seed 8... ALBA=2779.1536 vs Optuna=455.5929 → OPTUNA
+  [90/320] Seed 9... ALBA=1909.9146 vs Optuna=76.4077 → OPTUNA
+  → altellipsoid: ALBA 3/10 (30%)
+
+==================================================
+Function: schwefel_1_2
+==================================================
+  [91/320] Seed 0... ALBA=0.1856 vs Optuna=0.0045 → OPTUNA
+  [92/320] Seed 1... ALBA=0.0782 vs Optuna=0.0163 → OPTUNA
+  [93/320] Seed 2... ALBA=0.2564 vs Optuna=0.0474 → OPTUNA
+  [94/320] Seed 3... ALBA=0.4900 vs Optuna=0.0530 → OPTUNA
+  [95/320] Seed 4... ALBA=0.1798 vs Optuna=0.0317 → OPTUNA
+  [96/320] Seed 5... ALBA=0.4121 vs Optuna=0.0182 → OPTUNA
+  [97/320] Seed 6... ALBA=0.1243 vs Optuna=0.0338 → OPTUNA
+  [98/320] Seed 7... ALBA=0.0488 vs Optuna=0.0030 → OPTUNA
+  [99/320] Seed 8... ALBA=0.0756 vs Optuna=0.0059 → OPTUNA
+  [100/320] Seed 9... ALBA=0.1771 vs Optuna=0.0164 → OPTUNA
+  → schwefel_1_2: ALBA 0/10 (0%)
+
+==================================================
+Function: linear
+==================================================
+  [101/320] Seed 0... ALBA=-0.9998 vs Optuna=-0.9998 → ALBA
+  [102/320] Seed 1... ALBA=-0.9998 vs Optuna=-0.9998 → ALBA
+  [103/320] Seed 2... ALBA=-1.0000 vs Optuna=-1.0000 → ALBA
+  [104/320] Seed 3... ALBA=-0.9995 vs Optuna=-0.9995 → ALBA
+  [105/320] Seed 4... ALBA=-1.0000 vs Optuna=-1.0000 → ALBA
+  [106/320] Seed 5... ALBA=-0.9993 vs Optuna=-0.9993 → ALBA
+  [107/320] Seed 6... ALBA=-1.0000 vs Optuna=-1.0000 → ALBA
+  [108/320] Seed 7... ALBA=-0.9998 vs Optuna=-0.9998 → ALBA
+  [109/320] Seed 8... ALBA=-1.0000 vs Optuna=-1.0000 → ALBA
+  [110/320] Seed 9... ALBA=-0.9998 vs Optuna=-0.9998 → ALBA
+  → linear: ALBA 10/10 (100%)
+
+==================================================
+Function: slope
+==================================================
+  [111/320] Seed 0... ALBA=-20.7313 vs Optuna=-20.0577 → ALBA
+  [112/320] Seed 1... ALBA=-19.4900 vs Optuna=-19.4534 → ALBA
+  [113/320] Seed 2... ALBA=-22.4481 vs Optuna=-21.2181 → ALBA
+  [114/320] Seed 3... ALBA=-20.8029 vs Optuna=-20.4220 → ALBA
+  [115/320] Seed 4... ALBA=-23.0234 vs Optuna=-21.9272 → ALBA
+  [116/320] Seed 5... ALBA=-18.5670 vs Optuna=-18.5424 → ALBA
+  [117/320] Seed 6... ALBA=-20.1442 vs Optuna=-19.4941 → ALBA
+  [118/320] Seed 7... ALBA=-20.3602 vs Optuna=-20.0719 → ALBA
+  [119/320] Seed 8... ALBA=-22.9532 vs Optuna=-22.4621 → ALBA
+  [120/320] Seed 9... ALBA=-20.2877 vs Optuna=-19.4579 → ALBA
+  → slope: ALBA 10/10 (100%)
+
+==================================================
+Function: doublelinearslope
+==================================================
+  [121/320] Seed 0... ALBA=0.0031 vs Optuna=0.0079 → ALBA
+  [122/320] Seed 1... ALBA=0.0031 vs Optuna=0.0023 → OPTUNA
+  [123/320] Seed 2... ALBA=0.0168 vs Optuna=0.0044 → OPTUNA
+  [124/320] Seed 3... ALBA=0.0036 vs Optuna=0.0057 → ALBA
+  [125/320] Seed 4... ALBA=0.0032 vs Optuna=0.0072 → ALBA
+  [126/320] Seed 5... ALBA=0.0039 vs Optuna=0.0001 → OPTUNA
+  [127/320] Seed 6... ALBA=0.0034 vs Optuna=0.0017 → OPTUNA
+  [128/320] Seed 7... ALBA=0.0015 vs Optuna=0.0001 → OPTUNA
+  [129/320] Seed 8... ALBA=0.0082 vs Optuna=0.0047 → OPTUNA
+  [130/320] Seed 9... ALBA=0.0086 vs Optuna=0.0039 → OPTUNA
+  → doublelinearslope: ALBA 3/10 (30%)
+
+==================================================
+Function: rastrigin
+==================================================
+  [131/320] Seed 0... ALBA=7.8844 vs Optuna=4.8502 → OPTUNA
+  [132/320] Seed 1... ALBA=12.5169 vs Optuna=11.9327 → OPTUNA
+  [133/320] Seed 2... ALBA=12.6311 vs Optuna=9.0314 → OPTUNA
+  [134/320] Seed 3... ALBA=18.8015 vs Optuna=4.1807 → OPTUNA
+  [135/320] Seed 4... ALBA=16.6222 vs Optuna=8.7503 → OPTUNA
+  [136/320] Seed 5... ALBA=10.6135 vs Optuna=4.1567 → OPTUNA
+  [137/320] Seed 6... ALBA=11.4259 vs Optuna=7.7923 → OPTUNA
+  [138/320] Seed 7... ALBA=16.9676 vs Optuna=7.1020 → OPTUNA
+  [139/320] Seed 8... ALBA=21.5697 vs Optuna=8.7216 → OPTUNA
+  [140/320] Seed 9... ALBA=5.4882 vs Optuna=6.6936 → ALBA
+  → rastrigin: ALBA 1/10 (10%)
+
+==================================================
+Function: bucherastrigin
+==================================================
+  [141/320] Seed 0... ALBA=23.6655 vs Optuna=16.0972 → OPTUNA
+  [142/320] Seed 1... ALBA=20.6017 vs Optuna=4.6210 → OPTUNA
+  [143/320] Seed 2... ALBA=3.6004 vs Optuna=4.5672 → ALBA
+  [144/320] Seed 3... ALBA=28.6557 vs Optuna=6.7323 → OPTUNA
+  [145/320] Seed 4... ALBA=21.1045 vs Optuna=8.6621 → OPTUNA
+  [146/320] Seed 5... ALBA=23.5171 vs Optuna=10.1100 → OPTUNA
+  [147/320] Seed 6... ALBA=20.4956 vs Optuna=17.0380 → OPTUNA
+  [148/320] Seed 7... ALBA=12.4306 vs Optuna=6.1601 → OPTUNA
+  [149/320] Seed 8... ALBA=20.3476 vs Optuna=8.2727 → OPTUNA
+  [150/320] Seed 9... ALBA=25.2347 vs Optuna=11.0086 → OPTUNA
+  → bucherastrigin: ALBA 1/10 (10%)
+
+==================================================
+Function: lunacek
+==================================================
+  [151/320] Seed 0... ALBA=11.4522 vs Optuna=8.4744 → OPTUNA
+  [152/320] Seed 1... ALBA=7.4965 vs Optuna=6.2054 → OPTUNA
+  [153/320] Seed 2... ALBA=9.0301 vs Optuna=10.6630 → ALBA
+  [154/320] Seed 3... ALBA=5.7943 vs Optuna=5.9909 → ALBA
+  [155/320] Seed 4... ALBA=15.2976 vs Optuna=12.3240 → OPTUNA
+  [156/320] Seed 5... ALBA=9.7173 vs Optuna=5.1201 → OPTUNA
+  [157/320] Seed 6... ALBA=5.8860 vs Optuna=8.3959 → ALBA
+  [158/320] Seed 7... ALBA=7.7776 vs Optuna=5.9903 → OPTUNA
+  [159/320] Seed 8... ALBA=11.2877 vs Optuna=7.6143 → OPTUNA
+  [160/320] Seed 9... ALBA=11.9577 vs Optuna=10.4753 → OPTUNA
+  → lunacek: ALBA 3/10 (30%)
+
+==================================================
+Function: griewank
+==================================================
+  [161/320] Seed 0... ALBA=0.1423 vs Optuna=0.0093 → OPTUNA
+  [162/320] Seed 1... ALBA=0.0717 vs Optuna=0.0171 → OPTUNA
+  [163/320] Seed 2... ALBA=0.5656 vs Optuna=0.0136 → OPTUNA
+  [164/320] Seed 3... ALBA=0.0436 vs Optuna=0.0197 → OPTUNA
+  [165/320] Seed 4... ALBA=0.0172 vs Optuna=0.0151 → OPTUNA
+  [166/320] Seed 5... ALBA=0.0803 vs Optuna=0.0120 → OPTUNA
+  [167/320] Seed 6... ALBA=0.0821 vs Optuna=0.0130 → OPTUNA
+  [168/320] Seed 7... ALBA=0.0639 vs Optuna=0.0099 → OPTUNA
+  [169/320] Seed 8... ALBA=0.1324 vs Optuna=0.0052 → OPTUNA
+  [170/320] Seed 9... ALBA=0.0366 vs Optuna=0.0119 → OPTUNA
+  → griewank: ALBA 0/10 (0%)
+
+==================================================
+Function: ackley
+==================================================
+  [171/320] Seed 0... ALBA=1.7163 vs Optuna=0.3496 → OPTUNA
+  [172/320] Seed 1... ALBA=2.2073 vs Optuna=1.8102 → OPTUNA
+  [173/320] Seed 2... ALBA=3.2666 vs Optuna=0.5889 → OPTUNA
+  [174/320] Seed 3... ALBA=2.2464 vs Optuna=1.2183 → OPTUNA
+  [175/320] Seed 4... ALBA=2.7054 vs Optuna=0.6213 → OPTUNA
+  [176/320] Seed 5... ALBA=2.4499 vs Optuna=0.5079 → OPTUNA
+  [177/320] Seed 6... ALBA=2.2750 vs Optuna=0.4210 → OPTUNA
+  [178/320] Seed 7... ALBA=1.2367 vs Optuna=0.4258 → OPTUNA
+  [179/320] Seed 8... ALBA=1.6405 vs Optuna=0.3052 → OPTUNA
+  [180/320] Seed 9... ALBA=2.0570 vs Optuna=0.6388 → OPTUNA
+  → ackley: ALBA 0/10 (0%)
+
+==================================================
+Function: multipeak
+==================================================
+  [181/320] Seed 0... ALBA=1.1721 vs Optuna=1.0636 → OPTUNA
+  [182/320] Seed 1... ALBA=1.1094 vs Optuna=1.0646 → OPTUNA
+  [183/320] Seed 2... ALBA=1.0733 vs Optuna=1.1027 → ALBA
+  [184/320] Seed 3... ALBA=1.1704 vs Optuna=1.0542 → OPTUNA
+  [185/320] Seed 4... ALBA=1.1034 vs Optuna=1.0481 → OPTUNA
+  [186/320] Seed 5... ALBA=1.1870 vs Optuna=1.0489 → OPTUNA
+  [187/320] Seed 6... ALBA=1.0941 vs Optuna=1.0346 → OPTUNA
+  [188/320] Seed 7... ALBA=1.1628 vs Optuna=1.0197 → OPTUNA
+  [189/320] Seed 8... ALBA=1.0935 vs Optuna=1.0641 → OPTUNA
+  [190/320] Seed 9... ALBA=1.1352 vs Optuna=1.0297 → OPTUNA
+  → multipeak: ALBA 1/10 (10%)
+
+==================================================
+Function: hm
+==================================================
+  [191/320] Seed 0... ALBA=0.1630 vs Optuna=0.0039 → OPTUNA
+  [192/320] Seed 1... ALBA=0.0652 vs Optuna=0.0154 → OPTUNA
+  [193/320] Seed 2... ALBA=0.0661 vs Optuna=0.0230 → OPTUNA
+  [194/320] Seed 3... ALBA=0.0715 vs Optuna=0.0109 → OPTUNA
+  [195/320] Seed 4... ALBA=0.0152 vs Optuna=0.0068 → OPTUNA
+  [196/320] Seed 5... ALBA=0.0663 vs Optuna=0.0145 → OPTUNA
+  [197/320] Seed 6... ALBA=0.0891 vs Optuna=0.0133 → OPTUNA
+  [198/320] Seed 7... ALBA=0.1485 vs Optuna=0.0177 → OPTUNA
+  [199/320] Seed 8... ALBA=0.0306 vs Optuna=0.0045 → OPTUNA
+  [200/320] Seed 9... ALBA=0.0769 vs Optuna=0.0026 → OPTUNA
+  → hm: ALBA 0/10 (0%)
+
+==================================================
+Function: bentcigar
+==================================================
+  [201/320] Seed 0... ALBA=10836.4430 vs Optuna=707.1623 → OPTUNA
+  [202/320] Seed 1... ALBA=17927.4147 vs Optuna=13813.4099 → OPTUNA
+  [203/320] Seed 2... ALBA=278751.7150 vs Optuna=621.0752 → OPTUNA
+  [204/320] Seed 3... ALBA=31405.1297 vs Optuna=4470.0595 → OPTUNA
+  [205/320] Seed 4... ALBA=42995.0785 vs Optuna=2775.0557 → OPTUNA
+  [206/320] Seed 5... ALBA=77451.2988 vs Optuna=3175.7400 → OPTUNA
+  [207/320] Seed 6... ALBA=6784.7102 vs Optuna=3397.1952 → OPTUNA
+  [208/320] Seed 7... ALBA=6292.1328 vs Optuna=3443.9146 → OPTUNA
+  [209/320] Seed 8... ALBA=6137.7975 vs Optuna=2239.5378 → OPTUNA
+  [210/320] Seed 9... ALBA=164481.6299 vs Optuna=1243.8354 → OPTUNA
+  → bentcigar: ALBA 0/10 (0%)
+
+==================================================
+Function: discus
+==================================================
+  [211/320] Seed 0... ALBA=20.0592 vs Optuna=4.2184 → OPTUNA
+  [212/320] Seed 1... ALBA=21.0100 vs Optuna=5.6457 → OPTUNA
+  [213/320] Seed 2... ALBA=8.4362 vs Optuna=18.6105 → ALBA
+  [214/320] Seed 3... ALBA=26.9905 vs Optuna=13.7993 → OPTUNA
+  [215/320] Seed 4... ALBA=20.3889 vs Optuna=18.0304 → OPTUNA
+  [216/320] Seed 5... ALBA=12.0356 vs Optuna=49.5883 → ALBA
+  [217/320] Seed 6... ALBA=10.3746 vs Optuna=52.4217 → ALBA
+  [218/320] Seed 7... ALBA=53.6465 vs Optuna=60.1091 → ALBA
+  [219/320] Seed 8... ALBA=23.4430 vs Optuna=24.2198 → ALBA
+  [220/320] Seed 9... ALBA=9.9594 vs Optuna=18.0556 → ALBA
+  → discus: ALBA 6/10 (60%)
+
+==================================================
+Function: deceptivemultimodal
+==================================================
+  [221/320] Seed 0... ALBA=1.0000 vs Optuna=0.7167 → OPTUNA
+  [222/320] Seed 1... ALBA=1.0000 vs Optuna=0.4885 → OPTUNA
+  [223/320] Seed 2... ALBA=0.6213 vs Optuna=1.0000 → ALBA
+  [224/320] Seed 3... ALBA=1.0000 vs Optuna=1.0000 → TIE
+  [225/320] Seed 4... ALBA=1.0000 vs Optuna=0.5515 → OPTUNA
+  [226/320] Seed 5... ALBA=0.5460 vs Optuna=0.2755 → OPTUNA
+  [227/320] Seed 6... ALBA=0.0169 vs Optuna=0.6351 → ALBA
+  [228/320] Seed 7... ALBA=0.3225 vs Optuna=0.3964 → ALBA
+  [229/320] Seed 8... ALBA=1.0000 vs Optuna=0.1841 → OPTUNA
+  [230/320] Seed 9... ALBA=0.3071 vs Optuna=1.0000 → ALBA
+  → deceptivemultimodal: ALBA 4/10 (40%)
+
+==================================================
+Function: deceptiveillcond
+==================================================
+  [231/320] Seed 0... ALBA=0.1398 vs Optuna=0.1279 → OPTUNA
+  [232/320] Seed 1... ALBA=0.3119 vs Optuna=0.1037 → OPTUNA
+  [233/320] Seed 2... ALBA=0.2492 vs Optuna=0.1703 → OPTUNA
+  [234/320] Seed 3... ALBA=0.3834 vs Optuna=0.1170 → OPTUNA
+  [235/320] Seed 4... ALBA=0.4719 vs Optuna=0.1677 → OPTUNA
+  [236/320] Seed 5... ALBA=0.2338 vs Optuna=0.1054 → OPTUNA
+  [237/320] Seed 6... ALBA=0.1907 vs Optuna=0.0631 → OPTUNA
+  [238/320] Seed 7... ALBA=0.1959 vs Optuna=0.0931 → OPTUNA
+  [239/320] Seed 8... ALBA=0.5417 vs Optuna=0.1354 → OPTUNA
+  [240/320] Seed 9... ALBA=0.1882 vs Optuna=0.0651 → OPTUNA
+  → deceptiveillcond: ALBA 0/10 (0%)
+
+==================================================
+Function: deceptivepath
+==================================================
+  [241/320] Seed 0... ALBA=1.0000 vs Optuna=0.9505 → OPTUNA
+  [242/320] Seed 1... ALBA=0.2071 vs Optuna=0.4885 → ALBA
+  [243/320] Seed 2... ALBA=1.0000 vs Optuna=1.0000 → TIE
+  [244/320] Seed 3... ALBA=1.0000 vs Optuna=0.7909 → OPTUNA
+  [245/320] Seed 4... ALBA=0.1315 vs Optuna=1.0000 → ALBA
+  [246/320] Seed 5... ALBA=1.0000 vs Optuna=0.6380 → OPTUNA
+  [247/320] Seed 6... ALBA=1.0000 vs Optuna=0.7149 → OPTUNA
+  [248/320] Seed 7... ALBA=0.8125 vs Optuna=1.0000 → ALBA
+  [249/320] Seed 8... ALBA=1.0000 vs Optuna=0.6887 → OPTUNA
+  [250/320] Seed 9... ALBA=1.0000 vs Optuna=0.4330 → OPTUNA
+  → deceptivepath: ALBA 3/10 (30%)
+
+==================================================
+Function: maxdeceptive
+==================================================
+  [251/320] Seed 0... ALBA=0.1741 vs Optuna=-0.0042 → OPTUNA
+  [252/320] Seed 1... ALBA=0.2317 vs Optuna=-0.0058 → OPTUNA
+  [253/320] Seed 2... ALBA=0.1204 vs Optuna=0.0177 → OPTUNA
+  [254/320] Seed 3... ALBA=0.0535 vs Optuna=-0.0076 → OPTUNA
+  [255/320] Seed 4... ALBA=0.2591 vs Optuna=0.0151 → OPTUNA
+  [256/320] Seed 5... ALBA=0.2964 vs Optuna=-0.0096 → OPTUNA
+  [257/320] Seed 6... ALBA=0.3043 vs Optuna=0.0083 → OPTUNA
+  [258/320] Seed 7... ALBA=0.1280 vs Optuna=0.0106 → OPTUNA
+  [259/320] Seed 8... ALBA=0.4452 vs Optuna=-0.0082 → OPTUNA
+  [260/320] Seed 9... ALBA=0.1724 vs Optuna=0.0082 → OPTUNA
+  → maxdeceptive: ALBA 0/10 (0%)
+
+==================================================
+Function: sumdeceptive
+==================================================
+  [261/320] Seed 0... ALBA=0.2439 vs Optuna=-0.0666 → OPTUNA
+  [262/320] Seed 1... ALBA=0.7683 vs Optuna=-0.0309 → OPTUNA
+  [263/320] Seed 2... ALBA=0.0362 vs Optuna=-0.0530 → OPTUNA
+  [264/320] Seed 3... ALBA=0.1658 vs Optuna=-0.0022 → OPTUNA
+  [265/320] Seed 4... ALBA=0.1263 vs Optuna=0.0230 → OPTUNA
+  [266/320] Seed 5... ALBA=0.0015 vs Optuna=-0.0461 → OPTUNA
+  [267/320] Seed 6... ALBA=0.3745 vs Optuna=0.0106 → OPTUNA
+  [268/320] Seed 7... ALBA=0.7164 vs Optuna=-0.0351 → OPTUNA
+  [269/320] Seed 8... ALBA=0.0911 vs Optuna=-0.0411 → OPTUNA
+  [270/320] Seed 9... ALBA=0.0416 vs Optuna=-0.0283 → OPTUNA
+  → sumdeceptive: ALBA 0/10 (0%)
+
+==================================================
+Function: stepellipsoid
+==================================================
+  [271/320] Seed 0... ALBA=148.4132 vs Optuna=148.4132 → TIE
+  [272/320] Seed 1... ALBA=2980.9580 vs Optuna=403.4288 → OPTUNA
+  [273/320] Seed 2... ALBA=2980.9580 vs Optuna=403.4288 → OPTUNA
+  [274/320] Seed 3... ALBA=2980.9580 vs Optuna=20.0855 → OPTUNA
+  [275/320] Seed 4... ALBA=1096.6332 vs Optuna=54.5982 → OPTUNA
+  [276/320] Seed 5... ALBA=1096.6332 vs Optuna=148.4132 → OPTUNA
+  [277/320] Seed 6... ALBA=1096.6332 vs Optuna=54.5982 → OPTUNA
+  [278/320] Seed 7... ALBA=1096.6332 vs Optuna=20.0855 → OPTUNA
+  [279/320] Seed 8... ALBA=148.4132 vs Optuna=1096.6332 → ALBA
+  [280/320] Seed 9... ALBA=403.4288 vs Optuna=1096.6332 → ALBA
+  → stepellipsoid: ALBA 2/10 (20%)
+
+==================================================
+Function: stepdoublelinearslope
+==================================================
+  [281/320] Seed 0... ALBA=0.0067 vs Optuna=0.0183 → ALBA
+  [282/320] Seed 1... ALBA=0.0067 vs Optuna=0.0183 → ALBA
+  [283/320] Seed 2... ALBA=0.0067 vs Optuna=0.0067 → TIE
+  [284/320] Seed 3... ALBA=0.0025 vs Optuna=0.0183 → ALBA
+  [285/320] Seed 4... ALBA=0.0183 vs Optuna=0.0067 → OPTUNA
+  [286/320] Seed 5... ALBA=0.0025 vs Optuna=0.0025 → TIE
+  [287/320] Seed 6... ALBA=0.0067 vs Optuna=0.0183 → ALBA
+  [288/320] Seed 7... ALBA=0.0067 vs Optuna=0.0009 → OPTUNA
+  [289/320] Seed 8... ALBA=0.0183 vs Optuna=0.0003 → OPTUNA
+  [290/320] Seed 9... ALBA=0.0183 vs Optuna=0.0025 → OPTUNA
+  → stepdoublelinearslope: ALBA 4/10 (40%)
+
+==================================================
+Function: genzcornerpeak
+==================================================
+  [291/320] Seed 0... ALBA=0.0313 vs Optuna=0.0313 → ALBA
+  [292/320] Seed 1... ALBA=0.0313 vs Optuna=0.0313 → ALBA
+  [293/320] Seed 2... ALBA=0.0313 vs Optuna=0.0313 → ALBA
+  [294/320] Seed 3... ALBA=0.0313 vs Optuna=0.0313 → ALBA
+  [295/320] Seed 4... ALBA=0.0313 vs Optuna=0.0313 → ALBA
+  [296/320] Seed 5... ALBA=0.0313 vs Optuna=0.0313 → ALBA
+  [297/320] Seed 6... ALBA=0.0313 vs Optuna=0.0313 → ALBA
+  [298/320] Seed 7... ALBA=0.0313 vs Optuna=0.0313 → ALBA
+  [299/320] Seed 8... ALBA=0.0313 vs Optuna=0.0313 → ALBA
+  [300/320] Seed 9... ALBA=0.0313 vs Optuna=0.0313 → ALBA
+  → genzcornerpeak: ALBA 10/10 (100%)
+
+==================================================
+Function: minusgenzcornerpeak
+==================================================
+  [301/320] Seed 0... ALBA=-162058830055759085568.0000 vs Optuna=-28747552879903969280.0000 → ALBA
+  [302/320] Seed 1... ALBA=-162058830055759085568.0000 vs Optuna=-48564354229097291776.0000 → ALBA
+  [303/320] Seed 2... ALBA=-162058830055759085568.0000 vs Optuna=-138148179542340550656.0000 → ALBA
+  [304/320] Seed 3... ALBA=-162058830055759085568.0000 vs Optuna=-78272375540599996416.0000 → ALBA
+  [305/320] Seed 4... ALBA=-162058830055759085568.0000 vs Optuna=-142615476904746811392.0000 → ALBA
+  [306/320] Seed 5... ALBA=-162058830055759085568.0000 vs Optuna=-126233936925599989760.0000 → ALBA
+  [307/320] Seed 6... ALBA=-162058830055759085568.0000 vs Optuna=-91831555364148903936.0000 → ALBA
+  [308/320] Seed 7... ALBA=-162058830055759085568.0000 vs Optuna=-152352576511557926912.0000 → ALBA
+  [309/320] Seed 8... ALBA=-162058830055759085568.0000 vs Optuna=-86769817444762910720.0000 → ALBA
+  [310/320] Seed 9... ALBA=-162058830055759085568.0000 vs Optuna=-134830510677062270976.0000 → ALBA
+  → minusgenzcornerpeak: ALBA 10/10 (100%)
+
+==================================================
+Function: DelayedSphere
+==================================================
+  [311/320] Seed 0... ALBA=0.3423 vs Optuna=0.0335 → OPTUNA
+  [312/320] Seed 1... ALBA=0.2527 vs Optuna=0.0359 → OPTUNA
+  [313/320] Seed 2... ALBA=0.1453 vs Optuna=0.0219 → OPTUNA
+  [314/320] Seed 3... ALBA=0.0475 vs Optuna=0.0371 → OPTUNA
+  [315/320] Seed 4... ALBA=0.0925 vs Optuna=0.0119 → OPTUNA
+  [316/320] Seed 5... ALBA=0.1690 vs Optuna=0.0534 → OPTUNA
+  [317/320] Seed 6... ALBA=0.1535 vs Optuna=0.0177 → OPTUNA
+  [318/320] Seed 7... ALBA=0.1700 vs Optuna=0.0027 → OPTUNA
+  [319/320] Seed 8... ALBA=0.2379 vs Optuna=0.0187 → OPTUNA
+  [320/320] Seed 9... ALBA=0.0711 vs Optuna=0.0474 → OPTUNA
+  → DelayedSphere: ALBA 0/10 (0%)
+
+======================================================================
+FINAL SUMMARY
+======================================================================
+
+Overall: ALBA 81/320 (25.3%), Optuna 234/320 (73.1%), Ties 5
+
+By function:
+  sphere                   : ALBA 0/10 (0%)
+  sphere1                  : ALBA 0/10 (0%)
+  sphere2                  : ALBA 1/10 (10%)
+  sphere4                  : ALBA 7/10 (70%)
+  rosenbrock               : ALBA 1/10 (10%)
+  ellipsoid                : ALBA 0/10 (0%)
+  cigar                    : ALBA 1/10 (10%)
+  altcigar                 : ALBA 0/10 (0%)
+  altellipsoid             : ALBA 3/10 (30%)
+  schwefel_1_2             : ALBA 0/10 (0%)
+  linear                   : ALBA 10/10 (100%)
+  slope                    : ALBA 10/10 (100%)
+  doublelinearslope        : ALBA 3/10 (30%)
+  rastrigin                : ALBA 1/10 (10%)
+  bucherastrigin           : ALBA 1/10 (10%)
+  lunacek                  : ALBA 3/10 (30%)
+  griewank                 : ALBA 0/10 (0%)
+  ackley                   : ALBA 0/10 (0%)
+  multipeak                : ALBA 1/10 (10%)
+  hm                       : ALBA 0/10 (0%)
+  bentcigar                : ALBA 0/10 (0%)
+  discus                   : ALBA 6/10 (60%)
+  deceptivemultimodal      : ALBA 4/10 (40%)
+  deceptiveillcond         : ALBA 0/10 (0%)
+  deceptivepath            : ALBA 3/10 (30%)
+  maxdeceptive             : ALBA 0/10 (0%)
+  sumdeceptive             : ALBA 0/10 (0%)
+  stepellipsoid            : ALBA 2/10 (20%)
+  stepdoublelinearslope    : ALBA 4/10 (40%)
+  genzcornerpeak           : ALBA 10/10 (100%)
+  minusgenzcornerpeak      : ALBA 10/10 (100%)
+  DelayedSphere            : ALBA 0/10 (0%)
+
+By category:
+  Smooth            : ALBA 36/130 (28%)
+  Multimodal        : ALBA 6/70 (9%)
+  Ill-conditioned   : ALBA 6/20 (30%)
+  Deceptive         : ALBA 7/50 (14%)
+  Step (discretized): ALBA 6/20 (30%)
+  Genz              : ALBA 20/20 (100%)
+
+Results saved to: /mnt/workspace/thesis/benchmark_results/nevergrad_20260122_205729.json

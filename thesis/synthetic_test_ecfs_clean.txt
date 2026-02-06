@@ -1,0 +1,15 @@
+Warning: nevergrad not installed.
+Running in TEST mode (reduced budget/repeats)
+Starting Benchmark Suite (Test=True)...
+Function     Dim  Opt        Mean       Std        Time(s)  Best(all) 
+--------------------------------------------------------------------------------
+Fallback to local implementation for Sphere
+
+--- Benchmark: Sphere (5D), Budget 100 ---
+Sphere       5    Random     8.4018     0.0000     0.00     8.4018    
+Sphere       5    ALBA       2.8376     0.0000     0.10     2.8376    
+Sphere       5    ALBA_Cov   3.2822     0.0000     0.09     3.2822    
+Sphere       5    ALBA_Drill 43.7836    0.0000     0.01     43.7836   
+Sphere       5    ALBA_Hybrid_Drill 43.7836    0.0000     0.00     43.7836   
+Sphere       5    Optuna     1.4669     0.0000     0.56     1.4669    
+Sphere       5    ECFS       11.1231    0.0000     0.07     11.1231   

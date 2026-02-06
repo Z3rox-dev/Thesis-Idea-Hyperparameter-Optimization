@@ -1,0 +1,54 @@
+{
+  "config": {
+    "tasks": [
+      "colorectal_histology"
+    ],
+    "budget": 400,
+    "checkpoints": [
+      100,
+      200,
+      400
+    ],
+    "nepochs": 200,
+    "seeds": [
+      70
+    ],
+    "framework": {
+      "grid_bins": 8,
+      "grid_batch_size": 128,
+      "grid_batches": 2,
+      "grid_sampling": "grid_random",
+      "grid_jitter": true,
+      "grid_penalty_lambda": 0.06,
+      "heatmap_ucb": {
+        "beta": 1.0,
+        "explore_prob": 0.25,
+        "temperature": 1.0
+      },
+      "heatmap_blend_tau": 3.0,
+      "heatmap_soft_assignment": true,
+      "heatmap_multi_resolution": true,
+      "categorical_stage": "pre"
+    },
+    "timestamp": "20260108_001508"
+  },
+  "tasks": {
+    "colorectal_histology": {
+      "framework": {
+        "70": {
+          "100": 0.048006134033203085,
+          "200": 0.04162284851074216,
+          "400": 0.04018264770507818
+        }
+      },
+      "experimental": {
+        "70": {
+          "100": 0.03960571289062498,
+          "200": 0.038976364135742236,
+          "400": 0.03889656066894531
+        }
+      },
+      "errors": {}
+    }
+  }
+}

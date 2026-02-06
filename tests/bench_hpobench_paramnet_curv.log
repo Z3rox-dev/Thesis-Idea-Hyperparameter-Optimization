@@ -1,0 +1,113 @@
+/mnt/workspace/thesis/benchmark_hpobench_paramnet_curv_nw.py:11: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
+Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
+  if not hasattr(np, "float"):
+/mnt/workspace/thesis/benchmark_hpobench_paramnet_curv_nw.py:13: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
+Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
+  if not hasattr(np, "int"):
+/mnt/workspace/thesis/benchmark_hpobench_paramnet_curv_nw.py:15: DeprecationWarning: `np.bool` is a deprecated alias for the builtin `bool`. To silence this warning, use `bool` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.bool_` here.
+Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
+  if not hasattr(np, "bool"):
+/mnt/workspace/miniconda3/envs/py39/lib/python3.9/site-packages/sklearn/utils/fixes.py:25: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  from pkg_resources import parse_version  # type: ignore
+/mnt/workspace/thesis/benchmark_hpobench_paramnet_curv_nw.py:66: DeprecationWarning: Please use `list(space.values())`
+  hps = cs.get_hyperparameters()
+/mnt/workspace/miniconda3/envs/py39/lib/python3.9/site-packages/optuna/_experimental.py:32: ExperimentalWarning: Argument ``multivariate`` is an experimental feature. The interface can change in the future.
+  warnings.warn(
+/mnt/workspace/thesis/benchmark_hpobench_paramnet_curv_nw.py:66: DeprecationWarning: Please use `list(space.values())`
+  hps = cs.get_hyperparameters()
+/mnt/workspace/miniconda3/envs/py39/lib/python3.9/site-packages/optuna/_experimental.py:32: ExperimentalWarning: Argument ``multivariate`` is an experimental feature. The interface can change in the future.
+  warnings.warn(
+/mnt/workspace/thesis/benchmark_hpobench_paramnet_curv_nw.py:66: DeprecationWarning: Please use `list(space.values())`
+  hps = cs.get_hyperparameters()
+/mnt/workspace/miniconda3/envs/py39/lib/python3.9/site-packages/optuna/_experimental.py:32: ExperimentalWarning: Argument ``multivariate`` is an experimental feature. The interface can change in the future.
+  warnings.warn(
+/mnt/workspace/thesis/benchmark_hpobench_paramnet_curv_nw.py:66: DeprecationWarning: Please use `list(space.values())`
+  hps = cs.get_hyperparameters()
+/mnt/workspace/miniconda3/envs/py39/lib/python3.9/site-packages/optuna/_experimental.py:32: ExperimentalWarning: Argument ``multivariate`` is an experimental feature. The interface can change in the future.
+  warnings.warn(
+/mnt/workspace/thesis/benchmark_hpobench_paramnet_curv_nw.py:66: DeprecationWarning: Please use `list(space.values())`
+  hps = cs.get_hyperparameters()
+/mnt/workspace/miniconda3/envs/py39/lib/python3.9/site-packages/optuna/_experimental.py:32: ExperimentalWarning: Argument ``multivariate`` is an experimental feature. The interface can change in the future.
+  warnings.warn(
+/mnt/workspace/thesis/benchmark_hpobench_paramnet_curv_nw.py:66: DeprecationWarning: Please use `list(space.values())`
+  hps = cs.get_hyperparameters()
+/mnt/workspace/miniconda3/envs/py39/lib/python3.9/site-packages/optuna/_experimental.py:32: ExperimentalWarning: Argument ``multivariate`` is an experimental feature. The interface can change in the future.
+  warnings.warn(
+==============================================================================
+Benchmark QuadHPO vs Random/Optuna su HPOBench ParamNet (surrogate)
+==============================================================================
+Seeds: [151]
+Budget per seed: 200
+Datasets: adult, higgs, letter, mnist, optdigits, poker
+==============================================================================
+
+------------------------------------------------------------------------------
+Dataset: adult
+------------------------------------------------------------------------------
+[Seed 151] Minimal: 0.147546 | v3: 0.146667 | v3-NW: 0.147991 | v4: 0.148472 | Random: 0.148620 | Optuna: 0.147241
+Minimal mean best loss (adult): 0.147546 ± 0.000000
+LGS_v3  mean best loss (adult): 0.146667 ± 0.000000
+LGS_v3NW mean best loss (adult): 0.147991 ± 0.000000
+LGS_v4  mean best loss (adult): 0.148472 ± 0.000000
+Random mean best loss (adult): 0.148620 ± 0.000000
+Optuna mean best loss (adult): 0.147241 ± 0.000000
+
+------------------------------------------------------------------------------
+Dataset: higgs
+------------------------------------------------------------------------------
+[Seed 151] Minimal: 0.281338 | v3: 0.279788 | v3-NW: 0.280992 | v4: 0.281144 | Random: 0.281208 | Optuna: 0.281794
+Minimal mean best loss (higgs): 0.281338 ± 0.000000
+LGS_v3  mean best loss (higgs): 0.279788 ± 0.000000
+LGS_v3NW mean best loss (higgs): 0.280992 ± 0.000000
+LGS_v4  mean best loss (higgs): 0.281144 ± 0.000000
+Random mean best loss (higgs): 0.281208 ± 0.000000
+Optuna mean best loss (higgs): 0.281794 ± 0.000000
+
+------------------------------------------------------------------------------
+Dataset: letter
+------------------------------------------------------------------------------
+[Seed 151] Minimal: 0.046970 | v3: 0.038964 | v3-NW: 0.035504 | v4: 0.036929 | Random: 0.050746 | Optuna: 0.036839
+Minimal mean best loss (letter): 0.046970 ± 0.000000
+LGS_v3  mean best loss (letter): 0.038964 ± 0.000000
+LGS_v3NW mean best loss (letter): 0.035504 ± 0.000000
+LGS_v4  mean best loss (letter): 0.036929 ± 0.000000
+Random mean best loss (letter): 0.050746 ± 0.000000
+Optuna mean best loss (letter): 0.036839 ± 0.000000
+
+------------------------------------------------------------------------------
+Dataset: mnist
+------------------------------------------------------------------------------
+[Seed 151] Minimal: 0.014760 | v3: 0.014660 | v3-NW: 0.015460 | v4: 0.016220 | Random: 0.016760 | Optuna: 0.014760
+Minimal mean best loss (mnist): 0.014760 ± 0.000000
+LGS_v3  mean best loss (mnist): 0.014660 ± 0.000000
+LGS_v3NW mean best loss (mnist): 0.015460 ± 0.000000
+LGS_v4  mean best loss (mnist): 0.016220 ± 0.000000
+Random mean best loss (mnist): 0.016760 ± 0.000000
+Optuna mean best loss (mnist): 0.014760 ± 0.000000
+
+------------------------------------------------------------------------------
+Dataset: optdigits
+------------------------------------------------------------------------------
+[Seed 151] Minimal: 0.016573 | v3: 0.014722 | v3-NW: 0.014481 | v4: 0.018182 | Random: 0.014240 | Optuna: 0.015607
+Minimal mean best loss (optdigits): 0.016573 ± 0.000000
+LGS_v3  mean best loss (optdigits): 0.014722 ± 0.000000
+LGS_v3NW mean best loss (optdigits): 0.014481 ± 0.000000
+LGS_v4  mean best loss (optdigits): 0.018182 ± 0.000000
+Random mean best loss (optdigits): 0.014240 ± 0.000000
+Optuna mean best loss (optdigits): 0.015607 ± 0.000000
+
+------------------------------------------------------------------------------
+Dataset: poker
+------------------------------------------------------------------------------
+[Seed 151] Minimal: 0.000693 | v3: 0.000917 | v3-NW: 0.001136 | v4: 0.000431 | Random: 0.000983 | Optuna: 0.000771
+Minimal mean best loss (poker): 0.000693 ± 0.000000
+LGS_v3  mean best loss (poker): 0.000917 ± 0.000000
+LGS_v3NW mean best loss (poker): 0.001136 ± 0.000000
+LGS_v4  mean best loss (poker): 0.000431 ± 0.000000
+Random mean best loss (poker): 0.000983 ± 0.000000
+Optuna mean best loss (poker): 0.000771 ± 0.000000
+
+Log summary salvato in: /mnt/workspace/thesis/tests/benchmark_paramnet_results_20251204_221845.txt
+Log tracce salvato in  : /mnt/workspace/thesis/tests/benchmark_paramnet_traces_20251204_221845.txt
+
+==============================================================================

@@ -1,0 +1,169 @@
+{
+  "config": {
+    "tasks": [
+      "cifar10",
+      "fashion_mnist",
+      "colorectal_histology"
+    ],
+    "budget": 400,
+    "checkpoints": [
+      100,
+      200,
+      400
+    ],
+    "nepochs": 200,
+    "seeds": [
+      70,
+      71,
+      72,
+      73,
+      74,
+      75,
+      76,
+      77,
+      78,
+      79
+    ],
+    "timestamp": "20260105_152440"
+  },
+  "tasks": {
+    "cifar10": {
+      "framework_param_space": {},
+      "experimental": {},
+      "errors": {
+        "70": {
+          "message": "local variable 'choice' referenced before assignment",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 222, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 329, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 415, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 681, in _sample_in_cube\n    x = self._cat_sampler.sample(x, cube, self.rng, self.is_stagnating, self.best_x)\n  File \"/mnt/workspace/thesis/alba_framework/categorical.py\", line 324, in sample\n    x[dim_idx] = self.to_continuous(choice, n_choices)\nUnboundLocalError: local variable 'choice' referenced before assignment\n"
+        },
+        "71": {
+          "message": "local variable 'choice' referenced before assignment",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 222, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 329, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 415, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 681, in _sample_in_cube\n    x = self._cat_sampler.sample(x, cube, self.rng, self.is_stagnating, self.best_x)\n  File \"/mnt/workspace/thesis/alba_framework/categorical.py\", line 324, in sample\n    x[dim_idx] = self.to_continuous(choice, n_choices)\nUnboundLocalError: local variable 'choice' referenced before assignment\n"
+        },
+        "72": {
+          "message": "local variable 'choice' referenced before assignment",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 222, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 329, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 415, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 681, in _sample_in_cube\n    x = self._cat_sampler.sample(x, cube, self.rng, self.is_stagnating, self.best_x)\n  File \"/mnt/workspace/thesis/alba_framework/categorical.py\", line 324, in sample\n    x[dim_idx] = self.to_continuous(choice, n_choices)\nUnboundLocalError: local variable 'choice' referenced before assignment\n"
+        },
+        "73": {
+          "message": "local variable 'choice' referenced before assignment",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 222, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 329, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 415, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 681, in _sample_in_cube\n    x = self._cat_sampler.sample(x, cube, self.rng, self.is_stagnating, self.best_x)\n  File \"/mnt/workspace/thesis/alba_framework/categorical.py\", line 324, in sample\n    x[dim_idx] = self.to_continuous(choice, n_choices)\nUnboundLocalError: local variable 'choice' referenced before assignment\n"
+        },
+        "74": {
+          "message": "local variable 'choice' referenced before assignment",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 222, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 329, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 415, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 681, in _sample_in_cube\n    x = self._cat_sampler.sample(x, cube, self.rng, self.is_stagnating, self.best_x)\n  File \"/mnt/workspace/thesis/alba_framework/categorical.py\", line 324, in sample\n    x[dim_idx] = self.to_continuous(choice, n_choices)\nUnboundLocalError: local variable 'choice' referenced before assignment\n"
+        },
+        "75": {
+          "message": "local variable 'choice' referenced before assignment",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 222, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 329, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 415, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 681, in _sample_in_cube\n    x = self._cat_sampler.sample(x, cube, self.rng, self.is_stagnating, self.best_x)\n  File \"/mnt/workspace/thesis/alba_framework/categorical.py\", line 324, in sample\n    x[dim_idx] = self.to_continuous(choice, n_choices)\nUnboundLocalError: local variable 'choice' referenced before assignment\n"
+        },
+        "76": {
+          "message": "local variable 'choice' referenced before assignment",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 222, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 329, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 415, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 681, in _sample_in_cube\n    x = self._cat_sampler.sample(x, cube, self.rng, self.is_stagnating, self.best_x)\n  File \"/mnt/workspace/thesis/alba_framework/categorical.py\", line 324, in sample\n    x[dim_idx] = self.to_continuous(choice, n_choices)\nUnboundLocalError: local variable 'choice' referenced before assignment\n"
+        },
+        "77": {
+          "message": "local variable 'choice' referenced before assignment",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 222, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 329, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 415, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 681, in _sample_in_cube\n    x = self._cat_sampler.sample(x, cube, self.rng, self.is_stagnating, self.best_x)\n  File \"/mnt/workspace/thesis/alba_framework/categorical.py\", line 324, in sample\n    x[dim_idx] = self.to_continuous(choice, n_choices)\nUnboundLocalError: local variable 'choice' referenced before assignment\n"
+        },
+        "78": {
+          "message": "local variable 'choice' referenced before assignment",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 222, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 329, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 415, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 681, in _sample_in_cube\n    x = self._cat_sampler.sample(x, cube, self.rng, self.is_stagnating, self.best_x)\n  File \"/mnt/workspace/thesis/alba_framework/categorical.py\", line 324, in sample\n    x[dim_idx] = self.to_continuous(choice, n_choices)\nUnboundLocalError: local variable 'choice' referenced before assignment\n"
+        },
+        "79": {
+          "message": "local variable 'choice' referenced before assignment",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 222, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 329, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 415, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 681, in _sample_in_cube\n    x = self._cat_sampler.sample(x, cube, self.rng, self.is_stagnating, self.best_x)\n  File \"/mnt/workspace/thesis/alba_framework/categorical.py\", line 324, in sample\n    x[dim_idx] = self.to_continuous(choice, n_choices)\nUnboundLocalError: local variable 'choice' referenced before assignment\n"
+        }
+      }
+    },
+    "fashion_mnist": {
+      "framework_param_space": {},
+      "experimental": {},
+      "errors": {
+        "70": {
+          "message": "local variable 'choice' referenced before assignment",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 222, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 329, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 415, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 681, in _sample_in_cube\n    x = self._cat_sampler.sample(x, cube, self.rng, self.is_stagnating, self.best_x)\n  File \"/mnt/workspace/thesis/alba_framework/categorical.py\", line 324, in sample\n    x[dim_idx] = self.to_continuous(choice, n_choices)\nUnboundLocalError: local variable 'choice' referenced before assignment\n"
+        },
+        "71": {
+          "message": "local variable 'choice' referenced before assignment",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 222, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 329, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 415, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 681, in _sample_in_cube\n    x = self._cat_sampler.sample(x, cube, self.rng, self.is_stagnating, self.best_x)\n  File \"/mnt/workspace/thesis/alba_framework/categorical.py\", line 324, in sample\n    x[dim_idx] = self.to_continuous(choice, n_choices)\nUnboundLocalError: local variable 'choice' referenced before assignment\n"
+        },
+        "72": {
+          "message": "local variable 'choice' referenced before assignment",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 222, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 329, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 415, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 681, in _sample_in_cube\n    x = self._cat_sampler.sample(x, cube, self.rng, self.is_stagnating, self.best_x)\n  File \"/mnt/workspace/thesis/alba_framework/categorical.py\", line 324, in sample\n    x[dim_idx] = self.to_continuous(choice, n_choices)\nUnboundLocalError: local variable 'choice' referenced before assignment\n"
+        },
+        "73": {
+          "message": "local variable 'choice' referenced before assignment",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 222, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 329, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 415, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 681, in _sample_in_cube\n    x = self._cat_sampler.sample(x, cube, self.rng, self.is_stagnating, self.best_x)\n  File \"/mnt/workspace/thesis/alba_framework/categorical.py\", line 324, in sample\n    x[dim_idx] = self.to_continuous(choice, n_choices)\nUnboundLocalError: local variable 'choice' referenced before assignment\n"
+        },
+        "74": {
+          "message": "local variable 'choice' referenced before assignment",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 222, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 329, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 415, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 681, in _sample_in_cube\n    x = self._cat_sampler.sample(x, cube, self.rng, self.is_stagnating, self.best_x)\n  File \"/mnt/workspace/thesis/alba_framework/categorical.py\", line 324, in sample\n    x[dim_idx] = self.to_continuous(choice, n_choices)\nUnboundLocalError: local variable 'choice' referenced before assignment\n"
+        },
+        "75": {
+          "message": "local variable 'choice' referenced before assignment",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 222, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 329, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 415, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 681, in _sample_in_cube\n    x = self._cat_sampler.sample(x, cube, self.rng, self.is_stagnating, self.best_x)\n  File \"/mnt/workspace/thesis/alba_framework/categorical.py\", line 324, in sample\n    x[dim_idx] = self.to_continuous(choice, n_choices)\nUnboundLocalError: local variable 'choice' referenced before assignment\n"
+        },
+        "76": {
+          "message": "local variable 'choice' referenced before assignment",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 222, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 329, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 415, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 681, in _sample_in_cube\n    x = self._cat_sampler.sample(x, cube, self.rng, self.is_stagnating, self.best_x)\n  File \"/mnt/workspace/thesis/alba_framework/categorical.py\", line 324, in sample\n    x[dim_idx] = self.to_continuous(choice, n_choices)\nUnboundLocalError: local variable 'choice' referenced before assignment\n"
+        },
+        "77": {
+          "message": "local variable 'choice' referenced before assignment",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 222, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 329, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 415, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 681, in _sample_in_cube\n    x = self._cat_sampler.sample(x, cube, self.rng, self.is_stagnating, self.best_x)\n  File \"/mnt/workspace/thesis/alba_framework/categorical.py\", line 324, in sample\n    x[dim_idx] = self.to_continuous(choice, n_choices)\nUnboundLocalError: local variable 'choice' referenced before assignment\n"
+        },
+        "78": {
+          "message": "local variable 'choice' referenced before assignment",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 222, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 329, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 415, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 681, in _sample_in_cube\n    x = self._cat_sampler.sample(x, cube, self.rng, self.is_stagnating, self.best_x)\n  File \"/mnt/workspace/thesis/alba_framework/categorical.py\", line 324, in sample\n    x[dim_idx] = self.to_continuous(choice, n_choices)\nUnboundLocalError: local variable 'choice' referenced before assignment\n"
+        },
+        "79": {
+          "message": "local variable 'choice' referenced before assignment",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 222, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 329, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 415, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 681, in _sample_in_cube\n    x = self._cat_sampler.sample(x, cube, self.rng, self.is_stagnating, self.best_x)\n  File \"/mnt/workspace/thesis/alba_framework/categorical.py\", line 324, in sample\n    x[dim_idx] = self.to_continuous(choice, n_choices)\nUnboundLocalError: local variable 'choice' referenced before assignment\n"
+        }
+      }
+    },
+    "colorectal_histology": {
+      "framework_param_space": {},
+      "experimental": {},
+      "errors": {
+        "70": {
+          "message": "local variable 'choice' referenced before assignment",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 222, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 329, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 415, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 681, in _sample_in_cube\n    x = self._cat_sampler.sample(x, cube, self.rng, self.is_stagnating, self.best_x)\n  File \"/mnt/workspace/thesis/alba_framework/categorical.py\", line 324, in sample\n    x[dim_idx] = self.to_continuous(choice, n_choices)\nUnboundLocalError: local variable 'choice' referenced before assignment\n"
+        },
+        "71": {
+          "message": "local variable 'choice' referenced before assignment",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 222, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 329, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 415, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 681, in _sample_in_cube\n    x = self._cat_sampler.sample(x, cube, self.rng, self.is_stagnating, self.best_x)\n  File \"/mnt/workspace/thesis/alba_framework/categorical.py\", line 324, in sample\n    x[dim_idx] = self.to_continuous(choice, n_choices)\nUnboundLocalError: local variable 'choice' referenced before assignment\n"
+        },
+        "72": {
+          "message": "local variable 'choice' referenced before assignment",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 222, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 329, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 415, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 681, in _sample_in_cube\n    x = self._cat_sampler.sample(x, cube, self.rng, self.is_stagnating, self.best_x)\n  File \"/mnt/workspace/thesis/alba_framework/categorical.py\", line 324, in sample\n    x[dim_idx] = self.to_continuous(choice, n_choices)\nUnboundLocalError: local variable 'choice' referenced before assignment\n"
+        },
+        "73": {
+          "message": "local variable 'choice' referenced before assignment",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 222, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 329, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 415, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 681, in _sample_in_cube\n    x = self._cat_sampler.sample(x, cube, self.rng, self.is_stagnating, self.best_x)\n  File \"/mnt/workspace/thesis/alba_framework/categorical.py\", line 324, in sample\n    x[dim_idx] = self.to_continuous(choice, n_choices)\nUnboundLocalError: local variable 'choice' referenced before assignment\n"
+        },
+        "74": {
+          "message": "local variable 'choice' referenced before assignment",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 222, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 329, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 415, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 681, in _sample_in_cube\n    x = self._cat_sampler.sample(x, cube, self.rng, self.is_stagnating, self.best_x)\n  File \"/mnt/workspace/thesis/alba_framework/categorical.py\", line 324, in sample\n    x[dim_idx] = self.to_continuous(choice, n_choices)\nUnboundLocalError: local variable 'choice' referenced before assignment\n"
+        },
+        "75": {
+          "message": "local variable 'choice' referenced before assignment",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 222, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 329, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 415, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 681, in _sample_in_cube\n    x = self._cat_sampler.sample(x, cube, self.rng, self.is_stagnating, self.best_x)\n  File \"/mnt/workspace/thesis/alba_framework/categorical.py\", line 324, in sample\n    x[dim_idx] = self.to_continuous(choice, n_choices)\nUnboundLocalError: local variable 'choice' referenced before assignment\n"
+        },
+        "76": {
+          "message": "local variable 'choice' referenced before assignment",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 222, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 329, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 415, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 681, in _sample_in_cube\n    x = self._cat_sampler.sample(x, cube, self.rng, self.is_stagnating, self.best_x)\n  File \"/mnt/workspace/thesis/alba_framework/categorical.py\", line 324, in sample\n    x[dim_idx] = self.to_continuous(choice, n_choices)\nUnboundLocalError: local variable 'choice' referenced before assignment\n"
+        },
+        "77": {
+          "message": "local variable 'choice' referenced before assignment",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 222, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 329, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 415, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 681, in _sample_in_cube\n    x = self._cat_sampler.sample(x, cube, self.rng, self.is_stagnating, self.best_x)\n  File \"/mnt/workspace/thesis/alba_framework/categorical.py\", line 324, in sample\n    x[dim_idx] = self.to_continuous(choice, n_choices)\nUnboundLocalError: local variable 'choice' referenced before assignment\n"
+        },
+        "78": {
+          "message": "local variable 'choice' referenced before assignment",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 222, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 329, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 415, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 681, in _sample_in_cube\n    x = self._cat_sampler.sample(x, cube, self.rng, self.is_stagnating, self.best_x)\n  File \"/mnt/workspace/thesis/alba_framework/categorical.py\", line 324, in sample\n    x[dim_idx] = self.to_continuous(choice, n_choices)\nUnboundLocalError: local variable 'choice' referenced before assignment\n"
+        },
+        "79": {
+          "message": "local variable 'choice' referenced before assignment",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 222, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 329, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 415, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 681, in _sample_in_cube\n    x = self._cat_sampler.sample(x, cube, self.rng, self.is_stagnating, self.best_x)\n  File \"/mnt/workspace/thesis/alba_framework/categorical.py\", line 324, in sample\n    x[dim_idx] = self.to_continuous(choice, n_choices)\nUnboundLocalError: local variable 'choice' referenced before assignment\n"
+        }
+      }
+    }
+  }
+}

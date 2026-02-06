@@ -1,0 +1,48 @@
+{
+  "config": {
+    "n_trials": 100,
+    "n_seeds": 5
+  },
+  "results": {
+    "iaml_xgboost/40981": {
+      "means": {
+        "Base": 0.9366572022438049,
+        "RelDens": 0.9366572022438049,
+        "DensNorm": 0.9366572022438049
+      },
+      "winner": "Base"
+    },
+    "iaml_xgboost/1489": {
+      "means": {
+        "Base": 0.9479857206344604,
+        "RelDens": 0.9479857206344604,
+        "DensNorm": 0.9479857206344604
+      },
+      "winner": "Base"
+    },
+    "iaml_ranger/40981": {
+      "means": {
+        "Base": 0.9426314949989318,
+        "RelDens": 0.9421815156936646,
+        "DensNorm": 0.9413719534873962
+      },
+      "winner": "Base"
+    },
+    "iaml_ranger/1489": {
+      "means": {
+        "Base": 0.9587182998657227,
+        "RelDens": 0.960085642337799,
+        "DensNorm": 0.9618282914161682
+      },
+      "winner": "DensNorm"
+    }
+  },
+  "summary": {
+    "counts": {
+      "Base": 3,
+      "RelDens": 0,
+      "DensNorm": 1
+    },
+    "overall_winner": "Base"
+  }
+}

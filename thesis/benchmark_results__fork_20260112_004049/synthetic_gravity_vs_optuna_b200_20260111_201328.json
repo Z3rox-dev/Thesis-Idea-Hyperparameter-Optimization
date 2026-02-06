@@ -1,0 +1,203 @@
+{
+  "benchmark": "synthetic_gravity_vs_optuna",
+  "methods": {
+    "alba_framework_gravity": {
+      "kind": "alba_framework_gravity"
+    },
+    "optuna_tpe": {
+      "kind": "optuna_TPE"
+    }
+  },
+  "config": {
+    "budget": 200,
+    "seeds": [
+      70,
+      71,
+      72,
+      73
+    ],
+    "dims": [
+      4,
+      15
+    ],
+    "funcs": [
+      "sphere",
+      "rosenbrock",
+      "rastrigin",
+      "ackley"
+    ]
+  },
+  "tasks": {
+    "sphere_4D": [
+      {
+        "seed": 70,
+        "alba_framework_gravity": 0.03374495314085951,
+        "optuna_tpe": 0.1950817293149938
+      },
+      {
+        "seed": 71,
+        "alba_framework_gravity": 0.07416126652558845,
+        "optuna_tpe": 0.19711572410796852
+      },
+      {
+        "seed": 72,
+        "alba_framework_gravity": 0.028673600144460826,
+        "optuna_tpe": 0.12714677604235575
+      },
+      {
+        "seed": 73,
+        "alba_framework_gravity": 0.32623491158782897,
+        "optuna_tpe": 0.06750768933863065
+      }
+    ],
+    "sphere_15D": [
+      {
+        "seed": 70,
+        "alba_framework_gravity": 10.267513814903932,
+        "optuna_tpe": 26.776436352864877
+      },
+      {
+        "seed": 71,
+        "alba_framework_gravity": 12.72718690341612,
+        "optuna_tpe": 19.719685234226024
+      },
+      {
+        "seed": 72,
+        "alba_framework_gravity": 13.346989088539669,
+        "optuna_tpe": 27.89724681191282
+      },
+      {
+        "seed": 73,
+        "alba_framework_gravity": 12.352529277050705,
+        "optuna_tpe": 25.024118557150178
+      }
+    ],
+    "rosenbrock_4D": [
+      {
+        "seed": 70,
+        "alba_framework_gravity": 214.20924729939435,
+        "optuna_tpe": 9.027932098982324
+      },
+      {
+        "seed": 71,
+        "alba_framework_gravity": 33.4558353082853,
+        "optuna_tpe": 6.9187186587823355
+      },
+      {
+        "seed": 72,
+        "alba_framework_gravity": 27.53902810266451,
+        "optuna_tpe": 27.736304910810503
+      },
+      {
+        "seed": 73,
+        "alba_framework_gravity": 910.7153727613746,
+        "optuna_tpe": 15.291486832264068
+      }
+    ],
+    "rosenbrock_15D": [
+      {
+        "seed": 70,
+        "alba_framework_gravity": 10282.51561634476,
+        "optuna_tpe": 43812.29911646448
+      },
+      {
+        "seed": 71,
+        "alba_framework_gravity": 8115.916476728336,
+        "optuna_tpe": 41309.132649687264
+      },
+      {
+        "seed": 72,
+        "alba_framework_gravity": 8825.624957280857,
+        "optuna_tpe": 44938.75951380486
+      },
+      {
+        "seed": 73,
+        "alba_framework_gravity": 8778.746990521087,
+        "optuna_tpe": 59556.81912355019
+      }
+    ],
+    "rastrigin_4D": [
+      {
+        "seed": 70,
+        "alba_framework_gravity": 17.182105204881843,
+        "optuna_tpe": 15.677692559735977
+      },
+      {
+        "seed": 71,
+        "alba_framework_gravity": 11.921579558715145,
+        "optuna_tpe": 14.4121163884776
+      },
+      {
+        "seed": 72,
+        "alba_framework_gravity": 18.752410341852556,
+        "optuna_tpe": 15.02240499471845
+      },
+      {
+        "seed": 73,
+        "alba_framework_gravity": 20.22110760254221,
+        "optuna_tpe": 11.891686355938173
+      }
+    ],
+    "rastrigin_15D": [
+      {
+        "seed": 70,
+        "alba_framework_gravity": 156.3954962278233,
+        "optuna_tpe": 139.63675928094136
+      },
+      {
+        "seed": 71,
+        "alba_framework_gravity": 138.8396552029076,
+        "optuna_tpe": 168.44191670997827
+      },
+      {
+        "seed": 72,
+        "alba_framework_gravity": 130.02584140371496,
+        "optuna_tpe": 156.21799007790096
+      },
+      {
+        "seed": 73,
+        "alba_framework_gravity": 133.0249767053341,
+        "optuna_tpe": 139.72230736581378
+      }
+    ],
+    "ackley_4D": [
+      {
+        "seed": 70,
+        "alba_framework_gravity": 3.12398191920045,
+        "optuna_tpe": 1.921766303060267
+      },
+      {
+        "seed": 71,
+        "alba_framework_gravity": 3.047985283004938,
+        "optuna_tpe": 2.607957913922601
+      },
+      {
+        "seed": 72,
+        "alba_framework_gravity": 1.3771056672238093,
+        "optuna_tpe": 2.6219672297575305
+      },
+      {
+        "seed": 73,
+        "alba_framework_gravity": 2.3516593679357993,
+        "optuna_tpe": 2.172908575550665
+      }
+    ],
+    "ackley_15D": [
+      {
+        "seed": 70,
+        "alba_framework_gravity": 7.047510533880102,
+        "optuna_tpe": 6.8466457977641415
+      },
+      {
+        "seed": 71,
+        "alba_framework_gravity": 6.113938680989861,
+        "optuna_tpe": 6.2504943367653105
+      },
+      {
+        "seed": 72,
+        "alba_framework_gravity": 6.078181688659566,
+        "optuna_tpe": 6.060543764873358
+      }
+    ]
+  }
+}

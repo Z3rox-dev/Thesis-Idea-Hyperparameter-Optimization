@@ -1,0 +1,54 @@
+{
+  "dim": 10,
+  "budget": 200,
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19
+  ],
+  "bins": 25,
+  "noise_scale": 0.05,
+  "results": {
+    "DISCRETIZED": {
+      "coh_wins": 0,
+      "opt_wins": 12,
+      "ties": 8,
+      "winrate": 0.0
+    },
+    "RANDOM_NOISE": {
+      "coh_wins": 2,
+      "opt_wins": 17,
+      "ties": 1,
+      "winrate": 10.0
+    },
+    "SPATIAL_NOISE": {
+      "coh_wins": 1,
+      "opt_wins": 19,
+      "ties": 0,
+      "winrate": 5.0
+    },
+    "KNN_SMOOTH": {
+      "coh_wins": 3,
+      "opt_wins": 12,
+      "ties": 5,
+      "winrate": 15.0
+    }
+  }
+}

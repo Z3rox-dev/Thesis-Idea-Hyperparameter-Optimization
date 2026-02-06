@@ -151,6 +151,7 @@ class ALBA:
         categorical_dims: Optional[List[Tuple[int, int]]] = None,
         cube_gravity: bool = False,
         cube_gravity_drift: float = 0.3,
+        cube_gravity_mode: str = "potential",
         geo_drift: bool = False,
         llr_gradient: bool = False,
         llr_gradient_weight: float = 0.7,
@@ -284,13 +285,17 @@ class ALBA:
         self._cube_gravity_drift = cube_gravity_drift
         self._cube_gravity: Optional[CubeGravity] = None
         if self._use_cube_gravity:
-            self._cube_gravity = CubeGravity()
+            self._cube_gravity = CubeGravity(drift_mode=cube_gravity_mode)
 
         # Free geometry estimator for drift modulation
         self._use_geo_drift = geo_drift
         self._free_geometry: Optional[FreeGeometryEstimator] = None
         if self._use_geo_drift:
             self._free_geometry = FreeGeometryEstimator(n_dims=self.dim)
+
+        # Gravity velocity state per-leaf (used only when cube_gravity=True).
+        # This is an additive offset used in local search, with temporal momentum.
+        self._gravity_velocity: Dict[int, np.ndarray] = {}
 
         # Iteration counter
         self.iteration = 0
@@ -419,6 +424,13 @@ class ALBA:
             self.best_x = x.copy()
             self.stagnation = 0
             self.last_improvement_iter = self.iteration
+            if self._cube_gravity is not None:
+                try:
+                    leaf = self._find_containing_leaf(self.best_x)
+                    leaf_id = int(id(leaf))
+                    self._gravity_velocity[leaf_id] = np.zeros(self.dim, dtype=float)
+                except Exception:
+                    pass
         else:
             self.stagnation += 1
 
@@ -446,6 +458,7 @@ class ALBA:
         if self._last_cube is not None:
             cube = self._last_cube
             cube.add_observation(x, y, self.gamma)
+            cube.update_warp(x, y)
 
             # Update categorical stats in cube
             for dim_idx, n_choices in self._cat_sampler.categorical_dims:
@@ -807,27 +820,82 @@ class ALBA:
         np.ndarray
             Sampled point.
         """
-        x = self._local_search_sampler.sample(
+        x_base = self._local_search_sampler.sample(
             self.best_x,
             list(self.bounds),
             self._global_widths,
             float(progress),
             self.rng,
         )
+
+        w_leaf = None
+        leaf_id = None
+        if self.best_x is not None and self.leaves:
+            try:
+                leaf = self._find_containing_leaf(self.best_x)
+                w_leaf = leaf.get_warp_multipliers()
+                leaf_id = int(id(leaf))
+            except Exception:
+                w_leaf = None
+                leaf_id = None
+            if w_leaf is not None and getattr(w_leaf, "shape", None) == (self.dim,):
+                step = x_base - self.best_x
+                x_base = self.best_x + step / np.asarray(w_leaf, dtype=float)
+                x_base = self._clip_to_bounds(x_base)
+
+        # Relative local-search move (LLR/Gaussian) expressed as an offset from best_x.
+        eps = np.zeros(self.dim, dtype=float)
+        if self.best_x is not None:
+            eps = np.asarray(x_base, dtype=float) - np.asarray(self.best_x, dtype=float)
         
-        # Apply cube gravity drift if enabled
-        if self._cube_gravity is not None:
-            drift = self._cube_gravity.get_drift_vector(x, self.leaves)
-            
-            # Modulate drift by geometry if enabled
-            if self._free_geometry is not None:
-                drift = self._free_geometry.modulate_drift(drift)
-            
-            scale = self._cube_gravity_drift * (1 - 0.5 * progress)
-            avg_width = np.mean(self._global_widths)
-            step = 0.05 * avg_width
-            x = x + scale * step * drift
-        
+        # Apply cube gravity with temporal momentum (velocity integrates acceleration).
+        if self._cube_gravity is None or self.best_x is None or leaf_id is None:
+            return np.asarray(x_base, dtype=float)
+
+        v = self._gravity_velocity.get(int(leaf_id), np.zeros(self.dim, dtype=float))
+        if getattr(v, "shape", None) != (self.dim,):
+            v = np.zeros(self.dim, dtype=float)
+
+        # Acceleration at the local-search point (unnormalized, so magnitude can grow near attractors).
+        acc = self._cube_gravity.get_drift_vector(np.asarray(x_base, dtype=float), self.leaves, normalize=False)
+        if self._free_geometry is not None:
+            acc = self._free_geometry.modulate_drift(acc)
+
+        acc = np.asarray(acc, dtype=float)
+        acc_norm = float(np.linalg.norm(acc))
+        if np.isfinite(acc_norm) and acc_norm > 1e-12:
+            acc_dir = acc / acc_norm
+            acc_mag = float(min(3.0, np.log1p(acc_norm)))  # compress + cap
+        else:
+            acc_dir = np.zeros(self.dim, dtype=float)
+            acc_mag = 0.0
+
+        radius_start = float(getattr(self._local_search_sampler, "radius_start", 0.15))
+        radius_end = float(getattr(self._local_search_sampler, "radius_end", 0.03))
+        ls_radius = radius_start * (1.0 - float(progress)) + radius_end
+
+        stagn = float(
+            np.clip(float(self.stagnation) / float(max(1, self._stagnation_threshold)), 0.0, 1.0)
+        )
+        rho = 0.75 + 0.20 * stagn
+        scale = self._cube_gravity_drift * (1.0 - 0.5 * float(progress))
+        avg_width = float(np.mean(self._global_widths))
+        base_step = 0.05 * avg_width
+
+        dv = scale * base_step * acc_mag * acc_dir
+        if w_leaf is not None and getattr(w_leaf, "shape", None) == (self.dim,):
+            dv = dv / np.asarray(w_leaf, dtype=float)
+        dv = dv * (0.25 + 0.75 * stagn)
+
+        v = float(rho) * np.asarray(v, dtype=float) + dv
+
+        # Keep gravity offset within the local-search trust region.
+        v_cap = np.asarray(self._global_widths, dtype=float) * float(ls_radius)
+        v = np.minimum(np.maximum(v, -v_cap), v_cap)
+
+        self._gravity_velocity[int(leaf_id)] = v
+
+        x = np.asarray(x_base, dtype=float) + v
         return self._clip_to_bounds(x)
 
     # -------------------------------------------------------------------------

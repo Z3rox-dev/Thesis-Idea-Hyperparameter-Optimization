@@ -1,0 +1,15 @@
+Benchmark tasks: ['colorectal_histology'] | budget=400 | seeds=[70]
+Checkpoints: [100, 200, 400]
+Framework config: grid_bins=8 grid_batch_size=128 grid_batches=2 grid_sampling=grid_random grid_jitter=True grid_penalty_lambda=0.06 heatmap_ucb_beta=1.0 heatmap_ucb_explore_prob=0.25 heatmap_ucb_temperature=1.0
+Saving to: /mnt/workspace/thesis/benchmark_results/jahs_framework_vs_experimental_colorectal_histology_20260108_001548.json
+Logging to: /mnt/workspace/thesis/benchmark_results/jahs_framework_vs_experimental_colorectal_histology_20260108_001548.log
+
+=== TASK colorectal_histology ===
+
+Task colorectal_histology | Seed 70...
+  FW=95.98%  EXP=96.11%  -> EXP (20.1s)
+
+=== SUMMARY (final checkpoint) ===
+colorectal_histology: FW mean=95.98% std=0.00 | EXP mean=96.11% std=0.00 | wins FW=0 ties=0
+
+Saved: /mnt/workspace/thesis/benchmark_results/jahs_framework_vs_experimental_colorectal_histology_20260108_001548.json

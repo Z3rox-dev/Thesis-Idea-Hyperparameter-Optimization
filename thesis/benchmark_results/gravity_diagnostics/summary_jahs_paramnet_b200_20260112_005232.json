@@ -1,0 +1,244 @@
+{
+  "suite": "jahs_paramnet",
+  "budget": 200,
+  "seeds": [
+    70,
+    71
+  ],
+  "timestamp": "20260112_005232",
+  "out_dir": "/mnt/workspace/thesis/benchmark_results/gravity_diagnostics",
+  "results": {
+    "jahs_paramnet": {
+      "jahs": {
+        "cifar10": {
+          "per_seed": {
+            "70": {
+              "grav_warp0_grav0": {
+                "best": 0.0862897491455078,
+                "wall_s": 1.5884974002838135,
+                "unique_keys": 191,
+                "switch_rate": 0.9949748743718593
+              },
+              "grav_warp0_grav1": {
+                "best": 0.08749282836914063,
+                "wall_s": 1.6481220722198486,
+                "unique_keys": 190,
+                "switch_rate": 0.9949748743718593
+              },
+              "grav_warp1_grav0": {
+                "best": 0.0886675262451172,
+                "wall_s": 1.827258825302124,
+                "unique_keys": 194,
+                "switch_rate": 1.0
+              },
+              "grav_warp1_grav1": {
+                "best": 0.08881294250488281,
+                "wall_s": 1.828535795211792,
+                "unique_keys": 195,
+                "switch_rate": 1.0
+              }
+            },
+            "71": {
+              "grav_warp0_grav0": {
+                "best": 0.08619796752929687,
+                "wall_s": 1.682180643081665,
+                "unique_keys": 192,
+                "switch_rate": 1.0
+              },
+              "grav_warp0_grav1": {
+                "best": 0.08395133972167967,
+                "wall_s": 1.6688730716705322,
+                "unique_keys": 192,
+                "switch_rate": 1.0
+              },
+              "grav_warp1_grav0": {
+                "best": 0.0864501190185547,
+                "wall_s": 1.7953310012817383,
+                "unique_keys": 191,
+                "switch_rate": 1.0
+              },
+              "grav_warp1_grav1": {
+                "best": 0.08763816833496096,
+                "wall_s": 1.935016393661499,
+                "unique_keys": 190,
+                "switch_rate": 1.0
+              }
+            }
+          }
+        },
+        "colorectal_histology": {
+          "per_seed": {
+            "70": {
+              "grav_warp0_grav0": {
+                "best": 0.04102531433105472,
+                "wall_s": 1.6432738304138184,
+                "unique_keys": 199,
+                "switch_rate": 1.0
+              },
+              "grav_warp0_grav1": {
+                "best": 0.04102531433105472,
+                "wall_s": 1.9493036270141602,
+                "unique_keys": 199,
+                "switch_rate": 1.0
+              },
+              "grav_warp1_grav0": {
+                "best": 0.04028022766113282,
+                "wall_s": 1.8419265747070312,
+                "unique_keys": 198,
+                "switch_rate": 1.0
+              },
+              "grav_warp1_grav1": {
+                "best": 0.03971817016601564,
+                "wall_s": 1.7630927562713623,
+                "unique_keys": 198,
+                "switch_rate": 1.0
+              }
+            },
+            "71": {
+              "grav_warp0_grav0": {
+                "best": 0.0414441680908203,
+                "wall_s": 1.594583511352539,
+                "unique_keys": 190,
+                "switch_rate": 1.0
+              },
+              "grav_warp0_grav1": {
+                "best": 0.04159309387207033,
+                "wall_s": 1.7302815914154053,
+                "unique_keys": 192,
+                "switch_rate": 1.0
+              },
+              "grav_warp1_grav0": {
+                "best": 0.04031433105468751,
+                "wall_s": 1.848167896270752,
+                "unique_keys": 196,
+                "switch_rate": 0.9899497487437185
+              },
+              "grav_warp1_grav1": {
+                "best": 0.04024688720703129,
+                "wall_s": 2.119981050491333,
+                "unique_keys": 196,
+                "switch_rate": 0.9899497487437185
+              }
+            }
+          }
+        }
+      },
+      "paramnet": {
+        "letter": {
+          "dim": 8,
+          "per_seed": {
+            "70": {
+              "grav_warp0_grav0": {
+                "best": 0.03518769685254812,
+                "wall_s": 0.5779733657836914,
+                "unique_keys": 0,
+                "switch_rate": 0.0
+              },
+              "grav_warp0_grav1": {
+                "best": 0.03545906832319531,
+                "wall_s": 0.6055870056152344,
+                "unique_keys": 0,
+                "switch_rate": 0.0
+              },
+              "grav_warp1_grav0": {
+                "best": 0.03383084676320711,
+                "wall_s": 0.6427063941955566,
+                "unique_keys": 0,
+                "switch_rate": 0.0
+              },
+              "grav_warp1_grav1": {
+                "best": 0.0354816841033183,
+                "wall_s": 0.6677136421203613,
+                "unique_keys": 0,
+                "switch_rate": 0.0
+              }
+            },
+            "71": {
+              "grav_warp0_grav0": {
+                "best": 0.036702850640278395,
+                "wall_s": 0.5695545673370361,
+                "unique_keys": 0,
+                "switch_rate": 0.0
+              },
+              "grav_warp0_grav1": {
+                "best": 0.04084124838346165,
+                "wall_s": 0.5817301273345947,
+                "unique_keys": 0,
+                "switch_rate": 0.0
+              },
+              "grav_warp1_grav0": {
+                "best": 0.03378561825732849,
+                "wall_s": 0.6589467525482178,
+                "unique_keys": 0,
+                "switch_rate": 0.0
+              },
+              "grav_warp1_grav1": {
+                "best": 0.03482587185853855,
+                "wall_s": 0.6749887466430664,
+                "unique_keys": 0,
+                "switch_rate": 0.0
+              }
+            }
+          }
+        },
+        "mnist": {
+          "dim": 8,
+          "per_seed": {
+            "70": {
+              "grav_warp0_grav0": {
+                "best": 0.015689996008873008,
+                "wall_s": 0.6111700534820557,
+                "unique_keys": 0,
+                "switch_rate": 0.0
+              },
+              "grav_warp0_grav1": {
+                "best": 0.015290000229477907,
+                "wall_s": 0.5979924201965332,
+                "unique_keys": 0,
+                "switch_rate": 0.0
+              },
+              "grav_warp1_grav0": {
+                "best": 0.015099999383687968,
+                "wall_s": 0.6306843757629395,
+                "unique_keys": 0,
+                "switch_rate": 0.0
+              },
+              "grav_warp1_grav1": {
+                "best": 0.015199996845126152,
+                "wall_s": 0.6812882423400879,
+                "unique_keys": 0,
+                "switch_rate": 0.0
+              }
+            },
+            "71": {
+              "grav_warp0_grav0": {
+                "best": 0.014740001628994925,
+                "wall_s": 0.5995738506317139,
+                "unique_keys": 0,
+                "switch_rate": 0.0
+              },
+              "grav_warp0_grav1": {
+                "best": 0.014780002368688584,
+                "wall_s": 0.6484787464141846,
+                "unique_keys": 0,
+                "switch_rate": 0.0
+              },
+              "grav_warp1_grav0": {
+                "best": 0.01526000363111496,
+                "wall_s": 0.6733205318450928,
+                "unique_keys": 0,
+                "switch_rate": 0.0
+              },
+              "grav_warp1_grav1": {
+                "best": 0.015356669831176594,
+                "wall_s": 0.6902751922607422,
+                "unique_keys": 0,
+                "switch_rate": 0.0
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

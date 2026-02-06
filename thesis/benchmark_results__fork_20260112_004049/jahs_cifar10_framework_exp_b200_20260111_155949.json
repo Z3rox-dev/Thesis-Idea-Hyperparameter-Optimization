@@ -1,0 +1,56 @@
+{
+  "benchmark": "jahs_cifar10",
+  "methods": {
+    "alba_framework": {
+      "kind": "alba_framework"
+    },
+    "alba_experimental": {
+      "kind": "ALBA_V1_experimental"
+    }
+  },
+  "config": {
+    "budget": 200,
+    "seeds": [
+      70,
+      71
+    ],
+    "task": "cifar10",
+    "nepochs": 200
+  },
+  "tasks": {
+    "cifar10": {
+      "seeds": [
+        {
+          "seed": 70,
+          "alba_framework": 0.08569122314453126,
+          "alba_experimental": 0.08919166564941405,
+          "uniq_framework": 172,
+          "uniq_exp": 169,
+          "time_framework": 1.6730802059173584,
+          "time_exp": 1.5523006916046143
+        },
+        {
+          "seed": 71,
+          "alba_framework": 0.08807998657226568,
+          "alba_experimental": 0.08933845520019534,
+          "uniq_framework": 176,
+          "uniq_exp": 172,
+          "time_framework": 1.5750906467437744,
+          "time_exp": 1.644118070602417
+        }
+      ],
+      "summary": {
+        "alba_framework": {
+          "mean": 0.08688560485839847,
+          "std": 0.0011943817138672097,
+          "wins": 2
+        },
+        "alba_experimental": {
+          "mean": 0.0892650604248047,
+          "std": 7.339477539064498e-05,
+          "wins": 0
+        }
+      }
+    }
+  }
+}

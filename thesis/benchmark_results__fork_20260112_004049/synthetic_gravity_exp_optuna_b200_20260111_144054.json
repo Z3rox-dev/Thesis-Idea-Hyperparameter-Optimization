@@ -1,0 +1,1742 @@
+{
+  "benchmark": "synthetic_functions_multidim",
+  "methods": {
+    "alba_experimental": {
+      "kind": "ALBA_V1_experimental"
+    },
+    "optuna": {
+      "kind": "optuna_TPE"
+    },
+    "alba_framework_gravity": {
+      "kind": "alba_framework_gravity"
+    }
+  },
+  "config": {
+    "budget": 200,
+    "seeds": [
+      70,
+      71,
+      72,
+      73
+    ],
+    "dimensions": [
+      5,
+      10,
+      20
+    ],
+    "functions": [
+      "sphere",
+      "rosenbrock",
+      "rastrigin",
+      "ackley",
+      "levy",
+      "griewank",
+      "schwefel",
+      "zakharov",
+      "styblinski_tang"
+    ]
+  },
+  "tasks": {
+    "sphere_5D": {
+      "function": "sphere",
+      "dimension": 5,
+      "bounds": [
+        -5.12,
+        5.12
+      ],
+      "seeds": [
+        {
+          "seed": 70,
+          "alba_experimental": 0.6240195906534489,
+          "optuna": 0.06612893503438548,
+          "alba_framework_gravity": 0.16042374250290262,
+          "time_exp": 0.12265658378601074,
+          "time_opt": 0.6813983917236328,
+          "time_grav": 0.14986753463745117
+        },
+        {
+          "seed": 71,
+          "alba_experimental": 0.7922381374395495,
+          "optuna": 0.4632543240941624,
+          "alba_framework_gravity": 0.8096228830526014,
+          "time_exp": 0.1227579116821289,
+          "time_opt": 0.6944663524627686,
+          "time_grav": 0.13878870010375977
+        },
+        {
+          "seed": 72,
+          "alba_experimental": 0.7564935673222312,
+          "optuna": 0.5506025696446015,
+          "alba_framework_gravity": 2.7304040903453677,
+          "time_exp": 0.15079283714294434,
+          "time_opt": 0.6891520023345947,
+          "time_grav": 0.14040684700012207
+        },
+        {
+          "seed": 73,
+          "alba_experimental": 1.0871214173170118,
+          "optuna": 0.3651485987034686,
+          "alba_framework_gravity": 0.13948749927570703,
+          "time_exp": 0.14081406593322754,
+          "time_opt": 0.6870748996734619,
+          "time_grav": 0.15389156341552734
+        }
+      ],
+      "summary": {
+        "alba_experimental": {
+          "mean": 0.8149681781830603,
+          "std": 0.16916314870427787,
+          "wins": 0
+        },
+        "optuna": {
+          "mean": 0.3612836068691545,
+          "std": 0.18259991463957692,
+          "wins": 3
+        },
+        "alba_framework_gravity": {
+          "mean": 0.9599845537941447,
+          "std": 1.0570604139377013,
+          "wins": 1
+        }
+      }
+    },
+    "sphere_10D": {
+      "function": "sphere",
+      "dimension": 10,
+      "bounds": [
+        -5.12,
+        5.12
+      ],
+      "seeds": [
+        {
+          "seed": 70,
+          "alba_experimental": 10.028226595714301,
+          "optuna": 6.3707547075760464,
+          "alba_framework_gravity": 3.5194616985330915,
+          "time_exp": 0.21193194389343262,
+          "time_opt": 1.3831589221954346,
+          "time_grav": 0.2401564121246338
+        },
+        {
+          "seed": 71,
+          "alba_experimental": 11.548529191643302,
+          "optuna": 4.581946603150722,
+          "alba_framework_gravity": 5.729552276858486,
+          "time_exp": 0.2347409725189209,
+          "time_opt": 1.3770673274993896,
+          "time_grav": 0.24828267097473145
+        },
+        {
+          "seed": 72,
+          "alba_experimental": 4.230410935990985,
+          "optuna": 6.161256337307328,
+          "alba_framework_gravity": 8.901745981117843,
+          "time_exp": 0.20458292961120605,
+          "time_opt": 1.3662290573120117,
+          "time_grav": 0.22551751136779785
+        },
+        {
+          "seed": 73,
+          "alba_experimental": 16.704282493503538,
+          "optuna": 13.760659983229413,
+          "alba_framework_gravity": 5.017881822829742,
+          "time_exp": 0.22321319580078125,
+          "time_opt": 1.4056172370910645,
+          "time_grav": 0.2131202220916748
+        }
+      ],
+      "summary": {
+        "alba_experimental": {
+          "mean": 10.627862304213032,
+          "std": 4.445713014413456,
+          "wins": 1
+        },
+        "optuna": {
+          "mean": 7.718654407815877,
+          "std": 3.5562300817405617,
+          "wins": 1
+        },
+        "alba_framework_gravity": {
+          "mean": 5.79216044483479,
+          "std": 1.9645679528902442,
+          "wins": 2
+        }
+      }
+    },
+    "sphere_20D": {
+      "function": "sphere",
+      "dimension": 20,
+      "bounds": [
+        -5.12,
+        5.12
+      ],
+      "seeds": [
+        {
+          "seed": 70,
+          "alba_experimental": 27.123380456935426,
+          "optuna": 56.16544773181441,
+          "alba_framework_gravity": 27.154683632593567,
+          "time_exp": 0.7861592769622803,
+          "time_opt": 2.739746332168579,
+          "time_grav": 0.8168063163757324
+        },
+        {
+          "seed": 71,
+          "alba_experimental": 40.304462063395746,
+          "optuna": 53.662924225087735,
+          "alba_framework_gravity": 33.36453232176503,
+          "time_exp": 0.8054206371307373,
+          "time_opt": 2.710557699203491,
+          "time_grav": 0.8696160316467285
+        },
+        {
+          "seed": 72,
+          "alba_experimental": 22.87192960369891,
+          "optuna": 44.54403134300962,
+          "alba_framework_gravity": 22.002657171075978,
+          "time_exp": 1.4180874824523926,
+          "time_opt": 2.7424230575561523,
+          "time_grav": 0.945906400680542
+        },
+        {
+          "seed": 73,
+          "alba_experimental": 31.531989692430738,
+          "optuna": 39.539060875939214,
+          "alba_framework_gravity": 21.42203425881892,
+          "time_exp": 0.8566412925720215,
+          "time_opt": 2.732877016067505,
+          "time_grav": 0.8975839614868164
+        }
+      ],
+      "summary": {
+        "alba_experimental": {
+          "mean": 30.457940454115207,
+          "std": 6.45705855180554,
+          "wins": 1
+        },
+        "optuna": {
+          "mean": 48.47786604396274,
+          "std": 6.733517539803223,
+          "wins": 0
+        },
+        "alba_framework_gravity": {
+          "mean": 25.985976846063373,
+          "std": 4.808985444813022,
+          "wins": 3
+        }
+      }
+    },
+    "rosenbrock_5D": {
+      "function": "rosenbrock",
+      "dimension": 5,
+      "bounds": [
+        -5.0,
+        10.0
+      ],
+      "seeds": [
+        {
+          "seed": 70,
+          "alba_experimental": 1971.2429856880685,
+          "optuna": 55.32697191690048,
+          "alba_framework_gravity": 996.3031159793072,
+          "time_exp": 0.1637122631072998,
+          "time_opt": 0.6837430000305176,
+          "time_grav": 0.1368086338043213
+        },
+        {
+          "seed": 71,
+          "alba_experimental": 111.19951415080106,
+          "optuna": 151.2735246927193,
+          "alba_framework_gravity": 1395.9641587678261,
+          "time_exp": 0.1115267276763916,
+          "time_opt": 0.6994330883026123,
+          "time_grav": 0.1335456371307373
+        },
+        {
+          "seed": 72,
+          "alba_experimental": 723.6882751499456,
+          "optuna": 49.47183423465839,
+          "alba_framework_gravity": 658.5519670568668,
+          "time_exp": 0.11339950561523438,
+          "time_opt": 0.6764249801635742,
+          "time_grav": 0.15008306503295898
+        },
+        {
+          "seed": 73,
+          "alba_experimental": 187.96679484677617,
+          "optuna": 20.11845369533509,
+          "alba_framework_gravity": 738.7764548092057,
+          "time_exp": 0.12098455429077148,
+          "time_opt": 0.6836767196655273,
+          "time_grav": 0.1347827911376953
+        }
+      ],
+      "summary": {
+        "alba_experimental": {
+          "mean": 748.5243924588979,
+          "std": 744.3227478222082,
+          "wins": 1
+        },
+        "optuna": {
+          "mean": 69.0476961349033,
+          "std": 49.31184008413532,
+          "wins": 3
+        },
+        "alba_framework_gravity": {
+          "mean": 947.3989241533016,
+          "std": 287.4709937637344,
+          "wins": 0
+        }
+      }
+    },
+    "rosenbrock_10D": {
+      "function": "rosenbrock",
+      "dimension": 10,
+      "bounds": [
+        -5.0,
+        10.0
+      ],
+      "seeds": [
+        {
+          "seed": 70,
+          "alba_experimental": 1928.1893909260016,
+          "optuna": 3714.529854952643,
+          "alba_framework_gravity": 9063.753922179827,
+          "time_exp": 0.2097330093383789,
+          "time_opt": 1.3441808223724365,
+          "time_grav": 0.2581186294555664
+        },
+        {
+          "seed": 71,
+          "alba_experimental": 7841.195260916605,
+          "optuna": 2793.132893284309,
+          "alba_framework_gravity": 15225.749629913378,
+          "time_exp": 0.16246652603149414,
+          "time_opt": 1.3459327220916748,
+          "time_grav": 0.19178009033203125
+        },
+        {
+          "seed": 72,
+          "alba_experimental": 3789.8202682463384,
+          "optuna": 7196.00193064528,
+          "alba_framework_gravity": 2730.365783795488,
+          "time_exp": 0.21710753440856934,
+          "time_opt": 1.4061219692230225,
+          "time_grav": 0.19736456871032715
+        },
+        {
+          "seed": 73,
+          "alba_experimental": 7143.120606765707,
+          "optuna": 1486.433239491841,
+          "alba_framework_gravity": 4909.928957435575,
+          "time_exp": 0.19730114936828613,
+          "time_opt": 1.4207048416137695,
+          "time_grav": 0.248579740524292
+        }
+      ],
+      "summary": {
+        "alba_experimental": {
+          "mean": 5175.581381713663,
+          "std": 2420.877762328563,
+          "wins": 1
+        },
+        "optuna": {
+          "mean": 3797.5244795935178,
+          "std": 2115.802582458368,
+          "wins": 2
+        },
+        "alba_framework_gravity": {
+          "mean": 7982.449573331068,
+          "std": 4760.7610177347115,
+          "wins": 1
+        }
+      }
+    },
+    "rosenbrock_20D": {
+      "function": "rosenbrock",
+      "dimension": 20,
+      "bounds": [
+        -5.0,
+        10.0
+      ],
+      "seeds": [
+        {
+          "seed": 70,
+          "alba_experimental": 48411.856581126594,
+          "optuna": 216173.77858426908,
+          "alba_framework_gravity": 52607.77149502253,
+          "time_exp": 2.0214552879333496,
+          "time_opt": 2.7284820079803467,
+          "time_grav": 0.5853891372680664
+        },
+        {
+          "seed": 71,
+          "alba_experimental": 101188.4484817967,
+          "optuna": 137717.82340872637,
+          "alba_framework_gravity": 16023.031995257172,
+          "time_exp": 0.4920334815979004,
+          "time_opt": 2.7112064361572266,
+          "time_grav": 0.5474441051483154
+        },
+        {
+          "seed": 72,
+          "alba_experimental": 19098.928291484433,
+          "optuna": 115100.29645488963,
+          "alba_framework_gravity": 35104.0754435342,
+          "time_exp": 0.5352268218994141,
+          "time_opt": 2.714071273803711,
+          "time_grav": 0.719581127166748
+        },
+        {
+          "seed": 73,
+          "alba_experimental": 52399.92548957079,
+          "optuna": 148471.2549072634,
+          "alba_framework_gravity": 79047.3513404899,
+          "time_exp": 0.5665829181671143,
+          "time_opt": 2.7228896617889404,
+          "time_grav": 0.8386130332946777
+        }
+      ],
+      "summary": {
+        "alba_experimental": {
+          "mean": 55274.78971099463,
+          "std": 29462.356094692765,
+          "wins": 3
+        },
+        "optuna": {
+          "mean": 154365.78833878713,
+          "std": 37662.66975321152,
+          "wins": 0
+        },
+        "alba_framework_gravity": {
+          "mean": 45695.55756857595,
+          "std": 23198.917629242835,
+          "wins": 1
+        }
+      }
+    },
+    "rastrigin_5D": {
+      "function": "rastrigin",
+      "dimension": 5,
+      "bounds": [
+        -5.12,
+        5.12
+      ],
+      "seeds": [
+        {
+          "seed": 70,
+          "alba_experimental": 31.408856155399484,
+          "optuna": 15.232758095087213,
+          "alba_framework_gravity": 23.78494410535825,
+          "time_exp": 0.14398550987243652,
+          "time_opt": 0.6739256381988525,
+          "time_grav": 0.13335394859313965
+        },
+        {
+          "seed": 71,
+          "alba_experimental": 33.903286475694024,
+          "optuna": 9.490432074069545,
+          "alba_framework_gravity": 26.521062877673568,
+          "time_exp": 0.11896181106567383,
+          "time_opt": 0.693291187286377,
+          "time_grav": 0.1679542064666748
+        },
+        {
+          "seed": 72,
+          "alba_experimental": 41.95082871115823,
+          "optuna": 19.3924545559566,
+          "alba_framework_gravity": 45.646823221221496,
+          "time_exp": 0.10854625701904297,
+          "time_opt": 0.6801278591156006,
+          "time_grav": 0.13980698585510254
+        },
+        {
+          "seed": 73,
+          "alba_experimental": 37.77559918524348,
+          "optuna": 12.126808424889589,
+          "alba_framework_gravity": 25.257271216903426,
+          "time_exp": 0.11147212982177734,
+          "time_opt": 0.6793954372406006,
+          "time_grav": 0.13475680351257324
+        }
+      ],
+      "summary": {
+        "alba_experimental": {
+          "mean": 36.2596426318738,
+          "std": 3.9928143907480163,
+          "wins": 0
+        },
+        "optuna": {
+          "mean": 14.060613287500736,
+          "std": 3.6887874814164507,
+          "wins": 4
+        },
+        "alba_framework_gravity": {
+          "mean": 30.302525355289184,
+          "std": 8.911795415885898,
+          "wins": 0
+        }
+      }
+    },
+    "rastrigin_10D": {
+      "function": "rastrigin",
+      "dimension": 10,
+      "bounds": [
+        -5.12,
+        5.12
+      ],
+      "seeds": [
+        {
+          "seed": 70,
+          "alba_experimental": 83.52229563176375,
+          "optuna": 71.34761206599796,
+          "alba_framework_gravity": 65.3837293163327,
+          "time_exp": 0.2052772045135498,
+          "time_opt": 1.359468698501587,
+          "time_grav": 0.2190077304840088
+        },
+        {
+          "seed": 71,
+          "alba_experimental": 90.01671443258473,
+          "optuna": 73.34114381401628,
+          "alba_framework_gravity": 79.08946151588489,
+          "time_exp": 0.21177172660827637,
+          "time_opt": 1.3582825660705566,
+          "time_grav": 0.24456048011779785
+        },
+        {
+          "seed": 72,
+          "alba_experimental": 97.48320889861087,
+          "optuna": 83.55706569391953,
+          "alba_framework_gravity": 68.44253275474047,
+          "time_exp": 0.2212660312652588,
+          "time_opt": 1.3600497245788574,
+          "time_grav": 0.2249612808227539
+        },
+        {
+          "seed": 73,
+          "alba_experimental": 99.15240621297768,
+          "optuna": 76.73456164226664,
+          "alba_framework_gravity": 75.37771443864538,
+          "time_exp": 0.21814322471618652,
+          "time_opt": 1.3267390727996826,
+          "time_grav": 0.18029022216796875
+        }
+      ],
+      "summary": {
+        "alba_experimental": {
+          "mean": 92.54365629398426,
+          "std": 6.241897523878896,
+          "wins": 0
+        },
+        "optuna": {
+          "mean": 76.2450958040501,
+          "std": 4.640117579384294,
+          "wins": 1
+        },
+        "alba_framework_gravity": {
+          "mean": 72.07335950640086,
+          "std": 5.433196662789289,
+          "wins": 3
+        }
+      }
+    },
+    "rastrigin_20D": {
+      "function": "rastrigin",
+      "dimension": 20,
+      "bounds": [
+        -5.12,
+        5.12
+      ],
+      "seeds": [
+        {
+          "seed": 70,
+          "alba_experimental": 184.53432430580594,
+          "optuna": 172.3316399538636,
+          "alba_framework_gravity": 223.05235905376534,
+          "time_exp": 0.5735385417938232,
+          "time_opt": 2.6682772636413574,
+          "time_grav": 0.6348164081573486
+        },
+        {
+          "seed": 71,
+          "alba_experimental": 204.38009038883925,
+          "optuna": 226.6544763892459,
+          "alba_framework_gravity": 217.91697432405715,
+          "time_exp": 1.0241148471832275,
+          "time_opt": 2.6809284687042236,
+          "time_grav": 0.5534119606018066
+        },
+        {
+          "seed": 72,
+          "alba_experimental": 202.26115245168998,
+          "optuna": 178.15299850654594,
+          "alba_framework_gravity": 197.60406702348652,
+          "time_exp": 0.4844527244567871,
+          "time_opt": 2.7064690589904785,
+          "time_grav": 1.3702704906463623
+        },
+        {
+          "seed": 73,
+          "alba_experimental": 192.6341060818224,
+          "optuna": 190.63699575000015,
+          "alba_framework_gravity": 204.90225793222447,
+          "time_exp": 1.3596367835998535,
+          "time_opt": 2.717404842376709,
+          "time_grav": 0.5605196952819824
+        }
+      ],
+      "summary": {
+        "alba_experimental": {
+          "mean": 195.9524183070394,
+          "std": 7.940558070300487,
+          "wins": 1
+        },
+        "optuna": {
+          "mean": 191.9440276499139,
+          "std": 21.10309112456393,
+          "wins": 3
+        },
+        "alba_framework_gravity": {
+          "mean": 210.8689145833834,
+          "std": 10.120136333705043,
+          "wins": 0
+        }
+      }
+    },
+    "ackley_5D": {
+      "function": "ackley",
+      "dimension": 5,
+      "bounds": [
+        -5.0,
+        5.0
+      ],
+      "seeds": [
+        {
+          "seed": 70,
+          "alba_experimental": 2.186717391306854,
+          "optuna": 1.3356598434440135,
+          "alba_framework_gravity": 3.353731853163627,
+          "time_exp": 0.12997698783874512,
+          "time_opt": 0.6696615219116211,
+          "time_grav": 0.12928509712219238
+        },
+        {
+          "seed": 71,
+          "alba_experimental": 2.947266220905789,
+          "optuna": 2.383093086494949,
+          "alba_framework_gravity": 4.84161530453709,
+          "time_exp": 0.10911226272583008,
+          "time_opt": 0.6911234855651855,
+          "time_grav": 0.13149642944335938
+        },
+        {
+          "seed": 72,
+          "alba_experimental": 3.5992271774929745,
+          "optuna": 2.2393577116536822,
+          "alba_framework_gravity": 3.5598672663360884,
+          "time_exp": 0.1066901683807373,
+          "time_opt": 0.6817448139190674,
+          "time_grav": 0.14108896255493164
+        },
+        {
+          "seed": 73,
+          "alba_experimental": 2.600515557708189,
+          "optuna": 1.858336552791013,
+          "alba_framework_gravity": 3.518481808123291,
+          "time_exp": 0.10661911964416504,
+          "time_opt": 0.6792559623718262,
+          "time_grav": 0.12899518013000488
+        }
+      ],
+      "summary": {
+        "alba_experimental": {
+          "mean": 2.8334315868534516,
+          "std": 0.5176606846929379,
+          "wins": 0
+        },
+        "optuna": {
+          "mean": 1.9541117985959144,
+          "std": 0.4052918376996607,
+          "wins": 4
+        },
+        "alba_framework_gravity": {
+          "mean": 3.8184240580400237,
+          "std": 0.5957508161980247,
+          "wins": 0
+        }
+      }
+    },
+    "ackley_10D": {
+      "function": "ackley",
+      "dimension": 10,
+      "bounds": [
+        -5.0,
+        5.0
+      ],
+      "seeds": [
+        {
+          "seed": 70,
+          "alba_experimental": 5.780990944948346,
+          "optuna": 4.61372391018724,
+          "alba_framework_gravity": 4.710757989016933,
+          "time_exp": 0.17972493171691895,
+          "time_opt": 1.3456051349639893,
+          "time_grav": 0.1952192783355713
+        },
+        {
+          "seed": 71,
+          "alba_experimental": 6.632747420693615,
+          "optuna": 4.487189152709391,
+          "alba_framework_gravity": 5.018876886368272,
+          "time_exp": 0.22223448753356934,
+          "time_opt": 1.342057228088379,
+          "time_grav": 0.21022772789001465
+        },
+        {
+          "seed": 72,
+          "alba_experimental": 4.325597151000586,
+          "optuna": 4.7519762520897615,
+          "alba_framework_gravity": 6.531164844363243,
+          "time_exp": 0.20756840705871582,
+          "time_opt": 1.3501062393188477,
+          "time_grav": 0.21674394607543945
+        },
+        {
+          "seed": 73,
+          "alba_experimental": 5.566516727905515,
+          "optuna": 4.638741804071746,
+          "alba_framework_gravity": 4.060038703503302,
+          "time_exp": 0.1870124340057373,
+          "time_opt": 1.3497960567474365,
+          "time_grav": 0.21036553382873535
+        }
+      ],
+      "summary": {
+        "alba_experimental": {
+          "mean": 5.576463061137016,
+          "std": 0.824974659942114,
+          "wins": 1
+        },
+        "optuna": {
+          "mean": 4.622907779764534,
+          "std": 0.09409207732890584,
+          "wins": 2
+        },
+        "alba_framework_gravity": {
+          "mean": 5.080209605812938,
+          "std": 0.9064044315071899,
+          "wins": 1
+        }
+      }
+    },
+    "ackley_20D": {
+      "function": "ackley",
+      "dimension": 20,
+      "bounds": [
+        -5.0,
+        5.0
+      ],
+      "seeds": [
+        {
+          "seed": 70,
+          "alba_experimental": 4.674967914804061,
+          "optuna": 6.72154481161007,
+          "alba_framework_gravity": 4.880122396888154,
+          "time_exp": 0.4751458168029785,
+          "time_opt": 2.668478012084961,
+          "time_grav": 0.5823118686676025
+        },
+        {
+          "seed": 71,
+          "alba_experimental": 5.26696393412514,
+          "optuna": 5.919874108806603,
+          "alba_framework_gravity": 6.270781243732301,
+          "time_exp": 0.5569663047790527,
+          "time_opt": 2.6603195667266846,
+          "time_grav": 0.6021018028259277
+        },
+        {
+          "seed": 72,
+          "alba_experimental": 5.682995679891214,
+          "optuna": 6.127111522693987,
+          "alba_framework_gravity": 4.915410015262669,
+          "time_exp": 1.5960092544555664,
+          "time_opt": 2.718867540359497,
+          "time_grav": 1.4827933311462402
+        },
+        {
+          "seed": 73,
+          "alba_experimental": 6.947771122811641,
+          "optuna": 6.56018357531693,
+          "alba_framework_gravity": 6.1291526802615515,
+          "time_exp": 1.556779384613037,
+          "time_opt": 2.737781047821045,
+          "time_grav": 0.7309277057647705
+        }
+      ],
+      "summary": {
+        "alba_experimental": {
+          "mean": 5.643174662908014,
+          "std": 0.8340438321982883,
+          "wins": 2
+        },
+        "optuna": {
+          "mean": 6.3321785046068975,
+          "std": 0.32235066897940956,
+          "wins": 0
+        },
+        "alba_framework_gravity": {
+          "mean": 5.548866584036169,
+          "std": 0.6531421632621859,
+          "wins": 2
+        }
+      }
+    },
+    "levy_5D": {
+      "function": "levy",
+      "dimension": 5,
+      "bounds": [
+        -10.0,
+        10.0
+      ],
+      "seeds": [
+        {
+          "seed": 70,
+          "alba_experimental": 1.8697271964656914,
+          "optuna": 0.45126661405250634,
+          "alba_framework_gravity": 1.7608450754752656,
+          "time_exp": 0.17986702919006348,
+          "time_opt": 0.6784718036651611,
+          "time_grav": 0.12382936477661133
+        },
+        {
+          "seed": 71,
+          "alba_experimental": 3.817854210177036,
+          "optuna": 0.8786485702932458,
+          "alba_framework_gravity": 1.7101570214761717,
+          "time_exp": 0.11466860771179199,
+          "time_opt": 0.6738500595092773,
+          "time_grav": 0.13595104217529297
+        },
+        {
+          "seed": 72,
+          "alba_experimental": 1.6133095990666886,
+          "optuna": 0.3193798802329113,
+          "alba_framework_gravity": 0.9798671534957435,
+          "time_exp": 0.11376190185546875,
+          "time_opt": 0.7139317989349365,
+          "time_grav": 0.14129352569580078
+        },
+        {
+          "seed": 73,
+          "alba_experimental": 2.36500867146629,
+          "optuna": 0.13627415794321301,
+          "alba_framework_gravity": 0.9074284938278149,
+          "time_exp": 0.10973453521728516,
+          "time_opt": 0.6685044765472412,
+          "time_grav": 0.128007173538208
+        }
+      ],
+      "summary": {
+        "alba_experimental": {
+          "mean": 2.4164749192939263,
+          "std": 0.8530123527263666,
+          "wins": 0
+        },
+        "optuna": {
+          "mean": 0.4463923056304691,
+          "std": 0.2734843043728262,
+          "wins": 4
+        },
+        "alba_framework_gravity": {
+          "mean": 1.339574436068749,
+          "std": 0.39715861087372445,
+          "wins": 0
+        }
+      }
+    },
+    "levy_10D": {
+      "function": "levy",
+      "dimension": 10,
+      "bounds": [
+        -10.0,
+        10.0
+      ],
+      "seeds": [
+        {
+          "seed": 70,
+          "alba_experimental": 7.273350274242877,
+          "optuna": 4.855003632002742,
+          "alba_framework_gravity": 15.267669775588061,
+          "time_exp": 0.19473981857299805,
+          "time_opt": 1.3436658382415771,
+          "time_grav": 0.2297070026397705
+        },
+        {
+          "seed": 71,
+          "alba_experimental": 12.126910351858273,
+          "optuna": 6.086169493316134,
+          "alba_framework_gravity": 9.038176925993918,
+          "time_exp": 0.21465206146240234,
+          "time_opt": 1.3569207191467285,
+          "time_grav": 0.24587512016296387
+        },
+        {
+          "seed": 72,
+          "alba_experimental": 8.714397447404433,
+          "optuna": 19.846618913378325,
+          "alba_framework_gravity": 10.84764064831333,
+          "time_exp": 0.22318458557128906,
+          "time_opt": 1.3384807109832764,
+          "time_grav": 0.2187356948852539
+        },
+        {
+          "seed": 73,
+          "alba_experimental": 13.444973947025511,
+          "optuna": 6.971597429086039,
+          "alba_framework_gravity": 10.028463897832788,
+          "time_exp": 0.17805194854736328,
+          "time_opt": 1.3495268821716309,
+          "time_grav": 0.24689579010009766
+        }
+      ],
+      "summary": {
+        "alba_experimental": {
+          "mean": 10.389908005132774,
+          "std": 2.4935352805239974,
+          "wins": 1
+        },
+        "optuna": {
+          "mean": 9.43984736694581,
+          "std": 6.055185776037391,
+          "wins": 3
+        },
+        "alba_framework_gravity": {
+          "mean": 11.295487811932023,
+          "std": 2.381155111969276,
+          "wins": 0
+        }
+      }
+    },
+    "levy_20D": {
+      "function": "levy",
+      "dimension": 20,
+      "bounds": [
+        -10.0,
+        10.0
+      ],
+      "seeds": [
+        {
+          "seed": 70,
+          "alba_experimental": 25.473870530511387,
+          "optuna": 34.227384317766635,
+          "alba_framework_gravity": 34.54170425053667,
+          "time_exp": 0.6420595645904541,
+          "time_opt": 2.6819281578063965,
+          "time_grav": 0.5570497512817383
+        },
+        {
+          "seed": 71,
+          "alba_experimental": 32.749870554421705,
+          "optuna": 55.77702995832076,
+          "alba_framework_gravity": 48.188286206154636,
+          "time_exp": 0.547804594039917,
+          "time_opt": 2.6815526485443115,
+          "time_grav": 0.5179383754730225
+        },
+        {
+          "seed": 72,
+          "alba_experimental": 44.777131504800906,
+          "optuna": 57.22381505038587,
+          "alba_framework_gravity": 45.86929255632416,
+          "time_exp": 0.43232083320617676,
+          "time_opt": 2.674649477005005,
+          "time_grav": 0.5172789096832275
+        },
+        {
+          "seed": 73,
+          "alba_experimental": 69.2625268737931,
+          "optuna": 54.5069309693581,
+          "alba_framework_gravity": 45.82439680027902,
+          "time_exp": 0.5754456520080566,
+          "time_opt": 2.6772472858428955,
+          "time_grav": 0.58219313621521
+        }
+      ],
+      "summary": {
+        "alba_experimental": {
+          "mean": 43.06584986588177,
+          "std": 16.62145854907973,
+          "wins": 3
+        },
+        "optuna": {
+          "mean": 50.433790073957844,
+          "std": 9.406018232100827,
+          "wins": 0
+        },
+        "alba_framework_gravity": {
+          "mean": 43.60591995332362,
+          "std": 5.319835097120604,
+          "wins": 1
+        }
+      }
+    },
+    "griewank_5D": {
+      "function": "griewank",
+      "dimension": 5,
+      "bounds": [
+        -600.0,
+        600.0
+      ],
+      "seeds": [
+        {
+          "seed": 70,
+          "alba_experimental": 5.094567990734025,
+          "optuna": 2.2187504449917084,
+          "alba_framework_gravity": 1.797401680650711,
+          "time_exp": 0.1393122673034668,
+          "time_opt": 0.6664464473724365,
+          "time_grav": 0.15288066864013672
+        },
+        {
+          "seed": 71,
+          "alba_experimental": 2.0026313336523454,
+          "optuna": 1.620194069172799,
+          "alba_framework_gravity": 3.545645097868019,
+          "time_exp": 0.11151957511901855,
+          "time_opt": 0.6742918491363525,
+          "time_grav": 0.16633152961730957
+        },
+        {
+          "seed": 72,
+          "alba_experimental": 3.130707784182154,
+          "optuna": 1.194986651925733,
+          "alba_framework_gravity": 3.0395973151968008,
+          "time_exp": 0.12152481079101562,
+          "time_opt": 0.673250675201416,
+          "time_grav": 0.13040637969970703
+        },
+        {
+          "seed": 73,
+          "alba_experimental": 5.819330973056879,
+          "optuna": 1.698830930467522,
+          "alba_framework_gravity": 3.7831841265563995,
+          "time_exp": 0.11035633087158203,
+          "time_opt": 0.6651499271392822,
+          "time_grav": 0.12375545501708984
+        }
+      ],
+      "summary": {
+        "alba_experimental": {
+          "mean": 4.01180952040635,
+          "std": 1.5209073741161565,
+          "wins": 0
+        },
+        "optuna": {
+          "mean": 1.6831905241394405,
+          "std": 0.36379273814777313,
+          "wins": 3
+        },
+        "alba_framework_gravity": {
+          "mean": 3.0414570550679825,
+          "std": 0.7668184048929383,
+          "wins": 1
+        }
+      }
+    },
+    "griewank_10D": {
+      "function": "griewank",
+      "dimension": 10,
+      "bounds": [
+        -600.0,
+        600.0
+      ],
+      "seeds": [
+        {
+          "seed": 70,
+          "alba_experimental": 16.917931905775564,
+          "optuna": 22.87033036827902,
+          "alba_framework_gravity": 8.675057885324549,
+          "time_exp": 0.25960397720336914,
+          "time_opt": 1.3504502773284912,
+          "time_grav": 0.23422837257385254
+        },
+        {
+          "seed": 71,
+          "alba_experimental": 19.758034160440584,
+          "optuna": 16.710080023516582,
+          "alba_framework_gravity": 18.077056556931076,
+          "time_exp": 0.2101137638092041,
+          "time_opt": 1.3473153114318848,
+          "time_grav": 0.21151113510131836
+        },
+        {
+          "seed": 72,
+          "alba_experimental": 12.80657366624489,
+          "optuna": 22.153099491979592,
+          "alba_framework_gravity": 18.36284701168111,
+          "time_exp": 0.21188712120056152,
+          "time_opt": 1.3485586643218994,
+          "time_grav": 0.20682048797607422
+        },
+        {
+          "seed": 73,
+          "alba_experimental": 21.700791646925687,
+          "optuna": 36.852811394172335,
+          "alba_framework_gravity": 28.32491753133488,
+          "time_exp": 0.20500826835632324,
+          "time_opt": 1.3537886142730713,
+          "time_grav": 0.22298479080200195
+        }
+      ],
+      "summary": {
+        "alba_experimental": {
+          "mean": 17.79583284484668,
+          "std": 3.345233716010621,
+          "wins": 2
+        },
+        "optuna": {
+          "mean": 24.646580319486883,
+          "std": 7.438962033154656,
+          "wins": 1
+        },
+        "alba_framework_gravity": {
+          "mean": 18.359969746317905,
+          "std": 6.949419944583676,
+          "wins": 1
+        }
+      }
+    },
+    "griewank_20D": {
+      "function": "griewank",
+      "dimension": 20,
+      "bounds": [
+        -600.0,
+        600.0
+      ],
+      "seeds": [
+        {
+          "seed": 70,
+          "alba_experimental": 58.77759299634134,
+          "optuna": 193.82876209314153,
+          "alba_framework_gravity": 92.25407748968271,
+          "time_exp": 0.5306539535522461,
+          "time_opt": 2.6737184524536133,
+          "time_grav": 0.616980791091919
+        },
+        {
+          "seed": 71,
+          "alba_experimental": 56.18804000825884,
+          "optuna": 185.23702946003485,
+          "alba_framework_gravity": 90.79606351479734,
+          "time_exp": 0.5236196517944336,
+          "time_opt": 2.6677181720733643,
+          "time_grav": 0.5696759223937988
+        },
+        {
+          "seed": 72,
+          "alba_experimental": 117.0678590023359,
+          "optuna": 153.92977615779853,
+          "alba_framework_gravity": 86.51581116114338,
+          "time_exp": 0.4926638603210449,
+          "time_opt": 2.6975841522216797,
+          "time_grav": 0.44527363777160645
+        },
+        {
+          "seed": 73,
+          "alba_experimental": 148.58635095198738,
+          "optuna": 136.74659161556292,
+          "alba_framework_gravity": 99.59761608202322,
+          "time_exp": 0.5831148624420166,
+          "time_opt": 2.6561176776885986,
+          "time_grav": 0.5283894538879395
+        }
+      ],
+      "summary": {
+        "alba_experimental": {
+          "mean": 95.15496073973085,
+          "std": 39.29638140310225,
+          "wins": 2
+        },
+        "optuna": {
+          "mean": 167.43553983163446,
+          "std": 23.117701060862355,
+          "wins": 0
+        },
+        "alba_framework_gravity": {
+          "mean": 92.29089206191168,
+          "std": 4.716345063035841,
+          "wins": 2
+        }
+      }
+    },
+    "schwefel_5D": {
+      "function": "schwefel",
+      "dimension": 5,
+      "bounds": [
+        -500.0,
+        500.0
+      ],
+      "seeds": [
+        {
+          "seed": 70,
+          "alba_experimental": 477.52167339935295,
+          "optuna": 493.038493340714,
+          "alba_framework_gravity": 746.7845381987122,
+          "time_exp": 0.13633370399475098,
+          "time_opt": 0.6666305065155029,
+          "time_grav": 0.12451601028442383
+        },
+        {
+          "seed": 71,
+          "alba_experimental": 675.0841139230313,
+          "optuna": 770.2623617509253,
+          "alba_framework_gravity": 180.56731785895954,
+          "time_exp": 0.1138310432434082,
+          "time_opt": 0.6767764091491699,
+          "time_grav": 0.13507342338562012
+        },
+        {
+          "seed": 72,
+          "alba_experimental": 939.0535496596044,
+          "optuna": 460.79004835999444,
+          "alba_framework_gravity": 704.6831354823839,
+          "time_exp": 0.11441755294799805,
+          "time_opt": 0.6703383922576904,
+          "time_grav": 0.12446784973144531
+        },
+        {
+          "seed": 73,
+          "alba_experimental": 757.1634453815361,
+          "optuna": 843.7127642316523,
+          "alba_framework_gravity": 519.174357315294,
+          "time_exp": 0.10318326950073242,
+          "time_opt": 0.6893908977508545,
+          "time_grav": 0.15074992179870605
+        }
+      ],
+      "summary": {
+        "alba_experimental": {
+          "mean": 712.2056955908811,
+          "std": 165.78280237960485,
+          "wins": 1
+        },
+        "optuna": {
+          "mean": 641.9509169208216,
+          "std": 167.4558450001689,
+          "wins": 1
+        },
+        "alba_framework_gravity": {
+          "mean": 537.8023372138374,
+          "std": 223.3196262354758,
+          "wins": 2
+        }
+      }
+    },
+    "schwefel_10D": {
+      "function": "schwefel",
+      "dimension": 10,
+      "bounds": [
+        -500.0,
+        500.0
+      ],
+      "seeds": [
+        {
+          "seed": 70,
+          "alba_experimental": 2282.505758047044,
+          "optuna": 1638.4407424924443,
+          "alba_framework_gravity": 2136.235141059223,
+          "time_exp": 0.19011402130126953,
+          "time_opt": 1.3603830337524414,
+          "time_grav": 0.2286820411682129
+        },
+        {
+          "seed": 71,
+          "alba_experimental": 2158.0338369214305,
+          "optuna": 1349.2373196024905,
+          "alba_framework_gravity": 2551.6380835966597,
+          "time_exp": 0.2215108871459961,
+          "time_opt": 1.3520193099975586,
+          "time_grav": 0.20556855201721191
+        },
+        {
+          "seed": 72,
+          "alba_experimental": 2106.1890074548014,
+          "optuna": 2140.4546519563905,
+          "alba_framework_gravity": 2222.5145801330623,
+          "time_exp": 0.2139744758605957,
+          "time_opt": 1.3448173999786377,
+          "time_grav": 0.21636223793029785
+        },
+        {
+          "seed": 73,
+          "alba_experimental": 1921.5987517350518,
+          "optuna": 2048.4198461005785,
+          "alba_framework_gravity": 2480.3573323354804,
+          "time_exp": 0.2085261344909668,
+          "time_opt": 1.3666753768920898,
+          "time_grav": 0.23404216766357422
+        }
+      ],
+      "summary": {
+        "alba_experimental": {
+          "mean": 2117.081838539582,
+          "std": 129.78292483253256,
+          "wins": 2
+        },
+        "optuna": {
+          "mean": 1794.138140037976,
+          "std": 318.8936860820799,
+          "wins": 2
+        },
+        "alba_framework_gravity": {
+          "mean": 2347.686284281106,
+          "std": 172.89988788679457,
+          "wins": 0
+        }
+      }
+    },
+    "schwefel_20D": {
+      "function": "schwefel",
+      "dimension": 20,
+      "bounds": [
+        -500.0,
+        500.0
+      ],
+      "seeds": [
+        {
+          "seed": 70,
+          "alba_experimental": 5617.977516617235,
+          "optuna": 3859.1350432642794,
+          "alba_framework_gravity": 5136.035871336531,
+          "time_exp": 1.7529704570770264,
+          "time_opt": 2.7370989322662354,
+          "time_grav": 1.7648727893829346
+        },
+        {
+          "seed": 71,
+          "alba_experimental": 5729.811585041176,
+          "optuna": 4867.848451394251,
+          "alba_framework_gravity": 5651.0956976156185,
+          "time_exp": 2.048372983932495,
+          "time_opt": 2.7647006511688232,
+          "time_grav": 2.3613622188568115
+        },
+        {
+          "seed": 72,
+          "alba_experimental": 6138.073489680751,
+          "optuna": 4812.228468187268,
+          "alba_framework_gravity": 6138.329086747987,
+          "time_exp": 1.674492359161377,
+          "time_opt": 2.709583044052124,
+          "time_grav": 0.5151069164276123
+        },
+        {
+          "seed": 73,
+          "alba_experimental": 6425.598760202817,
+          "optuna": 4822.440718627754,
+          "alba_framework_gravity": 5579.080650784327,
+          "time_exp": 0.6119518280029297,
+          "time_opt": 2.671015977859497,
+          "time_grav": 1.079935073852539
+        }
+      ],
+      "summary": {
+        "alba_experimental": {
+          "mean": 5977.865337885495,
+          "std": 322.94805215351545,
+          "wins": 0
+        },
+        "optuna": {
+          "mean": 4590.413170368388,
+          "std": 422.7223804805358,
+          "wins": 4
+        },
+        "alba_framework_gravity": {
+          "mean": 5626.135326621116,
+          "std": 355.449393944285,
+          "wins": 0
+        }
+      }
+    },
+    "zakharov_5D": {
+      "function": "zakharov",
+      "dimension": 5,
+      "bounds": [
+        -5.0,
+        10.0
+      ],
+      "seeds": [
+        {
+          "seed": 70,
+          "alba_experimental": 11.099044427890911,
+          "optuna": 5.433475684854289,
+          "alba_framework_gravity": 5.574982415120274,
+          "time_exp": 0.15071654319763184,
+          "time_opt": 0.6732578277587891,
+          "time_grav": 0.13762760162353516
+        },
+        {
+          "seed": 71,
+          "alba_experimental": 2.7476399352494165,
+          "optuna": 2.7497596990886795,
+          "alba_framework_gravity": 7.170955424282915,
+          "time_exp": 0.15310215950012207,
+          "time_opt": 0.6737573146820068,
+          "time_grav": 0.13005471229553223
+        },
+        {
+          "seed": 72,
+          "alba_experimental": 16.71773459315015,
+          "optuna": 14.527603703721967,
+          "alba_framework_gravity": 4.592512105663844,
+          "time_exp": 0.10844850540161133,
+          "time_opt": 0.682096004486084,
+          "time_grav": 0.13123846054077148
+        },
+        {
+          "seed": 73,
+          "alba_experimental": 2.1124042367208404,
+          "optuna": 16.434285494798612,
+          "alba_framework_gravity": 19.52207504362583,
+          "time_exp": 0.11180496215820312,
+          "time_opt": 0.6613550186157227,
+          "time_grav": 0.1268908977508545
+        }
+      ],
+      "summary": {
+        "alba_experimental": {
+          "mean": 8.16920579825283,
+          "std": 6.07740735255521,
+          "wins": 2
+        },
+        "optuna": {
+          "mean": 9.786281145615888,
+          "std": 5.812393028551823,
+          "wins": 1
+        },
+        "alba_framework_gravity": {
+          "mean": 9.215131247173215,
+          "std": 6.021441614453043,
+          "wins": 1
+        }
+      }
+    },
+    "zakharov_10D": {
+      "function": "zakharov",
+      "dimension": 10,
+      "bounds": [
+        -5.0,
+        10.0
+      ],
+      "seeds": [
+        {
+          "seed": 70,
+          "alba_experimental": 92.09200443810182,
+          "optuna": 37.49223573130778,
+          "alba_framework_gravity": 132.27805147370825,
+          "time_exp": 0.21512508392333984,
+          "time_opt": 1.3358871936798096,
+          "time_grav": 0.19488978385925293
+        },
+        {
+          "seed": 71,
+          "alba_experimental": 99.2671512651772,
+          "optuna": 67.3823458536242,
+          "alba_framework_gravity": 83.15236742663093,
+          "time_exp": 0.1938340663909912,
+          "time_opt": 1.372884750366211,
+          "time_grav": 0.2429523468017578
+        },
+        {
+          "seed": 72,
+          "alba_experimental": 80.24904777248994,
+          "optuna": 57.07376556112439,
+          "alba_framework_gravity": 48.96969516944786,
+          "time_exp": 0.18148374557495117,
+          "time_opt": 1.3338391780853271,
+          "time_grav": 0.2018139362335205
+        },
+        {
+          "seed": 73,
+          "alba_experimental": 104.58028523560304,
+          "optuna": 72.99952806726036,
+          "alba_framework_gravity": 105.26368362317943,
+          "time_exp": 0.20170044898986816,
+          "time_opt": 1.3575689792633057,
+          "time_grav": 0.2198784351348877
+        }
+      ],
+      "summary": {
+        "alba_experimental": {
+          "mean": 94.047122177843,
+          "std": 9.115996521854944,
+          "wins": 0
+        },
+        "optuna": {
+          "mean": 58.73696880332918,
+          "std": 13.530226064493872,
+          "wins": 3
+        },
+        "alba_framework_gravity": {
+          "mean": 92.41594942324161,
+          "std": 30.526391917680385,
+          "wins": 1
+        }
+      }
+    },
+    "zakharov_20D": {
+      "function": "zakharov",
+      "dimension": 20,
+      "bounds": [
+        -5.0,
+        10.0
+      ],
+      "seeds": [
+        {
+          "seed": 70,
+          "alba_experimental": 70.30249325711361,
+          "optuna": 371.9393731724175,
+          "alba_framework_gravity": 201.1883464796918,
+          "time_exp": 0.6878674030303955,
+          "time_opt": 2.6952004432678223,
+          "time_grav": 0.9073498249053955
+        },
+        {
+          "seed": 71,
+          "alba_experimental": 200.04575337661794,
+          "optuna": 261.49737612574506,
+          "alba_framework_gravity": 133.08460538127727,
+          "time_exp": 0.8642594814300537,
+          "time_opt": 2.692201852798462,
+          "time_grav": 0.5584754943847656
+        },
+        {
+          "seed": 72,
+          "alba_experimental": 139.61931557636157,
+          "optuna": 339.06639985376086,
+          "alba_framework_gravity": 143.78321502883168,
+          "time_exp": 0.5449652671813965,
+          "time_opt": 2.7045018672943115,
+          "time_grav": 0.8189561367034912
+        },
+        {
+          "seed": 73,
+          "alba_experimental": 153.96560800810684,
+          "optuna": 260.89115059827145,
+          "alba_framework_gravity": 277.6544707476973,
+          "time_exp": 0.7754395008087158,
+          "time_opt": 2.778449296951294,
+          "time_grav": 0.5644333362579346
+        }
+      ],
+      "summary": {
+        "alba_experimental": {
+          "mean": 140.98329255455,
+          "std": 46.514918616008245,
+          "wins": 3
+        },
+        "optuna": {
+          "mean": 308.34857493754873,
+          "std": 48.56597662652382,
+          "wins": 0
+        },
+        "alba_framework_gravity": {
+          "mean": 188.92765940937454,
+          "std": 57.400433446350135,
+          "wins": 1
+        }
+      }
+    },
+    "styblinski_tang_5D": {
+      "function": "styblinski_tang",
+      "dimension": 5,
+      "bounds": [
+        -5.0,
+        5.0
+      ],
+      "seeds": [
+        {
+          "seed": 70,
+          "alba_experimental": -182.96610969160184,
+          "optuna": -193.5052396480964,
+          "alba_framework_gravity": -189.87316182441438,
+          "time_exp": 0.14677739143371582,
+          "time_opt": 0.669086217880249,
+          "time_grav": 0.13273072242736816
+        },
+        {
+          "seed": 71,
+          "alba_experimental": -192.56081380074627,
+          "optuna": -195.20771832575207,
+          "alba_framework_gravity": -157.46160136277297,
+          "time_exp": 0.11464881896972656,
+          "time_opt": 0.6754655838012695,
+          "time_grav": 0.14500999450683594
+        },
+        {
+          "seed": 72,
+          "alba_experimental": -171.37085047175933,
+          "optuna": -188.9139480144959,
+          "alba_framework_gravity": -192.7880824354773,
+          "time_exp": 0.12598228454589844,
+          "time_opt": 0.6850988864898682,
+          "time_grav": 0.1307055950164795
+        },
+        {
+          "seed": 73,
+          "alba_experimental": -165.99361442635694,
+          "optuna": -179.72745865246534,
+          "alba_framework_gravity": -166.99762788744016,
+          "time_exp": 0.10547041893005371,
+          "time_opt": 0.6771645545959473,
+          "time_grav": 0.1551671028137207
+        }
+      ],
+      "summary": {
+        "alba_experimental": {
+          "mean": -178.22284709761612,
+          "std": 10.302667357341482,
+          "wins": 0
+        },
+        "optuna": {
+          "mean": -189.3385911602024,
+          "std": 6.007532837811581,
+          "wins": 3
+        },
+        "alba_framework_gravity": {
+          "mean": -176.7801183775262,
+          "std": 14.971513950004267,
+          "wins": 1
+        }
+      }
+    },
+    "styblinski_tang_10D": {
+      "function": "styblinski_tang",
+      "dimension": 10,
+      "bounds": [
+        -5.0,
+        5.0
+      ],
+      "seeds": [
+        {
+          "seed": 70,
+          "alba_experimental": -302.9171471331509,
+          "optuna": -276.0451571429293,
+          "alba_framework_gravity": -303.0019760163231,
+          "time_exp": 0.20969915390014648,
+          "time_opt": 1.3415429592132568,
+          "time_grav": 0.21869540214538574
+        },
+        {
+          "seed": 71,
+          "alba_experimental": -232.44994732998427,
+          "optuna": -342.17137195783414,
+          "alba_framework_gravity": -291.78134694794744,
+          "time_exp": 0.16587448120117188,
+          "time_opt": 1.334733009338379,
+          "time_grav": 0.22592616081237793
+        },
+        {
+          "seed": 72,
+          "alba_experimental": -261.78863584059854,
+          "optuna": -327.74111944817537,
+          "alba_framework_gravity": -267.75900690558086,
+          "time_exp": 0.21655035018920898,
+          "time_opt": 1.3382601737976074,
+          "time_grav": 0.21793866157531738
+        },
+        {
+          "seed": 73,
+          "alba_experimental": -295.74505367791136,
+          "optuna": -293.0617751644943,
+          "alba_framework_gravity": -318.37310577532287,
+          "time_exp": 0.2256481647491455,
+          "time_opt": 1.341261625289917,
+          "time_grav": 0.22606229782104492
+        }
+      ],
+      "summary": {
+        "alba_experimental": {
+          "mean": -273.22519599541124,
+          "std": 28.205370784249723,
+          "wins": 0
+        },
+        "optuna": {
+          "mean": -309.75485592835827,
+          "std": 26.407096226614943,
+          "wins": 2
+        },
+        "alba_framework_gravity": {
+          "mean": -295.2288589112936,
+          "std": 18.45640553022721,
+          "wins": 2
+        }
+      }
+    },
+    "styblinski_tang_20D": {
+      "function": "styblinski_tang",
+      "dimension": 20,
+      "bounds": [
+        -5.0,
+        5.0
+      ],
+      "seeds": [
+        {
+          "seed": 70,
+          "alba_experimental": -501.2143170477009,
+          "optuna": -570.6975101616753,
+          "alba_framework_gravity": -548.3713496140349,
+          "time_exp": 1.545215368270874,
+          "time_opt": 2.707151412963867,
+          "time_grav": 1.1367688179016113
+        },
+        {
+          "seed": 71,
+          "alba_experimental": -547.2692358077666,
+          "optuna": -540.9488085728625,
+          "alba_framework_gravity": -432.32611220512536,
+          "time_exp": 0.5324206352233887,
+          "time_opt": 2.687194347381592,
+          "time_grav": 0.53904128074646
+        },
+        {
+          "seed": 72,
+          "alba_experimental": -525.3158702991425,
+          "optuna": -512.1274255016103,
+          "alba_framework_gravity": -536.0297122226405,
+          "time_exp": 0.5730700492858887,
+          "time_opt": 2.675175428390503,
+          "time_grav": 0.5732212066650391
+        },
+        {
+          "seed": 73,
+          "alba_experimental": -531.3627344942927,
+          "optuna": -486.04275675822447,
+          "alba_framework_gravity": -435.22092565247345,
+          "time_exp": 1.0492479801177979,
+          "time_opt": 2.6700918674468994,
+          "time_grav": 0.5264606475830078
+        }
+      ],
+      "summary": {
+        "alba_experimental": {
+          "mean": -526.2905394122256,
+          "std": 16.549922759350846,
+          "wins": 2
+        },
+        "optuna": {
+          "mean": -527.4541252485932,
+          "std": 31.63030976034915,
+          "wins": 1
+        },
+        "alba_framework_gravity": {
+          "mean": -487.9870249235685,
+          "std": 54.398448755863626,
+          "wins": 1
+        }
+      }
+    }
+  }
+}

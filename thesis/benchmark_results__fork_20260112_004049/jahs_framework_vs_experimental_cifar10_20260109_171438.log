@@ -1,0 +1,7 @@
+Benchmark tasks: ['cifar10'] | budget=400 | seeds=[70, 71, 72, 73]
+Checkpoints: [100, 200, 400]
+Framework config: grid_bins=8 grid_batch_size=512 grid_batches=4 grid_sampling=grid_random grid_jitter=True grid_penalty_lambda=0.06 heatmap_ucb_beta=1.0 heatmap_ucb_explore_prob=0.25 heatmap_ucb_temperature=1.0
+Saving to: /mnt/workspace/thesis/benchmark_results/jahs_framework_vs_experimental_cifar10_20260109_171438.json
+Logging to: /mnt/workspace/thesis/benchmark_results/jahs_framework_vs_experimental_cifar10_20260109_171438.log
+
+=== TASK cifar10 ===

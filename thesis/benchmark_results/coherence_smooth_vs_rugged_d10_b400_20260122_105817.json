@@ -1,0 +1,882 @@
+{
+  "config": {
+    "dim": 10,
+    "budget": 400,
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19
+    ]
+  },
+  "smooth": {
+    "coh_wins": 45,
+    "opt_wins": 15,
+    "ties": 0,
+    "runs": [
+      {
+        "function": "sphere",
+        "seed": 0,
+        "coh_best": 0.590400393103263,
+        "opt_best": 4.594589309890413,
+        "winner": "COH"
+      },
+      {
+        "function": "sphere",
+        "seed": 1,
+        "coh_best": 0.42659914652897474,
+        "opt_best": 7.462905302067006,
+        "winner": "COH"
+      },
+      {
+        "function": "sphere",
+        "seed": 2,
+        "coh_best": 0.16380169333071176,
+        "opt_best": 0.9092503368899184,
+        "winner": "COH"
+      },
+      {
+        "function": "sphere",
+        "seed": 3,
+        "coh_best": 0.33022984923998516,
+        "opt_best": 3.5108633048123616,
+        "winner": "COH"
+      },
+      {
+        "function": "sphere",
+        "seed": 4,
+        "coh_best": 0.45975321804315805,
+        "opt_best": 5.925519434715616,
+        "winner": "COH"
+      },
+      {
+        "function": "sphere",
+        "seed": 5,
+        "coh_best": 0.16330958175355909,
+        "opt_best": 6.233453212258636,
+        "winner": "COH"
+      },
+      {
+        "function": "sphere",
+        "seed": 6,
+        "coh_best": 0.351233655772674,
+        "opt_best": 2.322059363843476,
+        "winner": "COH"
+      },
+      {
+        "function": "sphere",
+        "seed": 7,
+        "coh_best": 0.139236114926972,
+        "opt_best": 3.8214835363184836,
+        "winner": "COH"
+      },
+      {
+        "function": "sphere",
+        "seed": 8,
+        "coh_best": 0.36484360776807756,
+        "opt_best": 3.0431676075499574,
+        "winner": "COH"
+      },
+      {
+        "function": "sphere",
+        "seed": 9,
+        "coh_best": 0.42019997182343105,
+        "opt_best": 6.604349406121921,
+        "winner": "COH"
+      },
+      {
+        "function": "sphere",
+        "seed": 10,
+        "coh_best": 0.3858036625283256,
+        "opt_best": 2.623248721620591,
+        "winner": "COH"
+      },
+      {
+        "function": "sphere",
+        "seed": 11,
+        "coh_best": 0.34747240030677984,
+        "opt_best": 4.099739538814571,
+        "winner": "COH"
+      },
+      {
+        "function": "sphere",
+        "seed": 12,
+        "coh_best": 0.22526107181408717,
+        "opt_best": 2.6512428504093775,
+        "winner": "COH"
+      },
+      {
+        "function": "sphere",
+        "seed": 13,
+        "coh_best": 0.34346251921514614,
+        "opt_best": 1.4670791134396097,
+        "winner": "COH"
+      },
+      {
+        "function": "sphere",
+        "seed": 14,
+        "coh_best": 0.2829687353174182,
+        "opt_best": 5.8427203438756905,
+        "winner": "COH"
+      },
+      {
+        "function": "sphere",
+        "seed": 15,
+        "coh_best": 0.21284592475638792,
+        "opt_best": 1.4784735467530417,
+        "winner": "COH"
+      },
+      {
+        "function": "sphere",
+        "seed": 16,
+        "coh_best": 0.40119724138964996,
+        "opt_best": 5.347546211843392,
+        "winner": "COH"
+      },
+      {
+        "function": "sphere",
+        "seed": 17,
+        "coh_best": 0.2298771881012266,
+        "opt_best": 6.725818603627108,
+        "winner": "COH"
+      },
+      {
+        "function": "sphere",
+        "seed": 18,
+        "coh_best": 0.2835899132320577,
+        "opt_best": 5.661999013817627,
+        "winner": "COH"
+      },
+      {
+        "function": "sphere",
+        "seed": 19,
+        "coh_best": 0.2871883238778304,
+        "opt_best": 4.496412860124905,
+        "winner": "COH"
+      },
+      {
+        "function": "rosenbrock",
+        "seed": 0,
+        "coh_best": 471.81083411581574,
+        "opt_best": 490.1855879610982,
+        "winner": "COH"
+      },
+      {
+        "function": "rosenbrock",
+        "seed": 1,
+        "coh_best": 160.22445689139437,
+        "opt_best": 5303.4657073710205,
+        "winner": "COH"
+      },
+      {
+        "function": "rosenbrock",
+        "seed": 2,
+        "coh_best": 465.9846700320568,
+        "opt_best": 2149.1242092339303,
+        "winner": "COH"
+      },
+      {
+        "function": "rosenbrock",
+        "seed": 3,
+        "coh_best": 96.78397758750143,
+        "opt_best": 1534.98717740746,
+        "winner": "COH"
+      },
+      {
+        "function": "rosenbrock",
+        "seed": 4,
+        "coh_best": 276.9871012153394,
+        "opt_best": 1335.1063502616967,
+        "winner": "COH"
+      },
+      {
+        "function": "rosenbrock",
+        "seed": 5,
+        "coh_best": 73.29031992678703,
+        "opt_best": 2256.9053356031186,
+        "winner": "COH"
+      },
+      {
+        "function": "rosenbrock",
+        "seed": 6,
+        "coh_best": 301.92854054939534,
+        "opt_best": 1471.6286208767592,
+        "winner": "COH"
+      },
+      {
+        "function": "rosenbrock",
+        "seed": 7,
+        "coh_best": 1097.750818308828,
+        "opt_best": 798.2448136959692,
+        "winner": "OPT"
+      },
+      {
+        "function": "rosenbrock",
+        "seed": 8,
+        "coh_best": 144.71993835068102,
+        "opt_best": 3180.9243779697763,
+        "winner": "COH"
+      },
+      {
+        "function": "rosenbrock",
+        "seed": 9,
+        "coh_best": 73.88477887010272,
+        "opt_best": 495.5906429900886,
+        "winner": "COH"
+      },
+      {
+        "function": "rosenbrock",
+        "seed": 10,
+        "coh_best": 136.048332687876,
+        "opt_best": 760.7586967879771,
+        "winner": "COH"
+      },
+      {
+        "function": "rosenbrock",
+        "seed": 11,
+        "coh_best": 1067.6982844032507,
+        "opt_best": 981.2408991710868,
+        "winner": "OPT"
+      },
+      {
+        "function": "rosenbrock",
+        "seed": 12,
+        "coh_best": 191.8842814820285,
+        "opt_best": 304.22551820116087,
+        "winner": "COH"
+      },
+      {
+        "function": "rosenbrock",
+        "seed": 13,
+        "coh_best": 1120.0429999735472,
+        "opt_best": 553.3557759863726,
+        "winner": "OPT"
+      },
+      {
+        "function": "rosenbrock",
+        "seed": 14,
+        "coh_best": 370.0597700595434,
+        "opt_best": 835.7172584114024,
+        "winner": "COH"
+      },
+      {
+        "function": "rosenbrock",
+        "seed": 15,
+        "coh_best": 88.84093754792268,
+        "opt_best": 1089.6943356227737,
+        "winner": "COH"
+      },
+      {
+        "function": "rosenbrock",
+        "seed": 16,
+        "coh_best": 66.44442943710428,
+        "opt_best": 1028.278544353009,
+        "winner": "COH"
+      },
+      {
+        "function": "rosenbrock",
+        "seed": 17,
+        "coh_best": 222.66427574310407,
+        "opt_best": 647.5299584877064,
+        "winner": "COH"
+      },
+      {
+        "function": "rosenbrock",
+        "seed": 18,
+        "coh_best": 98.68109656308044,
+        "opt_best": 324.9694121421803,
+        "winner": "COH"
+      },
+      {
+        "function": "rosenbrock",
+        "seed": 19,
+        "coh_best": 87.4867479027074,
+        "opt_best": 193.55575719106173,
+        "winner": "COH"
+      },
+      {
+        "function": "levy",
+        "seed": 0,
+        "coh_best": 8.346657150112058,
+        "opt_best": 4.643998182964071,
+        "winner": "OPT"
+      },
+      {
+        "function": "levy",
+        "seed": 1,
+        "coh_best": 7.068570724590836,
+        "opt_best": 3.141970504897585,
+        "winner": "OPT"
+      },
+      {
+        "function": "levy",
+        "seed": 2,
+        "coh_best": 5.765879462457907,
+        "opt_best": 8.576787896104172,
+        "winner": "COH"
+      },
+      {
+        "function": "levy",
+        "seed": 3,
+        "coh_best": 14.384370458536543,
+        "opt_best": 3.397463079300948,
+        "winner": "OPT"
+      },
+      {
+        "function": "levy",
+        "seed": 4,
+        "coh_best": 1.242838393188828,
+        "opt_best": 7.462421302174093,
+        "winner": "COH"
+      },
+      {
+        "function": "levy",
+        "seed": 5,
+        "coh_best": 14.012757477537985,
+        "opt_best": 8.103565277295855,
+        "winner": "OPT"
+      },
+      {
+        "function": "levy",
+        "seed": 6,
+        "coh_best": 3.5541172550898037,
+        "opt_best": 3.964677913384764,
+        "winner": "COH"
+      },
+      {
+        "function": "levy",
+        "seed": 7,
+        "coh_best": 1.0308757956896621,
+        "opt_best": 0.7536238590873995,
+        "winner": "OPT"
+      },
+      {
+        "function": "levy",
+        "seed": 8,
+        "coh_best": 11.687072357942656,
+        "opt_best": 1.6330984809510016,
+        "winner": "OPT"
+      },
+      {
+        "function": "levy",
+        "seed": 9,
+        "coh_best": 6.150695740663655,
+        "opt_best": 1.6448983759848386,
+        "winner": "OPT"
+      },
+      {
+        "function": "levy",
+        "seed": 10,
+        "coh_best": 7.744793477201888,
+        "opt_best": 8.440798303366707,
+        "winner": "COH"
+      },
+      {
+        "function": "levy",
+        "seed": 11,
+        "coh_best": 4.346539943733022,
+        "opt_best": 5.0527197370584185,
+        "winner": "COH"
+      },
+      {
+        "function": "levy",
+        "seed": 12,
+        "coh_best": 8.262733281562475,
+        "opt_best": 5.372100236317658,
+        "winner": "OPT"
+      },
+      {
+        "function": "levy",
+        "seed": 13,
+        "coh_best": 2.1108997171666246,
+        "opt_best": 5.9496435759099695,
+        "winner": "COH"
+      },
+      {
+        "function": "levy",
+        "seed": 14,
+        "coh_best": 5.710777008813321,
+        "opt_best": 7.087792494894337,
+        "winner": "COH"
+      },
+      {
+        "function": "levy",
+        "seed": 15,
+        "coh_best": 9.195877148511597,
+        "opt_best": 3.193470753449531,
+        "winner": "OPT"
+      },
+      {
+        "function": "levy",
+        "seed": 16,
+        "coh_best": 9.139759402062964,
+        "opt_best": 3.1091518464884342,
+        "winner": "OPT"
+      },
+      {
+        "function": "levy",
+        "seed": 17,
+        "coh_best": 7.4465884955496,
+        "opt_best": 5.3923303975056065,
+        "winner": "OPT"
+      },
+      {
+        "function": "levy",
+        "seed": 18,
+        "coh_best": 0.5050755603399922,
+        "opt_best": 6.698730810912277,
+        "winner": "COH"
+      },
+      {
+        "function": "levy",
+        "seed": 19,
+        "coh_best": 13.786839091193249,
+        "opt_best": 3.718545949288944,
+        "winner": "OPT"
+      }
+    ]
+  },
+  "rugged": {
+    "coh_wins": 47,
+    "opt_wins": 13,
+    "ties": 0,
+    "runs": [
+      {
+        "function": "rastrigin",
+        "seed": 0,
+        "coh_best": 53.79051693994338,
+        "opt_best": 56.41141054211357,
+        "winner": "COH"
+      },
+      {
+        "function": "rastrigin",
+        "seed": 1,
+        "coh_best": 65.32026755618116,
+        "opt_best": 50.44972847341998,
+        "winner": "OPT"
+      },
+      {
+        "function": "rastrigin",
+        "seed": 2,
+        "coh_best": 73.60380362727325,
+        "opt_best": 56.71670953689902,
+        "winner": "OPT"
+      },
+      {
+        "function": "rastrigin",
+        "seed": 3,
+        "coh_best": 60.9459211877355,
+        "opt_best": 70.31382345612013,
+        "winner": "COH"
+      },
+      {
+        "function": "rastrigin",
+        "seed": 4,
+        "coh_best": 42.90455246087987,
+        "opt_best": 47.702952970449296,
+        "winner": "COH"
+      },
+      {
+        "function": "rastrigin",
+        "seed": 5,
+        "coh_best": 77.49623968719484,
+        "opt_best": 62.1601740810733,
+        "winner": "OPT"
+      },
+      {
+        "function": "rastrigin",
+        "seed": 6,
+        "coh_best": 76.03794868234195,
+        "opt_best": 56.011653808860366,
+        "winner": "OPT"
+      },
+      {
+        "function": "rastrigin",
+        "seed": 7,
+        "coh_best": 62.8469541252885,
+        "opt_best": 45.70865420718079,
+        "winner": "OPT"
+      },
+      {
+        "function": "rastrigin",
+        "seed": 8,
+        "coh_best": 54.770588965727846,
+        "opt_best": 63.49300745198216,
+        "winner": "COH"
+      },
+      {
+        "function": "rastrigin",
+        "seed": 9,
+        "coh_best": 61.56775647370408,
+        "opt_best": 67.16635000507432,
+        "winner": "COH"
+      },
+      {
+        "function": "rastrigin",
+        "seed": 10,
+        "coh_best": 58.939480264056535,
+        "opt_best": 62.842881298211616,
+        "winner": "COH"
+      },
+      {
+        "function": "rastrigin",
+        "seed": 11,
+        "coh_best": 56.610575947075084,
+        "opt_best": 47.10823009659641,
+        "winner": "OPT"
+      },
+      {
+        "function": "rastrigin",
+        "seed": 12,
+        "coh_best": 60.24858185490009,
+        "opt_best": 50.67011973741742,
+        "winner": "OPT"
+      },
+      {
+        "function": "rastrigin",
+        "seed": 13,
+        "coh_best": 84.07465342928664,
+        "opt_best": 47.904205849196494,
+        "winner": "OPT"
+      },
+      {
+        "function": "rastrigin",
+        "seed": 14,
+        "coh_best": 66.34801993308997,
+        "opt_best": 57.537146051241066,
+        "winner": "OPT"
+      },
+      {
+        "function": "rastrigin",
+        "seed": 15,
+        "coh_best": 58.75976771806661,
+        "opt_best": 42.45739422117225,
+        "winner": "OPT"
+      },
+      {
+        "function": "rastrigin",
+        "seed": 16,
+        "coh_best": 70.45585248482237,
+        "opt_best": 58.76014684086576,
+        "winner": "OPT"
+      },
+      {
+        "function": "rastrigin",
+        "seed": 17,
+        "coh_best": 102.65827459059275,
+        "opt_best": 65.77139513800918,
+        "winner": "OPT"
+      },
+      {
+        "function": "rastrigin",
+        "seed": 18,
+        "coh_best": 52.26503955430378,
+        "opt_best": 46.97023863500081,
+        "winner": "OPT"
+      },
+      {
+        "function": "rastrigin",
+        "seed": 19,
+        "coh_best": 54.18347705033633,
+        "opt_best": 78.13022604223126,
+        "winner": "COH"
+      },
+      {
+        "function": "ackley",
+        "seed": 0,
+        "coh_best": 6.215215014785311,
+        "opt_best": 15.335658185159009,
+        "winner": "COH"
+      },
+      {
+        "function": "ackley",
+        "seed": 1,
+        "coh_best": 5.405971638425797,
+        "opt_best": 13.813010766712756,
+        "winner": "COH"
+      },
+      {
+        "function": "ackley",
+        "seed": 2,
+        "coh_best": 6.985976223998227,
+        "opt_best": 13.91417440042104,
+        "winner": "COH"
+      },
+      {
+        "function": "ackley",
+        "seed": 3,
+        "coh_best": 6.971386064764264,
+        "opt_best": 14.860466816428229,
+        "winner": "COH"
+      },
+      {
+        "function": "ackley",
+        "seed": 4,
+        "coh_best": 5.335061061226334,
+        "opt_best": 13.528232165709447,
+        "winner": "COH"
+      },
+      {
+        "function": "ackley",
+        "seed": 5,
+        "coh_best": 5.816209658429955,
+        "opt_best": 13.254918264937164,
+        "winner": "COH"
+      },
+      {
+        "function": "ackley",
+        "seed": 6,
+        "coh_best": 7.145335347092583,
+        "opt_best": 13.12457347995375,
+        "winner": "COH"
+      },
+      {
+        "function": "ackley",
+        "seed": 7,
+        "coh_best": 7.038128573565119,
+        "opt_best": 14.359028027366364,
+        "winner": "COH"
+      },
+      {
+        "function": "ackley",
+        "seed": 8,
+        "coh_best": 6.701216894074403,
+        "opt_best": 11.923528031117497,
+        "winner": "COH"
+      },
+      {
+        "function": "ackley",
+        "seed": 9,
+        "coh_best": 6.57574443512145,
+        "opt_best": 11.972160511879908,
+        "winner": "COH"
+      },
+      {
+        "function": "ackley",
+        "seed": 10,
+        "coh_best": 6.532274270492621,
+        "opt_best": 13.231084186028601,
+        "winner": "COH"
+      },
+      {
+        "function": "ackley",
+        "seed": 11,
+        "coh_best": 6.009963029182131,
+        "opt_best": 13.046021132233669,
+        "winner": "COH"
+      },
+      {
+        "function": "ackley",
+        "seed": 12,
+        "coh_best": 6.2215275776916314,
+        "opt_best": 11.357161839935264,
+        "winner": "COH"
+      },
+      {
+        "function": "ackley",
+        "seed": 13,
+        "coh_best": 6.4392201410735055,
+        "opt_best": 14.835908209501804,
+        "winner": "COH"
+      },
+      {
+        "function": "ackley",
+        "seed": 14,
+        "coh_best": 6.908750586957087,
+        "opt_best": 13.369763683061159,
+        "winner": "COH"
+      },
+      {
+        "function": "ackley",
+        "seed": 15,
+        "coh_best": 4.726233570100753,
+        "opt_best": 10.53889729179942,
+        "winner": "COH"
+      },
+      {
+        "function": "ackley",
+        "seed": 16,
+        "coh_best": 6.461409507960873,
+        "opt_best": 15.919075978144773,
+        "winner": "COH"
+      },
+      {
+        "function": "ackley",
+        "seed": 17,
+        "coh_best": 6.831158953452537,
+        "opt_best": 14.236445884945129,
+        "winner": "COH"
+      },
+      {
+        "function": "ackley",
+        "seed": 18,
+        "coh_best": 5.26098695175531,
+        "opt_best": 12.502257290805654,
+        "winner": "COH"
+      },
+      {
+        "function": "ackley",
+        "seed": 19,
+        "coh_best": 7.55146199062475,
+        "opt_best": 13.677687895565606,
+        "winner": "COH"
+      },
+      {
+        "function": "griewank",
+        "seed": 0,
+        "coh_best": 1.974575508019885,
+        "opt_best": 8.724935044538672,
+        "winner": "COH"
+      },
+      {
+        "function": "griewank",
+        "seed": 1,
+        "coh_best": 1.5835052180705094,
+        "opt_best": 13.763430842217796,
+        "winner": "COH"
+      },
+      {
+        "function": "griewank",
+        "seed": 2,
+        "coh_best": 1.8922650947113868,
+        "opt_best": 8.48576056691632,
+        "winner": "COH"
+      },
+      {
+        "function": "griewank",
+        "seed": 3,
+        "coh_best": 1.841771165552676,
+        "opt_best": 15.735573853748512,
+        "winner": "COH"
+      },
+      {
+        "function": "griewank",
+        "seed": 4,
+        "coh_best": 2.254050442774635,
+        "opt_best": 12.978711464384528,
+        "winner": "COH"
+      },
+      {
+        "function": "griewank",
+        "seed": 5,
+        "coh_best": 1.892763621858287,
+        "opt_best": 24.707546387372023,
+        "winner": "COH"
+      },
+      {
+        "function": "griewank",
+        "seed": 6,
+        "coh_best": 2.1424679690632926,
+        "opt_best": 15.221310254032806,
+        "winner": "COH"
+      },
+      {
+        "function": "griewank",
+        "seed": 7,
+        "coh_best": 1.8984127206378805,
+        "opt_best": 15.227890932496928,
+        "winner": "COH"
+      },
+      {
+        "function": "griewank",
+        "seed": 8,
+        "coh_best": 1.8436909088398832,
+        "opt_best": 12.93013071254921,
+        "winner": "COH"
+      },
+      {
+        "function": "griewank",
+        "seed": 9,
+        "coh_best": 2.2344646082472908,
+        "opt_best": 14.895436995565424,
+        "winner": "COH"
+      },
+      {
+        "function": "griewank",
+        "seed": 10,
+        "coh_best": 1.9854789567185347,
+        "opt_best": 8.855862604684058,
+        "winner": "COH"
+      },
+      {
+        "function": "griewank",
+        "seed": 11,
+        "coh_best": 1.718942753163049,
+        "opt_best": 15.960917098180177,
+        "winner": "COH"
+      },
+      {
+        "function": "griewank",
+        "seed": 12,
+        "coh_best": 1.9119012184758195,
+        "opt_best": 9.53991951860491,
+        "winner": "COH"
+      },
+      {
+        "function": "griewank",
+        "seed": 13,
+        "coh_best": 1.8737443482022762,
+        "opt_best": 7.494911067084025,
+        "winner": "COH"
+      },
+      {
+        "function": "griewank",
+        "seed": 14,
+        "coh_best": 1.896983249021873,
+        "opt_best": 21.059401783089374,
+        "winner": "COH"
+      },
+      {
+        "function": "griewank",
+        "seed": 15,
+        "coh_best": 2.643868740476755,
+        "opt_best": 6.522727441327798,
+        "winner": "COH"
+      },
+      {
+        "function": "griewank",
+        "seed": 16,
+        "coh_best": 2.1246969442580417,
+        "opt_best": 33.4141163281334,
+        "winner": "COH"
+      },
+      {
+        "function": "griewank",
+        "seed": 17,
+        "coh_best": 2.556631882872205,
+        "opt_best": 23.70077177725029,
+        "winner": "COH"
+      },
+      {
+        "function": "griewank",
+        "seed": 18,
+        "coh_best": 1.8108624134366615,
+        "opt_best": 25.251928193697307,
+        "winner": "COH"
+      },
+      {
+        "function": "griewank",
+        "seed": 19,
+        "coh_best": 1.9096386974454629,
+        "opt_best": 16.619447028875754,
+        "winner": "COH"
+      }
+    ]
+  }
+}

@@ -1,0 +1,8 @@
+nohup: ignoring input
+usage: benchmark_jahs_checkpoints.py [-h]
+                                     [--task {cifar10,colorectal_histology,fashion_mnist}]
+                                     [--n_seeds N_SEEDS]
+                                     [--seed_start SEED_START]
+                                     [--output_dir OUTPUT_DIR] [--smoke_test]
+                                     [--optimizers {Random,Optuna_TPE,ALBA} [{Random,Optuna_TPE,ALBA} ...]]
+benchmark_jahs_checkpoints.py: error: unrecognized arguments: --budget 2000 --seed0 0

@@ -1,0 +1,70 @@
+{
+  "config": {
+    "task": "cifar10",
+    "budget": 500,
+    "checkpoints": [
+      100,
+      250,
+      500
+    ],
+    "seeds": [
+      42,
+      43
+    ],
+    "meta_variant": "lexi_topk",
+    "meta_kwargs": {
+      "leaf_selection_mode": "lexi_topk",
+      "leaf_reward_topk": 5,
+      "cat_selection_mode": "lexi_topk",
+      "cat_reward_topk": 3,
+      "passion_during_study": false,
+      "adaptive_budget": true,
+      "study_budget_fraction": 0.15,
+      "study_budget_min": 50,
+      "study_budget_max_fraction": 0.6,
+      "adaptive_performance": true,
+      "performance_patience": 40,
+      "controller_enabled": true,
+      "controller_check_every": 25,
+      "controller_min_history": 4,
+      "controller_quantile_low": 0.4,
+      "controller_quantile_high": 0.6,
+      "controller_guardrail_init": 0.5,
+      "controller_guardrail_step": 0.1,
+      "controller_guardrail_min": 0.2,
+      "controller_guardrail_max": 0.9,
+      "debug": true,
+      "debug_every": 100
+    },
+    "timestamp": "20260102_032136"
+  },
+  "jahs": {
+    "cifar10": {
+      "dim": 13,
+      "alba_v1": {
+        "42": {
+          "100": 0.0910926818847656,
+          "250": 0.08367446899414066,
+          "500": 0.08208168029785157
+        },
+        "43": {
+          "100": 0.09164085388183596,
+          "250": 0.08563957214355467,
+          "500": 0.08235237121582029
+        }
+      },
+      "alba_meta_lexi_topk": {
+        "42": {
+          "100": 0.08896217346191404,
+          "250": 0.08786293029785153,
+          "500": 0.0828883361816406
+        },
+        "43": {
+          "100": 0.09368888854980473,
+          "250": 0.0842973327636719,
+          "500": 0.08139183044433596
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "config": {
+    "datasets": [
+      "adult"
+    ],
+    "budget": 5,
+    "checkpoints": [
+      5
+    ],
+    "seeds": [
+      70
+    ],
+    "step": 50,
+    "timestamp": "20260107_205839"
+  },
+  "datasets": {
+    "adult": {
+      "framework": {
+        "70": {
+          "5": 0.15162962805700525
+        }
+      },
+      "experimental": {
+        "70": {
+          "5": 0.15162962805700525
+        }
+      },
+      "errors": {}
+    }
+  }
+}

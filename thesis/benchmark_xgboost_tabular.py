@@ -11,8 +11,15 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import numpy as np
 
-from hpo_curvature import QuadHPO
-from hpo_adaptive import QuadHPO as QuadHPO_Adaptive
+try:
+    from hpo_curvature import QuadHPO
+except Exception:
+    QuadHPO = None
+
+try:
+    from hpo_adaptive import QuadHPO as QuadHPO_Adaptive
+except Exception:
+    QuadHPO_Adaptive = None
 
 try:
     import optuna
@@ -83,12 +90,12 @@ def get_tabular_data() -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, 
         raise RuntimeError("scikit-learn is required for the XGBoost tabular benchmark.")
 
     if _TABULAR_CACHE["train"] is None:
-        # High-dimensional but still reasonably fast synthetic classification task.
+        # Lightweight synthetic classification task for faster benchmarking.
         X, y = make_classification(
-            n_samples=10000,
-            n_features=100,
-            n_informative=40,
-            n_redundant=20,
+            n_samples=2000,
+            n_features=30,
+            n_informative=15,
+            n_redundant=8,
             n_repeated=0,
             n_classes=2,
             n_clusters_per_class=2,
@@ -157,7 +164,7 @@ def build_xgb_config(x_norm: np.ndarray, use_gpu: bool, seed: int) -> XGBConfig:
     feat_sel_ratio = 0.1 + 0.9 * float(x_norm[5])
     var_threshold = 0.0 + 0.2 * float(x_norm[6])
 
-    n_estimators = int(round(100 + float(x_norm[7]) * 700))
+    n_estimators = int(round(50 + float(x_norm[7]) * 150))  # [50, 200] instead of [100, 800]
     max_depth = int(round(3 + float(x_norm[8]) * 9))
 
     lr_log_min, lr_log_max = np.log10(0.01), np.log10(0.3)

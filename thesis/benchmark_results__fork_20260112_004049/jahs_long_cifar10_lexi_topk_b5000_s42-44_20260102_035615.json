@@ -1,0 +1,81 @@
+{
+  "config": {
+    "task": "cifar10",
+    "budget": 5000,
+    "checkpoints": [
+      1000,
+      2000,
+      3000,
+      4000,
+      5000
+    ],
+    "seeds": [
+      42,
+      43,
+      44
+    ],
+    "meta_variant": "lexi_topk",
+    "meta_kwargs": {
+      "leaf_selection_mode": "lexi_topk",
+      "leaf_reward_topk": 5,
+      "cat_selection_mode": "lexi_topk",
+      "cat_reward_topk": 3,
+      "passion_during_study": false,
+      "adaptive_budget": false,
+      "study_budget_fraction": 0.25,
+      "study_budget_min": 50,
+      "study_budget_max_fraction": 0.6,
+      "adaptive_performance": false,
+      "performance_patience": 75,
+      "controller_enabled": true,
+      "controller_check_every": 25,
+      "controller_min_history": 4,
+      "controller_quantile_low": 0.4,
+      "controller_quantile_high": 0.6,
+      "controller_guardrail_init": 0.5,
+      "controller_guardrail_step": 0.1,
+      "controller_guardrail_min": 0.2,
+      "controller_guardrail_max": 0.9,
+      "debug": false,
+      "debug_every": 100
+    },
+    "timestamp": "20260102_035615"
+  },
+  "jahs": {
+    "cifar10": {
+      "dim": 13,
+      "alba_v1": {
+        "42": {
+          "1000": 0.08291328430175782,
+          "2000": 0.08291328430175782,
+          "3000": 0.08223068237304687,
+          "4000": 0.08223068237304687,
+          "5000": 0.08114601135253907
+        },
+        "43": {
+          "1000": 0.08438430786132811,
+          "2000": 0.08438430786132811,
+          "3000": 0.08429016113281251,
+          "4000": 0.08393981933593753,
+          "5000": 0.08063156127929683
+        }
+      },
+      "alba_meta_lexi_topk": {
+        "42": {
+          "1000": 0.08671272277832032,
+          "2000": 0.08543281555175786,
+          "3000": 0.0851161193847656,
+          "4000": 0.08268486022949217,
+          "5000": 0.08082588195800777
+        },
+        "43": {
+          "1000": 0.08220535278320318,
+          "2000": 0.08188102722167967,
+          "3000": 0.08172187805175779,
+          "4000": 0.08172187805175779,
+          "5000": 0.08058601379394537
+        }
+      }
+    }
+  }
+}

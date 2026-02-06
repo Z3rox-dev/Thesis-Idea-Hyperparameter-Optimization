@@ -1,0 +1,107 @@
+Benchmark tasks: ['cifar10', 'fashion_mnist', 'colorectal_histology'] | budget=400 | seeds=[70, 71, 72, 73, 74, 75, 76, 77, 78, 79]
+Checkpoints: [100, 200, 400]
+Saving to: /mnt/workspace/thesis/benchmark_results/jahs_framework_vs_experimental_alltasks_20260106_110302.json
+Logging to: /mnt/workspace/thesis/benchmark_results/jahs_framework_vs_experimental_alltasks_20260106_110302.log
+
+=== TASK cifar10 ===
+
+Task cifar10 | Seed 70...
+  ERROR: float() argument must be a string or a number, not 'dict'
+
+Task cifar10 | Seed 71...
+  ERROR: float() argument must be a string or a number, not 'dict'
+
+Task cifar10 | Seed 72...
+  ERROR: float() argument must be a string or a number, not 'dict'
+
+Task cifar10 | Seed 73...
+  ERROR: float() argument must be a string or a number, not 'dict'
+
+Task cifar10 | Seed 74...
+  ERROR: float() argument must be a string or a number, not 'dict'
+
+Task cifar10 | Seed 75...
+  ERROR: float() argument must be a string or a number, not 'dict'
+
+Task cifar10 | Seed 76...
+  ERROR: float() argument must be a string or a number, not 'dict'
+
+Task cifar10 | Seed 77...
+  ERROR: float() argument must be a string or a number, not 'dict'
+
+Task cifar10 | Seed 78...
+  ERROR: float() argument must be a string or a number, not 'dict'
+
+Task cifar10 | Seed 79...
+  ERROR: float() argument must be a string or a number, not 'dict'
+
+=== TASK fashion_mnist ===
+
+Task fashion_mnist | Seed 70...
+  ERROR: float() argument must be a string or a number, not 'dict'
+
+Task fashion_mnist | Seed 71...
+  ERROR: float() argument must be a string or a number, not 'dict'
+
+Task fashion_mnist | Seed 72...
+  ERROR: float() argument must be a string or a number, not 'dict'
+
+Task fashion_mnist | Seed 73...
+  ERROR: float() argument must be a string or a number, not 'dict'
+
+Task fashion_mnist | Seed 74...
+  ERROR: float() argument must be a string or a number, not 'dict'
+
+Task fashion_mnist | Seed 75...
+  ERROR: float() argument must be a string or a number, not 'dict'
+
+Task fashion_mnist | Seed 76...
+  ERROR: float() argument must be a string or a number, not 'dict'
+
+Task fashion_mnist | Seed 77...
+  ERROR: float() argument must be a string or a number, not 'dict'
+
+Task fashion_mnist | Seed 78...
+  ERROR: float() argument must be a string or a number, not 'dict'
+
+Task fashion_mnist | Seed 79...
+  ERROR: float() argument must be a string or a number, not 'dict'
+
+=== TASK colorectal_histology ===
+
+Task colorectal_histology | Seed 70...
+  ERROR: float() argument must be a string or a number, not 'dict'
+
+Task colorectal_histology | Seed 71...
+  ERROR: float() argument must be a string or a number, not 'dict'
+
+Task colorectal_histology | Seed 72...
+  ERROR: float() argument must be a string or a number, not 'dict'
+
+Task colorectal_histology | Seed 73...
+  ERROR: float() argument must be a string or a number, not 'dict'
+
+Task colorectal_histology | Seed 74...
+  ERROR: float() argument must be a string or a number, not 'dict'
+
+Task colorectal_histology | Seed 75...
+  ERROR: float() argument must be a string or a number, not 'dict'
+
+Task colorectal_histology | Seed 76...
+  ERROR: float() argument must be a string or a number, not 'dict'
+
+Task colorectal_histology | Seed 77...
+  ERROR: float() argument must be a string or a number, not 'dict'
+
+Task colorectal_histology | Seed 78...
+  ERROR: float() argument must be a string or a number, not 'dict'
+
+Task colorectal_histology | Seed 79...
+  ERROR: float() argument must be a string or a number, not 'dict'
+
+=== SUMMARY (final checkpoint) ===
+cifar10: n/a (missing finals)
+fashion_mnist: n/a (missing finals)
+colorectal_histology: n/a (missing finals)
+
+Saved: /mnt/workspace/thesis/benchmark_results/jahs_framework_vs_experimental_alltasks_20260106_110302.json

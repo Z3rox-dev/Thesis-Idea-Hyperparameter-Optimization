@@ -1,0 +1,31 @@
+{
+  "config": {
+    "tasks": [
+      "fashion_mnist"
+    ],
+    "budget": 3,
+    "checkpoints": [
+      3
+    ],
+    "nepochs": 200,
+    "seeds": [
+      70
+    ],
+    "timestamp": "20260106_140833"
+  },
+  "tasks": {
+    "fashion_mnist": {
+      "hpo_minimal_improved": {
+        "70": {
+          "3": 0.09812484741210936
+        }
+      },
+      "experimental": {
+        "70": {
+          "3": 0.06868354797363285
+        }
+      },
+      "errors": {}
+    }
+  }
+}

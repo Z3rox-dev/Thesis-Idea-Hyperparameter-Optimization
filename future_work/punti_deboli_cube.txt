@@ -1,0 +1,397 @@
+l punto chiave è questo: “alta dimensionalità” non significa che tutte le dimensioni siano davvero importanti. Spesso i problemi HPO hanno bassa dimensione intrinseca (poche direzioni “attive” che contano davvero) e forte anisotropia. Il tuo algoritmo, pur splittando “solo” su 2 assi alla volta, in realtà:
+
+Trova la sottostruttura a bassa dimensione.
+Con PCA locale + curvatura scegli assi “attivi” (PC1/PC2) e tagli lì: stai proiettando il problema sulla manifold effettiva dove cambia davvero l’obiettivo. In alta d, questo è oro: eviti di sprecare budget su dimensioni quasi irrilevanti.
+
+Modella le interazioni non-lineari localmente.
+Il tuo surrogato 2D quadratico (su PC1–PC2) cattura interazioni tra iperparametri in quel piano. Il TPE classico (indipendente) usa una densità fattorizzata per dimensione: in alta d, se le interazioni contano, la stima KDE prodotto-di-marginali diluisce il segnale. (In Optuna esiste una modalità multivariate, ma se non è attiva/ben tarata, soffre).
+
+Trust region + pruning concentrano il budget.
+Tu lavori con regioni locali (leaf) + EI/ucb con penalizzazione distanza, e potando le foglie deboli concentri i trial dove serve. TPE, se lasciato globale/indipendente, tende a spargere campioni su molte dimensioni; la varianza alta in d grande riduce la precisione della densità “good vs bad”.
+
+Anisotropia = vantaggio geometrico.
+La tua metrica di split via curvatura*larghezza (|λ|²·h⁴) privilegia assi dove “succede qualcosa” e la cella è abbastanza ampia. In d grande, essere “giusti” su quali assi tagliare vale più che provare a modellare tutto insieme.
+
+Robustezza al rumore.
+Il fit ridge del surrogato + varianza residua ti rendono meno instabile al rumore di valutazione. I KDE del TPE possono diventare molto sensibili con campioni pochi/rumorosi in alta d.
+
+Tradotto: anche se “geometricamente” tagli 2 assi alla volta, componi tanti split informati che seguono la direzione del segnale. Se l’effettiva dimensionalità è 1–3 (tipico: LR, regolarizzazione, depth/width dominano; il resto è secondario/condizionale), vinci perché indirizzi il budget nel sottospazio giusto.
+
+Come verificare che non è un’illusione
+
+Fai queste 6 prove rapide:
+
+Attiva il TPE multivariate in Optuna (se non l’hai già fatto) e ripeti i test. Se la distanza si riduce, era davvero il limite del TPE indipendente.
+
+Dummy dims test.
+Aggiungi 10–50 dimensioni finte (uniformi ignorate nell’obiettivo). Se il tuo metodo degrada poco, conferma che la selezione di assi sta filtrando irrilevanze. TPE indipendente soffrirà di più.
+
+Ablation del tuo algoritmo.
+
+disattiva PCA (usa frame identità) → vedi quanto perdi;
+
+disattiva criterio di curvatura (split solo per larghezza) → vedi il drop;
+
+disattiva pruning → vedi se sprechi budget.
+Capisci quali mattoni ti danno il vantaggio in d alta.
+
+Stima “dimensione attiva”.
+Logga il rapporto di anisotropia dalle tue PCA locali (λ₁/mean(λ₂:λ_d)). Se spesso > 1.4–2.0, il problema è intrinsecamente low-dim: ecco perché vinci.
+
+Funzioni sintetiche con “effective dimension”.
+Testa su funzioni dove l’obiettivo dipende da 2–3 proiezioni lineari in uno spazio d=20–50 (classico “active subspace”). Dovresti dominare TPE indipendente.
+
+Curva budget→qualità.
+Plotta best-of-k vs trial. Se il tuo migliora “prima”, è un vantaggio di efficienza campionaria (meglio nei primi 100–200), tipico di chi centra le direzioni giuste.
+
+Possibili motivi “non algoritmici” (da escludere)
+
+Parametrizzazione TPE (startup trials, gamma, consider_prior, multivariate) non ottimale.
+
+Condizionali/categorical complesse: TPE soffre se non configurato; il tuo spazio continuo normalizzato + mapping nell’obiettivo potrebbe risultare più “liscio”.
+
+Seed e rumore: fai medie su 10–20 semi per confermare.
+
+Budget: TPE spesso ha bisogno di un po’ di warm-up; se il tuo è molto sample-efficient early, sembra che “vince sempre”.
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+2. Dove nascono i “salti” nel tuo codice
+
+I salti che vedi sono esattamente quello: exploration che non muore mai + campionamento dentro le celle troppo uniforme.
+
+2.1. UCB per foglia: esplorazione che non si spegne
+
+La tua ucb:
+
+def ucb(self, beta: float = 1.6, eps: float = 1e-8, lambda_geo: float = 0.0) -> float:
+    ...
+    if self.n_trials > 0:
+        mu = self.mean_score
+        var = self.var_score if self.n_trials > 1 else self.prior_var
+    else:
+        mu = 0.0
+        var = self.prior_var
+
+    if self.parent is not None and self.parent.n_trials > 0:
+        mu = 0.5 * parent.mean_score + 0.5 * mu
+        var = 0.5 * parent_var + 0.5 * var
+
+    if n_eff <= 0:
+        base = mu + beta * sqrt(var + prior_var)
+    else:
+        base = mu + beta * sqrt(var / (n_eff + eps) + prior_var)
+
+    if lambda_geo > 0:
+        bonus = lambda_geo * vol / sqrt(n_eff + 1.0)
+        return base + bonus
+    return base
+
+
+Punti chiave:
+
+prior_var è costante (=1.0) e entra nel termine sotto radice anche quando n_trials è grande:
+
+anche se var / (n_eff) diventa piccolo, + prior_var rimane.
+
+quindi l’incertezza non tende mai veramente a 0.
+
+beta è costante durante tutta la run → l’esploration weight non si riduce nel tempo.
+
+lambda_geo * vol / sqrt(n+1) dà un bonus a celle grandi/povero-campionate:
+
+anche tardi nella run, una foglia poco campionata ma volumosa può avere una UCB abbastanza alta da essere scelta di nuovo.
+
+Effetto pratico:
+anche quando hai una foglia con mean_score ≈ 0.72 e molta storia, il sistema continua a dire:
+
+“ok, ma proviamo ancora qualche zona grossa e poco vista, potrebbe essere meglio”.
+
+Questo è il motivo per cui hai ancora trial tipo 46 (0.48), 54 (0.51), 64 (0.47) molto tardi.
+
+2.2. All’interno della foglia: campioni uniformi → salti locali
+
+Dentro ogni QuadCube:
+
+def sample_uniform_prime(self) -> np.ndarray:
+    ...
+def sample_uniform(self) -> np.ndarray:
+    x_prime = self.sample_uniform_prime()
+    return self.to_original(x_prime)
+
+
+Quindi anche nella foglia “migliore”:
+
+Non usi il surrogato 2D (predict_surrogate) per dire “vado vicino al massimo locale”.
+
+Prendi un punto uniforme in tutto il box locale.
+
+Conseguenza:
+
+Anche se la foglia è nella “zona giusta”, tu continui a pescare punti nella parte “sbagliata” del box.
+
+Questo genera oscillazioni locali del tipo:
+
+trial 56 → 0.7134
+
+trial 57 → 0.5660
+
+trial 58 → 0.7176
+
+Optuna invece:
+
+costruisce una densità sulle configurazioni “buone” vs “cattive”
+
+campiona più fitto dove vede alta probabilità di buoni valori → much less zig-zag.
+
+2.3. Splitting: continua a generare nuove foglie “giovani”
+
+La tua should_split:
+
+def should_split(..., max_depth: Optional[int] = 4, ..., gamma: float = 0.02) -> str:
+    if max_depth is not None and self.depth >= max_depth:
+        return 'none'
+    ...
+    if self.n_trials < min_trials and len(self._points_history) < min_points:
+        return 'none'
+    ...
+    split_type = 'quad' if npts >= min_points else 'binary'
+
+    S = self._curvature_scores()
+    if S is not None and float(np.max(S)) < 1e-6:
+        return 'none'
+
+    if self.surrogate_2d is not None and self.surrogate_2d['n'] >= self.surrogate_min_points:
+        ...
+        if delta < gamma:
+            return 'none'
+    return split_type
+
+
+Cosa succede:
+
+max_depth=4 → l’albero non diventa infinito, ok.
+
+Però non c’è nessun criterio “sono vicino al best globale”:
+
+anche celle mediocri (0.63–0.65) possono essere splittate se il surrogato suggerisce un po’ di curvatura e Δvar > γ.
+
+Ogni split crea figli con:
+
+stessa prior_var del padre
+
+n_trials = 0 → UCB relativamente alta rispetto al loro mean (inesistente) perché var è grande + bonus geometrico.
+
+Anche se come numeri magari non superano sempre la foglia migliore, entrano comunque nel mix e consumano budget.
+
+Risultato: continui a produrre sotto-regioni anche tardi, che poi:
+
+Vengono selezionate un minimo (exploration),
+
+Vengono campionate uniformemente → altri punti lontani dal sweet spot,
+
+Contribuiscono ai “salti” verso valori bassi.
+
+3. Come rendere curv più “stabile” e exploitativo
+
+Ti propongo un piano in 3 interventi concreti, in ordine di impatto.
+
+3.1. Schedule di exploration (β, λ_geo, prior_var)
+
+Obiettivo: dopo un certo numero di trial, l’exploration deve spegnersi e l’UCB deve diventare quasi puro mu.
+
+Idee pratiche:
+
+β(t) decrescente nel tempo:
+
+# in QuadHPO
+def beta_at(self, t, T_max):
+    # ad es: scende da 0.05 a 0.005
+    return self.beta0 * max(0.1, 1.0 - t / T_max)
+
+
+Nel loop principale di QuadHPO:
+
+beta_t = self.beta_at(global_trial, self.budget)
+leaf_ucb = leaf.ucb(beta=beta_t, lambda_geo=self.lambda_geo_at(global_trial))
+
+
+λ_geo(t) che va a zero nell’ultima parte del budget:
+
+def lambda_geo_at(self, t, T_max):
+    frac = t / T_max
+    if frac < 0.5:
+        return self.lambda_geo0      # esploro tanto
+    elif frac < 0.8:
+        return self.lambda_geo0 * 0.5
+    else:
+        return 0.0                   # quasi solo exploit
+
+
+prior_var che dipende dalla larghezza della cella:
+
+Dove crei i figli (split2/split4):
+
+# dopo aver calcolato wch (widths child) e widths_parent
+scale = float(np.mean(np.abs(wch)) / np.mean(self._widths()) + 1e-9)
+# se il figlio è più piccolo del padre, scale < 1
+ch.prior_var = float(self.prior_var * scale**2)
+
+
+Così, man mano che il box si restringe, l’incertezza a priori cala → il termine esplorativo nella UCB diventa sempre meno dominante.
+
+3.2. Rendere gli split più selettivi e “vicini al best”
+
+Obiettivo: non voglio splittare tutto, ma solo le zone che sono vicinissime al best globale, e solo finché ne vale la pena.
+
+Aggiunte possibili in should_split:
+
+Gate sul best globale (devi passare global_best da QuadHPO):
+
+def should_split(..., global_best: Optional[float] = None, rel_tol: float = 0.98):
+    ...
+    # dopo i check base
+    if global_best is not None and self.best_score < rel_tol * global_best:
+        # questa cella è chiaramente subottima: non spreco split
+        return 'none'
+
+
+γ dipendente dalla profondità (splittare in profondità solo se il gain è molto forte):
+
+effective_gamma = gamma * (1.0 + 0.5 * self.depth)
+...
+if delta < effective_gamma:
+    return 'none'
+
+
+Aumentare surrogate_min_points e min_trials per usare il surrogato solo quando è un po’ robusto:
+
+ad esempio:
+
+surrogate_min_points = 16 o 24
+
+min_trials = 8 (o più) per foglia
+
+Questo evita split guidati da un surrogato rumoroso con 5–8 punti.
+
+Effetto:
+gli split avvengono solo:
+
+nelle celle già “quasi best”,
+
+con abbastanza dati,
+
+con un vero guadagno informativo.
+
+Questo riduce il numero di foglie nuove “random” e concentra la gerarchia sulle zone buone.
+
+3.3. Exploit dentro la foglia con il surrogato (niente più uniform pura)
+
+Qui secondo me c’è il buco più grosso: hai un surrogato 2D figo, ma lo usi solo per UCB/splitting, non per campionare.
+
+Idea: sostituire sample_uniform con una mixture exploit/explore:
+
+def sample_point(self, exploit_prob: float = 0.8) -> np.ndarray:
+    # exploit: uso il surrogato per andare vicino al massimo stimato
+    use_exploit = (np.random.rand() < exploit_prob)
+
+    if use_exploit and self.surrogate_2d is not None:
+        # ottieni centro + Hessian nel frame del surrogato (PC1,PC2)
+        s = self.surrogate_2d
+        R_s = s['R']
+        mu_s = s['mu']
+        H = s['H']
+        # per semplicità: prendi il centro del box locale in coords prime
+        t0 = np.zeros(len(self.bounds))
+        # piccola perturbazione gaussiana scalata alle width locali
+        widths = self._widths()
+        sigma = 0.15 * widths  # 15% della larghezza
+        t = t0 + np.random.normal(0.0, sigma, size=len(widths))
+
+        # clip nei bounds locali
+        for i, (lo, hi) in enumerate(self.bounds):
+            t[i] = np.clip(t[i], lo, hi)
+        x = self.to_original(t)
+        return x
+    else:
+        # fallback / pure exploration
+        return self.sample_uniform()
+
+
+E nel loop di QuadHPO, invece di:
+
+x = leaf.sample_uniform()
+
+
+fai:
+
+x = leaf.sample_point(exploit_prob=self.exploit_prob_at(global_trial))
+
+
+Con un exploit_prob che sale nel tempo, tipo:
+
+def exploit_prob_at(self, t, T_max):
+    # inizio 50% exploit, arrivo a 90%
+    frac = t / T_max
+    return min(0.9, 0.5 + 0.5 * frac)
+
+
+Questo da solo ti riduce un sacco i “salti”:
+
+nelle ultime 20–30 iterazioni stai praticamente solo girando nei dintorni del massimo stimato nella foglia migliore,
+
+le nuove esplorazioni uniformi sono sempre più rare.
+
+4. Piano operativo concreto (cosa testerei subito)
+
+Se dovessi fare un nuovo run con budget 80 su CIFAR10, io farei:
+
+Aggiungi schedule per β e λ_geo in QuadHPO:
+
+beta0 = 0.05
+
+beta(t) → 0.05 all’inizio, ~0.01 alla fine
+
+lambda_geo(t) → 0.8 all’inizio, 0.0 negli ultimi ~20 trial
+
+Modifica sample_uniform → sample_point con mixture exploit/explore:
+
+exploit_prob da 0.5 → 0.9 lungo la run
+
+sfrutta il surrogato 2D per campionare vicino al centro (e poi in futuro puoi cercare davvero il minimo/massimo del surrogato, se vuoi).
+
+In should_split:
+
+aumenta surrogate_min_points a 16
+
+aumenta min_trials a ~8
+
+aggiungi il gate self.best_score >= 0.98 * global_best per permettere split solo in celle quasi ottime.
+
+Con solo questi tre cambi:
+
+ti aspetti ancora un po’ di exploration all’inizio (salti normali),
+
+ma la coda finale dovrebbe somigliare molto di più a quella di Optuna:
+
+poche valutazioni pessime,
+
+la maggior parte dei trial concentrati tra 0.72 e “best”.
+
+Se vuoi, nel prossimo messaggio puoi incollarmi la parte di QuadHPO dove scegli la foglia e fai il loop dei trial, e ti scrivo patch quasi copy-paste per:
+
+beta schedule,
+
+lambda_geo schedule,
+
+exploit_prob,
+
+passaggio di global_best a should_split.

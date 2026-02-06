@@ -253,6 +253,14 @@ class Cube:
 
         child_lo = Cube(bounds=bounds_lo, parent=self)
         child_hi = Cube(bounds=bounds_hi, parent=self)
+        # Propagate categorical dimension metadata (if present) for category-aware surrogates.
+        cat_dims = getattr(self, "categorical_dims", None)
+        if cat_dims is not None:
+            try:
+                child_lo.categorical_dims = cat_dims  # type: ignore[attr-defined]
+                child_hi.categorical_dims = cat_dims  # type: ignore[attr-defined]
+            except Exception:
+                pass
         child_lo.depth = self.depth + 1
         child_hi.depth = self.depth + 1
 

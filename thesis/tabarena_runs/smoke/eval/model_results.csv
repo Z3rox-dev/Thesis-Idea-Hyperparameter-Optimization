@@ -1,0 +1,2 @@
+dataset,fold,method,metric_error,time_train_s,time_infer_s,metric,problem_type,metric_error_val,method_type,config_type,ta_name,ta_suite
+anneal,0,LinearModel_demo_BAG2,0.11234098765667212,3.5239052772521973,0.017370223999023438,log_loss,multiclass,0.11467794452913395,config,LR,LinearModel,LinearModel

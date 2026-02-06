@@ -1,0 +1,31 @@
+{
+  "config": {
+    "tasks": [
+      "colorectal_histology"
+    ],
+    "budget": 3,
+    "checkpoints": [
+      3
+    ],
+    "nepochs": 200,
+    "seeds": [
+      79
+    ],
+    "timestamp": "20260106_110650"
+  },
+  "tasks": {
+    "colorectal_histology": {
+      "framework_param_space": {
+        "79": {
+          "3": 0.12329956054687496
+        }
+      },
+      "experimental": {
+        "79": {
+          "3": 0.06917823791503908
+        }
+      },
+      "errors": {}
+    }
+  }
+}

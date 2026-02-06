@@ -1,0 +1,27 @@
+{
+  "config": {
+    "datasets": [
+      "letter"
+    ],
+    "budget": 30,
+    "seeds": [
+      70
+    ],
+    "step": 50,
+    "timestamp": "20260111_172105"
+  },
+  "datasets": {
+    "letter": {
+      "framework": {
+        "70": 0.04563545597618601
+      },
+      "experimental": {
+        "70": 0.04563545597618601
+      },
+      "optuna": {
+        "70": 0.04674355438099574
+      },
+      "errors": {}
+    }
+  }
+}

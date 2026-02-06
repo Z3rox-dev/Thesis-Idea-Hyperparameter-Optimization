@@ -1,0 +1,9 @@
+{
+  "jahs": {
+    "cifar10": {
+      "42": {
+        "error": "cannot import name 'ALBAOptimizer' from 'ALBA_V1' (/mnt/workspace/thesis/ALBA_V1.py)"
+      }
+    }
+  }
+}

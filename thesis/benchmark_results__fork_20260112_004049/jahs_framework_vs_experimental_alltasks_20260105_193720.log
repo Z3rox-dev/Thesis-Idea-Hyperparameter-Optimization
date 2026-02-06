@@ -1,0 +1,107 @@
+Benchmark tasks: ['cifar10', 'fashion_mnist', 'colorectal_histology'] | budget=400 | seeds=[70, 71, 72, 73, 74, 75, 76, 77, 78, 79]
+Checkpoints: [100, 200, 400]
+Saving to: /mnt/workspace/thesis/benchmark_results/jahs_framework_vs_experimental_alltasks_20260105_193720.json
+Logging to: /mnt/workspace/thesis/benchmark_results/jahs_framework_vs_experimental_alltasks_20260105_193720.log
+
+=== TASK cifar10 ===
+
+Task cifar10 | Seed 70...
+  FW=91.48%  EXP=91.45%  -> FW (8.9s)
+
+Task cifar10 | Seed 71...
+  FW=91.16%  EXP=91.10%  -> FW (8.5s)
+
+Task cifar10 | Seed 72...
+  FW=91.18%  EXP=91.67%  -> EXP (8.9s)
+
+Task cifar10 | Seed 73...
+  FW=91.49%  EXP=91.74%  -> EXP (9.2s)
+
+Task cifar10 | Seed 74...
+  FW=90.87%  EXP=91.53%  -> EXP (8.7s)
+
+Task cifar10 | Seed 75...
+  FW=91.35%  EXP=91.67%  -> EXP (8.4s)
+
+Task cifar10 | Seed 76...
+  FW=91.13%  EXP=91.54%  -> EXP (8.9s)
+
+Task cifar10 | Seed 77...
+  FW=91.82%  EXP=91.72%  -> FW (10.0s)
+
+Task cifar10 | Seed 78...
+  FW=91.68%  EXP=91.52%  -> FW (8.7s)
+
+Task cifar10 | Seed 79...
+  FW=91.72%  EXP=91.44%  -> FW (8.7s)
+
+=== TASK fashion_mnist ===
+
+Task fashion_mnist | Seed 70...
+  FW=95.40%  EXP=95.33%  -> FW (8.9s)
+
+Task fashion_mnist | Seed 71...
+  FW=95.42%  EXP=95.28%  -> FW (8.8s)
+
+Task fashion_mnist | Seed 72...
+  FW=95.20%  EXP=95.34%  -> EXP (9.1s)
+
+Task fashion_mnist | Seed 73...
+  FW=95.32%  EXP=95.30%  -> FW (8.9s)
+
+Task fashion_mnist | Seed 74...
+  FW=95.22%  EXP=95.13%  -> FW (9.4s)
+
+Task fashion_mnist | Seed 75...
+  FW=95.30%  EXP=95.33%  -> EXP (10.3s)
+
+Task fashion_mnist | Seed 76...
+  FW=95.35%  EXP=95.32%  -> FW (10.3s)
+
+Task fashion_mnist | Seed 77...
+  FW=95.24%  EXP=95.25%  -> EXP (9.1s)
+
+Task fashion_mnist | Seed 78...
+  FW=95.48%  EXP=95.35%  -> FW (8.5s)
+
+Task fashion_mnist | Seed 79...
+  FW=95.10%  EXP=95.28%  -> EXP (9.2s)
+
+=== TASK colorectal_histology ===
+
+Task colorectal_histology | Seed 70...
+  FW=95.95%  EXP=96.11%  -> EXP (9.2s)
+
+Task colorectal_histology | Seed 71...
+  FW=95.91%  EXP=96.13%  -> EXP (8.6s)
+
+Task colorectal_histology | Seed 72...
+  FW=95.91%  EXP=95.98%  -> EXP (9.0s)
+
+Task colorectal_histology | Seed 73...
+  FW=95.98%  EXP=96.06%  -> EXP (8.8s)
+
+Task colorectal_histology | Seed 74...
+  FW=95.96%  EXP=96.10%  -> EXP (9.6s)
+
+Task colorectal_histology | Seed 75...
+  FW=95.64%  EXP=96.03%  -> EXP (9.3s)
+
+Task colorectal_histology | Seed 76...
+  FW=95.87%  EXP=96.28%  -> EXP (8.8s)
+
+Task colorectal_histology | Seed 77...
+  FW=96.02%  EXP=95.96%  -> FW (8.8s)
+
+Task colorectal_histology | Seed 78...
+  FW=96.15%  EXP=95.77%  -> FW (9.3s)
+
+Task colorectal_histology | Seed 79...
+  FW=96.05%  EXP=96.01%  -> FW (9.5s)
+
+=== SUMMARY (final checkpoint) ===
+cifar10: FW mean=91.39% std=0.29 | EXP mean=91.54% std=0.18 | wins FW=5 ties=0
+fashion_mnist: FW mean=95.30% std=0.11 | EXP mean=95.29% std=0.06 | wins FW=6 ties=0
+colorectal_histology: FW mean=95.94% std=0.13 | EXP mean=96.04% std=0.13 | wins FW=3 ties=0
+
+Saved: /mnt/workspace/thesis/benchmark_results/jahs_framework_vs_experimental_alltasks_20260105_193720.json

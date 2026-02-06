@@ -1,0 +1,809 @@
+{
+  "config": {
+    "budget": 400,
+    "seeds": [
+      70,
+      71,
+      72,
+      73,
+      74,
+      75,
+      76,
+      77,
+      78,
+      79
+    ],
+    "jahs_tasks": [
+      "cifar10",
+      "colorectal_histology"
+    ],
+    "jahs_nepochs": 200,
+    "paramnet_datasets": [
+      "letter",
+      "mnist"
+    ],
+    "paramnet_step": 50,
+    "methods": {
+      "alba_experimental": {
+        "kind": "ALBA_V1_experimental"
+      },
+      "optuna": {
+        "kind": "TPESampler"
+      },
+      "alba_framework_gravity": {
+        "kind": "alba_framework_gravity"
+      }
+    },
+    "timestamp": "20260111_141205"
+  },
+  "jahs": {
+    "cifar10": {
+      "per_seed": {
+        "70": {
+          "alba_experimental": {
+            "best": 0.08592559814453127,
+            "unique_keys": 309,
+            "switch_rate": 0.9674185463659147
+          },
+          "optuna": {
+            "best": 0.09085937499999996,
+            "unique_keys": 397,
+            "switch_rate": 1.0
+          },
+          "alba_framework_gravity": {
+            "best": 0.0823708343505859,
+            "unique_keys": 386,
+            "switch_rate": 0.9974937343358395
+          }
+        },
+        "71": {
+          "alba_experimental": {
+            "best": 0.08691627502441401,
+            "unique_keys": 318,
+            "switch_rate": 0.9924812030075187
+          },
+          "optuna": {
+            "best": 0.0913277435302734,
+            "unique_keys": 393,
+            "switch_rate": 1.0
+          },
+          "alba_framework_gravity": {
+            "best": 0.08535263061523435,
+            "unique_keys": 378,
+            "switch_rate": 0.9974937343358395
+          }
+        },
+        "72": {
+          "alba_experimental": {
+            "best": 0.08386756896972658,
+            "unique_keys": 295,
+            "switch_rate": 0.9323308270676691
+          },
+          "optuna": {
+            "best": 0.0877445220947266,
+            "unique_keys": 389,
+            "switch_rate": 0.9974937343358395
+          },
+          "alba_framework_gravity": {
+            "best": 0.08357543945312496,
+            "unique_keys": 379,
+            "switch_rate": 0.9974937343358395
+          }
+        },
+        "73": {
+          "alba_experimental": {
+            "best": 0.08089935302734375,
+            "unique_keys": 349,
+            "switch_rate": 0.9824561403508771
+          },
+          "optuna": {
+            "best": 0.08792266845703123,
+            "unique_keys": 393,
+            "switch_rate": 1.0
+          },
+          "alba_framework_gravity": {
+            "best": 0.08650833129882818,
+            "unique_keys": 389,
+            "switch_rate": 1.0
+          }
+        },
+        "74": {
+          "alba_experimental": {
+            "best": 0.0885542297363281,
+            "unique_keys": 352,
+            "switch_rate": 0.9523809523809523
+          },
+          "optuna": {
+            "best": 0.08932273864746099,
+            "unique_keys": 396,
+            "switch_rate": 1.0
+          },
+          "alba_framework_gravity": {
+            "best": 0.08695449829101565,
+            "unique_keys": 376,
+            "switch_rate": 1.0
+          }
+        },
+        "75": {
+          "alba_experimental": {
+            "best": 0.08587066650390629,
+            "unique_keys": 315,
+            "switch_rate": 0.949874686716792
+          },
+          "optuna": {
+            "best": 0.08669128417968752,
+            "unique_keys": 393,
+            "switch_rate": 1.0
+          },
+          "alba_framework_gravity": {
+            "best": 0.08410331726074216,
+            "unique_keys": 389,
+            "switch_rate": 0.9974937343358395
+          }
+        },
+        "76": {
+          "alba_experimental": {
+            "best": 0.08462944030761721,
+            "unique_keys": 333,
+            "switch_rate": 0.9523809523809523
+          },
+          "optuna": {
+            "best": 0.08949722290039064,
+            "unique_keys": 397,
+            "switch_rate": 0.9974937343358395
+          },
+          "alba_framework_gravity": {
+            "best": 0.08480690002441404,
+            "unique_keys": 379,
+            "switch_rate": 0.9949874686716792
+          }
+        },
+        "77": {
+          "alba_experimental": {
+            "best": 0.08252578735351568,
+            "unique_keys": 328,
+            "switch_rate": 0.9724310776942355
+          },
+          "optuna": {
+            "best": 0.08875068664550778,
+            "unique_keys": 397,
+            "switch_rate": 1.0
+          },
+          "alba_framework_gravity": {
+            "best": 0.08221130371093754,
+            "unique_keys": 337,
+            "switch_rate": 0.9974937343358395
+          }
+        },
+        "78": {
+          "alba_experimental": {
+            "best": 0.0817465209960937,
+            "unique_keys": 316,
+            "switch_rate": 0.9774436090225563
+          },
+          "optuna": {
+            "best": 0.08875366210937496,
+            "unique_keys": 391,
+            "switch_rate": 1.0
+          },
+          "alba_framework_gravity": {
+            "best": 0.0841892242431641,
+            "unique_keys": 372,
+            "switch_rate": 0.9949874686716792
+          }
+        },
+        "79": {
+          "alba_experimental": {
+            "best": 0.08305076599121097,
+            "unique_keys": 339,
+            "switch_rate": 0.9649122807017544
+          },
+          "optuna": {
+            "best": 0.08696578979492187,
+            "unique_keys": 381,
+            "switch_rate": 1.0
+          },
+          "alba_framework_gravity": {
+            "best": 0.08632331848144537,
+            "unique_keys": 389,
+            "switch_rate": 1.0
+          }
+        }
+      },
+      "summary": {
+        "alba_experimental": {
+          "mean": 0.08439862060546875,
+          "std": 0.0023031340929374903,
+          "wins": 4
+        },
+        "optuna": {
+          "mean": 0.08878356933593749,
+          "std": 0.0014521198739678148,
+          "wins": 0
+        },
+        "alba_framework_gravity": {
+          "mean": 0.08463957977294922,
+          "std": 0.001577625311973653,
+          "wins": 6
+        }
+      }
+    },
+    "colorectal_histology": {
+      "per_seed": {
+        "70": {
+          "alba_experimental": {
+            "best": 0.03913223266601562,
+            "unique_keys": 358,
+            "switch_rate": 0.9799498746867168
+          },
+          "optuna": {
+            "best": 0.041494522094726594,
+            "unique_keys": 398,
+            "switch_rate": 1.0
+          },
+          "alba_framework_gravity": {
+            "best": 0.04115341186523436,
+            "unique_keys": 394,
+            "switch_rate": 0.9974937343358395
+          }
+        },
+        "71": {
+          "alba_experimental": {
+            "best": 0.038124237060546906,
+            "unique_keys": 354,
+            "switch_rate": 0.9874686716791979
+          },
+          "optuna": {
+            "best": 0.039516754150390576,
+            "unique_keys": 388,
+            "switch_rate": 1.0
+          },
+          "alba_framework_gravity": {
+            "best": 0.040201034545898406,
+            "unique_keys": 371,
+            "switch_rate": 0.9974937343358395
+          }
+        },
+        "72": {
+          "alba_experimental": {
+            "best": 0.03897460937499997,
+            "unique_keys": 342,
+            "switch_rate": 0.9724310776942355
+          },
+          "optuna": {
+            "best": 0.03958076477050776,
+            "unique_keys": 397,
+            "switch_rate": 0.9974937343358395
+          },
+          "alba_framework_gravity": {
+            "best": 0.03994094848632812,
+            "unique_keys": 387,
+            "switch_rate": 1.0
+          }
+        },
+        "73": {
+          "alba_experimental": {
+            "best": 0.039118118286132764,
+            "unique_keys": 346,
+            "switch_rate": 0.949874686716792
+          },
+          "optuna": {
+            "best": 0.039900054931640616,
+            "unique_keys": 394,
+            "switch_rate": 0.9974937343358395
+          },
+          "alba_framework_gravity": {
+            "best": 0.0400845336914063,
+            "unique_keys": 390,
+            "switch_rate": 1.0
+          }
+        },
+        "74": {
+          "alba_experimental": {
+            "best": 0.0402669525146484,
+            "unique_keys": 342,
+            "switch_rate": 0.949874686716792
+          },
+          "optuna": {
+            "best": 0.04028343200683593,
+            "unique_keys": 391,
+            "switch_rate": 1.0
+          },
+          "alba_framework_gravity": {
+            "best": 0.039792404174804674,
+            "unique_keys": 392,
+            "switch_rate": 1.0
+          }
+        },
+        "75": {
+          "alba_experimental": {
+            "best": 0.03975723266601561,
+            "unique_keys": 336,
+            "switch_rate": 0.9899749373433584
+          },
+          "optuna": {
+            "best": 0.03951271057128902,
+            "unique_keys": 388,
+            "switch_rate": 0.9974937343358395
+          },
+          "alba_framework_gravity": {
+            "best": 0.04120170593261718,
+            "unique_keys": 390,
+            "switch_rate": 1.0
+          }
+        },
+        "76": {
+          "alba_experimental": {
+            "best": 0.03851997375488281,
+            "unique_keys": 331,
+            "switch_rate": 0.9699248120300752
+          },
+          "optuna": {
+            "best": 0.04021064758300785,
+            "unique_keys": 395,
+            "switch_rate": 1.0
+          },
+          "alba_framework_gravity": {
+            "best": 0.03851165771484377,
+            "unique_keys": 378,
+            "switch_rate": 0.9974937343358395
+          }
+        },
+        "77": {
+          "alba_experimental": {
+            "best": 0.03893417358398432,
+            "unique_keys": 333,
+            "switch_rate": 0.9849624060150376
+          },
+          "optuna": {
+            "best": 0.040655593872070295,
+            "unique_keys": 394,
+            "switch_rate": 0.9974937343358395
+          },
+          "alba_framework_gravity": {
+            "best": 0.040082855224609415,
+            "unique_keys": 394,
+            "switch_rate": 1.0
+          }
+        },
+        "78": {
+          "alba_experimental": {
+            "best": 0.03788703918457026,
+            "unique_keys": 356,
+            "switch_rate": 0.9899749373433584
+          },
+          "optuna": {
+            "best": 0.039411697387695344,
+            "unique_keys": 392,
+            "switch_rate": 1.0
+          },
+          "alba_framework_gravity": {
+            "best": 0.03902626037597656,
+            "unique_keys": 377,
+            "switch_rate": 1.0
+          }
+        },
+        "79": {
+          "alba_experimental": {
+            "best": 0.039640350341796915,
+            "unique_keys": 350,
+            "switch_rate": 0.974937343358396
+          },
+          "optuna": {
+            "best": 0.039479064941406294,
+            "unique_keys": 393,
+            "switch_rate": 1.0
+          },
+          "alba_framework_gravity": {
+            "best": 0.04021972656249995,
+            "unique_keys": 391,
+            "switch_rate": 1.0
+          }
+        }
+      },
+      "summary": {
+        "alba_experimental": {
+          "mean": 0.039035491943359354,
+          "std": 0.0006963120472767199,
+          "wins": 6
+        },
+        "optuna": {
+          "mean": 0.04000452423095703,
+          "std": 0.0006373459867718744,
+          "wins": 2
+        },
+        "alba_framework_gravity": {
+          "mean": 0.040021453857421875,
+          "std": 0.0007799021544136971,
+          "wins": 2
+        }
+      }
+    }
+  },
+  "paramnet": {
+    "letter": {
+      "dim": 8,
+      "per_seed": {
+        "70": {
+          "alba_experimental": {
+            "best": 0.0340796021140576,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          },
+          "optuna": {
+            "best": 0.034283133345133346,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          },
+          "alba_framework_gravity": {
+            "best": 0.03464495998763865,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          }
+        },
+        "71": {
+          "alba_experimental": {
+            "best": 0.033808231778351884,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          },
+          "optuna": {
+            "best": 0.03426051681557157,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          },
+          "alba_framework_gravity": {
+            "best": 0.034102217686602224,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          }
+        },
+        "72": {
+          "alba_experimental": {
+            "best": 0.03367254868291286,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          },
+          "optuna": {
+            "best": 0.034260519119152254,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          },
+          "alba_framework_gravity": {
+            "best": 0.033061963999125824,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          }
+        },
+        "73": {
+          "alba_experimental": {
+            "best": 0.03256445040885057,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          },
+          "optuna": {
+            "best": 0.03505201518454737,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          },
+          "alba_framework_gravity": {
+            "best": 0.03439620162420605,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          }
+        },
+        "74": {
+          "alba_experimental": {
+            "best": 0.03493894102992864,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          },
+          "optuna": {
+            "best": 0.03525554208747944,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          },
+          "alba_framework_gravity": {
+            "best": 0.034848485883680835,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          }
+        },
+        "75": {
+          "alba_experimental": {
+            "best": 0.03498417271957412,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          },
+          "optuna": {
+            "best": 0.03403437537933464,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          },
+          "alba_framework_gravity": {
+            "best": 0.03462234136477038,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          }
+        },
+        "76": {
+          "alba_experimental": {
+            "best": 0.034034375338897284,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          },
+          "optuna": {
+            "best": 0.034011760122201265,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          },
+          "alba_framework_gravity": {
+            "best": 0.036318409548038735,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          }
+        },
+        "77": {
+          "alba_experimental": {
+            "best": 0.033491633931526175,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          },
+          "optuna": {
+            "best": 0.03403437537933464,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          },
+          "alba_framework_gravity": {
+            "best": 0.034079604623868734,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          }
+        },
+        "78": {
+          "alba_experimental": {
+            "best": 0.033808234156067686,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          },
+          "optuna": {
+            "best": 0.034938941203809214,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          },
+          "alba_framework_gravity": {
+            "best": 0.03376300591707552,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          }
+        },
+        "79": {
+          "alba_experimental": {
+            "best": 0.03437358761523871,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          },
+          "optuna": {
+            "best": 0.034328358373400404,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          },
+          "alba_framework_gravity": {
+            "best": 0.0338760764404208,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          }
+        }
+      },
+      "summary": {
+        "alba_experimental": {
+          "mean": 0.03397557777754056,
+          "std": 0.0006701745936623794,
+          "wins": 4
+        },
+        "optuna": {
+          "mean": 0.034445953700996415,
+          "std": 0.0004361433251659523,
+          "wins": 2
+        },
+        "alba_framework_gravity": {
+          "mean": 0.034371326707542775,
+          "std": 0.0008151437855600365,
+          "wins": 4
+        }
+      }
+    },
+    "mnist": {
+      "dim": 8,
+      "per_seed": {
+        "70": {
+          "alba_experimental": {
+            "best": 0.01493000423789025,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          },
+          "optuna": {
+            "best": 0.015270003746747963,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          },
+          "alba_framework_gravity": {
+            "best": 0.01547999890208247,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          }
+        },
+        "71": {
+          "alba_experimental": {
+            "best": 0.01458000139832497,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          },
+          "optuna": {
+            "best": 0.014940001665949809,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          },
+          "alba_framework_gravity": {
+            "best": 0.014860002337694144,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          }
+        },
+        "72": {
+          "alba_experimental": {
+            "best": 0.01457000575900077,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          },
+          "optuna": {
+            "best": 0.0153099989694357,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          },
+          "alba_framework_gravity": {
+            "best": 0.014640005326271032,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          }
+        },
+        "73": {
+          "alba_experimental": {
+            "best": 0.015130000782608977,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          },
+          "optuna": {
+            "best": 0.014850003911852826,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          },
+          "alba_framework_gravity": {
+            "best": 0.014910003757476841,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          }
+        },
+        "74": {
+          "alba_experimental": {
+            "best": 0.01504000334143638,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          },
+          "optuna": {
+            "best": 0.014800003432631482,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          },
+          "alba_framework_gravity": {
+            "best": 0.01498000171601772,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          }
+        },
+        "75": {
+          "alba_experimental": {
+            "best": 0.014670000944137562,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          },
+          "optuna": {
+            "best": 0.014780000329613685,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          },
+          "alba_framework_gravity": {
+            "best": 0.014790001746416093,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          }
+        },
+        "76": {
+          "alba_experimental": {
+            "best": 0.01480000575184821,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          },
+          "optuna": {
+            "best": 0.015040000106096274,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          },
+          "alba_framework_gravity": {
+            "best": 0.01498000188171863,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          }
+        },
+        "77": {
+          "alba_experimental": {
+            "best": 0.015209999717473988,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          },
+          "optuna": {
+            "best": 0.014960000333786017,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          },
+          "alba_framework_gravity": {
+            "best": 0.014670002541542049,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          }
+        },
+        "78": {
+          "alba_experimental": {
+            "best": 0.015089998464584342,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          },
+          "optuna": {
+            "best": 0.01496000202476977,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          },
+          "alba_framework_gravity": {
+            "best": 0.01516000395417214,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          }
+        },
+        "79": {
+          "alba_experimental": {
+            "best": 0.014780001818537714,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          },
+          "optuna": {
+            "best": 0.014710003478527068,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          },
+          "alba_framework_gravity": {
+            "best": 0.01530999882777533,
+            "unique_keys": 0,
+            "switch_rate": 0.0
+          }
+        }
+      },
+      "summary": {
+        "alba_experimental": {
+          "mean": 0.014880002221584318,
+          "std": 0.00022140346947375106,
+          "wins": 5
+        },
+        "optuna": {
+          "mean": 0.01496200179994106,
+          "std": 0.00018919769104915998,
+          "wins": 4
+        },
+        "alba_framework_gravity": {
+          "mean": 0.014978002099116644,
+          "std": 0.00025658384352236275,
+          "wins": 1
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,107 @@
+Benchmark tasks: ['cifar10', 'fashion_mnist', 'colorectal_histology'] | budget=400 | seeds=[70, 71, 72, 73, 74, 75, 76, 77, 78, 79]
+Checkpoints: [100, 200, 400]
+Saving to: /mnt/workspace/thesis/benchmark_results/jahs_framework_vs_experimental_alltasks_20260105_125913.json
+Logging to: /mnt/workspace/thesis/benchmark_results/jahs_framework_vs_experimental_alltasks_20260105_125913.log
+
+=== TASK cifar10 ===
+
+Task cifar10 | Seed 70...
+  ERROR: index 1 is out of bounds for axis 0 with size 1
+
+Task cifar10 | Seed 71...
+  ERROR: index 1 is out of bounds for axis 0 with size 1
+
+Task cifar10 | Seed 72...
+  ERROR: index 1 is out of bounds for axis 0 with size 1
+
+Task cifar10 | Seed 73...
+  ERROR: index 1 is out of bounds for axis 0 with size 1
+
+Task cifar10 | Seed 74...
+  ERROR: index 1 is out of bounds for axis 0 with size 1
+
+Task cifar10 | Seed 75...
+  ERROR: index 1 is out of bounds for axis 0 with size 1
+
+Task cifar10 | Seed 76...
+  ERROR: index 1 is out of bounds for axis 0 with size 1
+
+Task cifar10 | Seed 77...
+  ERROR: index 1 is out of bounds for axis 0 with size 1
+
+Task cifar10 | Seed 78...
+  ERROR: index 1 is out of bounds for axis 0 with size 1
+
+Task cifar10 | Seed 79...
+  ERROR: index 1 is out of bounds for axis 0 with size 1
+
+=== TASK fashion_mnist ===
+
+Task fashion_mnist | Seed 70...
+  ERROR: index 1 is out of bounds for axis 0 with size 1
+
+Task fashion_mnist | Seed 71...
+  ERROR: index 1 is out of bounds for axis 0 with size 1
+
+Task fashion_mnist | Seed 72...
+  ERROR: index 1 is out of bounds for axis 0 with size 1
+
+Task fashion_mnist | Seed 73...
+  ERROR: index 1 is out of bounds for axis 0 with size 1
+
+Task fashion_mnist | Seed 74...
+  ERROR: index 1 is out of bounds for axis 0 with size 1
+
+Task fashion_mnist | Seed 75...
+  ERROR: index 1 is out of bounds for axis 0 with size 1
+
+Task fashion_mnist | Seed 76...
+  ERROR: index 1 is out of bounds for axis 0 with size 1
+
+Task fashion_mnist | Seed 77...
+  ERROR: index 1 is out of bounds for axis 0 with size 1
+
+Task fashion_mnist | Seed 78...
+  ERROR: index 1 is out of bounds for axis 0 with size 1
+
+Task fashion_mnist | Seed 79...
+  ERROR: index 1 is out of bounds for axis 0 with size 1
+
+=== TASK colorectal_histology ===
+
+Task colorectal_histology | Seed 70...
+  ERROR: index 1 is out of bounds for axis 0 with size 1
+
+Task colorectal_histology | Seed 71...
+  ERROR: index 1 is out of bounds for axis 0 with size 1
+
+Task colorectal_histology | Seed 72...
+  ERROR: index 1 is out of bounds for axis 0 with size 1
+
+Task colorectal_histology | Seed 73...
+  ERROR: index 1 is out of bounds for axis 0 with size 1
+
+Task colorectal_histology | Seed 74...
+  ERROR: index 1 is out of bounds for axis 0 with size 1
+
+Task colorectal_histology | Seed 75...
+  ERROR: index 1 is out of bounds for axis 0 with size 1
+
+Task colorectal_histology | Seed 76...
+  ERROR: index 1 is out of bounds for axis 0 with size 1
+
+Task colorectal_histology | Seed 77...
+  ERROR: index 1 is out of bounds for axis 0 with size 1
+
+Task colorectal_histology | Seed 78...
+  ERROR: index 1 is out of bounds for axis 0 with size 1
+
+Task colorectal_histology | Seed 79...
+  ERROR: index 1 is out of bounds for axis 0 with size 1
+
+=== SUMMARY (final checkpoint) ===
+cifar10: n/a (missing finals)
+fashion_mnist: n/a (missing finals)
+colorectal_histology: n/a (missing finals)
+
+Saved: /mnt/workspace/thesis/benchmark_results/jahs_framework_vs_experimental_alltasks_20260105_125913.json

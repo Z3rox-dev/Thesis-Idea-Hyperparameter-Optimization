@@ -1,0 +1,64 @@
+================================================================================
+ALBA DEBUG BENCHMARK
+================================================================================
+Task: cifar10
+Evaluations: 100
+Seed: 42
+Evo Debug Mode: True
+Output: /mnt/workspace/thesis/results/alba_debug/debug_cifar10_seed42_20251229_125441.txt
+================================================================================
+
+Initializing JAHS-Bench-201...
+Dimension: 13
+
+============================================================
+Running ALBA Original...
+============================================================
+
+============================================================
+Running ALBA Evo...
+============================================================
+
+================================================================================
+DETAILED COMPARISON ANALYSIS
+================================================================================
+
+Final Errors:
+  Original: 0.087925
+  Evo:      0.087128
+  Difference: -0.000797 (Evo wins)
+
+Leaf Management:
+  Original final leaves: 3
+  Evo final active:      4
+  Evo final suspended:   0
+  Evo total leaves:      4
+
+Resurrection Analysis (Evo only):
+  Total attempts:   0
+  Total successes:  0
+  Success rate:     0.00%
+  WARNING: Low resurrection success rate - success criteria may be too strict!
+
+Split Analysis:
+  Evo total splits: 3
+
+Convergence Analysis:
+  @50: Orig=0.103298, Evo=0.099462, diff=-0.003836
+  @100: Orig=0.087925, Evo=0.087128, diff=-0.000797
+
+Success Rate Evolution (Evo, last-20 window):
+  Early (iter 50):  30.00%
+  Mid: N/A
+  Late (last):      80.00%
+  Average:          44.40%
+
+Gamma Evolution:
+  Orig: start=-0.1340, end=-0.1191
+  Evo:  start=-0.1738, end=-0.1225
+
+Pool Selection Distribution (Evo):
+  warmup: 26 (26.0%)
+  active: 74 (74.0%)
+
+JSON saved: /mnt/workspace/thesis/results/alba_debug/debug_stats_cifar10_seed42_20251229_125441.json

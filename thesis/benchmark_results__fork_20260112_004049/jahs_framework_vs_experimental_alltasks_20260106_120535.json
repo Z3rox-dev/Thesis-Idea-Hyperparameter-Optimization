@@ -1,0 +1,169 @@
+{
+  "config": {
+    "tasks": [
+      "cifar10",
+      "fashion_mnist",
+      "colorectal_histology"
+    ],
+    "budget": 400,
+    "checkpoints": [
+      100,
+      200,
+      400
+    ],
+    "nepochs": 200,
+    "seeds": [
+      70,
+      71,
+      72,
+      73,
+      74,
+      75,
+      76,
+      77,
+      78,
+      79
+    ],
+    "timestamp": "20260106_120535"
+  },
+  "tasks": {
+    "cifar10": {
+      "framework_param_space": {},
+      "experimental": {},
+      "errors": {
+        "70": {
+          "message": "select() got multiple values for argument 'novelty_weight'",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 226, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 305, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 336, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 524, in _sample_in_cube\n    x = self._sample_with_lgs(cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 560, in _sample_with_lgs\n    idx = self._acquisition_selector.select(\nTypeError: select() got multiple values for argument 'novelty_weight'\n"
+        },
+        "71": {
+          "message": "select() got multiple values for argument 'novelty_weight'",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 226, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 305, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 336, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 524, in _sample_in_cube\n    x = self._sample_with_lgs(cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 560, in _sample_with_lgs\n    idx = self._acquisition_selector.select(\nTypeError: select() got multiple values for argument 'novelty_weight'\n"
+        },
+        "72": {
+          "message": "select() got multiple values for argument 'novelty_weight'",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 226, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 305, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 336, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 524, in _sample_in_cube\n    x = self._sample_with_lgs(cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 560, in _sample_with_lgs\n    idx = self._acquisition_selector.select(\nTypeError: select() got multiple values for argument 'novelty_weight'\n"
+        },
+        "73": {
+          "message": "select() got multiple values for argument 'novelty_weight'",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 226, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 305, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 336, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 524, in _sample_in_cube\n    x = self._sample_with_lgs(cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 560, in _sample_with_lgs\n    idx = self._acquisition_selector.select(\nTypeError: select() got multiple values for argument 'novelty_weight'\n"
+        },
+        "74": {
+          "message": "select() got multiple values for argument 'novelty_weight'",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 226, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 305, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 336, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 524, in _sample_in_cube\n    x = self._sample_with_lgs(cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 560, in _sample_with_lgs\n    idx = self._acquisition_selector.select(\nTypeError: select() got multiple values for argument 'novelty_weight'\n"
+        },
+        "75": {
+          "message": "select() got multiple values for argument 'novelty_weight'",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 226, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 305, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 336, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 524, in _sample_in_cube\n    x = self._sample_with_lgs(cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 560, in _sample_with_lgs\n    idx = self._acquisition_selector.select(\nTypeError: select() got multiple values for argument 'novelty_weight'\n"
+        },
+        "76": {
+          "message": "select() got multiple values for argument 'novelty_weight'",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 226, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 305, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 336, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 524, in _sample_in_cube\n    x = self._sample_with_lgs(cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 560, in _sample_with_lgs\n    idx = self._acquisition_selector.select(\nTypeError: select() got multiple values for argument 'novelty_weight'\n"
+        },
+        "77": {
+          "message": "select() got multiple values for argument 'novelty_weight'",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 226, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 305, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 336, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 524, in _sample_in_cube\n    x = self._sample_with_lgs(cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 560, in _sample_with_lgs\n    idx = self._acquisition_selector.select(\nTypeError: select() got multiple values for argument 'novelty_weight'\n"
+        },
+        "78": {
+          "message": "select() got multiple values for argument 'novelty_weight'",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 226, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 305, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 336, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 524, in _sample_in_cube\n    x = self._sample_with_lgs(cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 560, in _sample_with_lgs\n    idx = self._acquisition_selector.select(\nTypeError: select() got multiple values for argument 'novelty_weight'\n"
+        },
+        "79": {
+          "message": "select() got multiple values for argument 'novelty_weight'",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 226, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 305, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 336, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 524, in _sample_in_cube\n    x = self._sample_with_lgs(cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 560, in _sample_with_lgs\n    idx = self._acquisition_selector.select(\nTypeError: select() got multiple values for argument 'novelty_weight'\n"
+        }
+      }
+    },
+    "fashion_mnist": {
+      "framework_param_space": {},
+      "experimental": {},
+      "errors": {
+        "70": {
+          "message": "select() got multiple values for argument 'novelty_weight'",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 226, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 305, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 336, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 524, in _sample_in_cube\n    x = self._sample_with_lgs(cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 560, in _sample_with_lgs\n    idx = self._acquisition_selector.select(\nTypeError: select() got multiple values for argument 'novelty_weight'\n"
+        },
+        "71": {
+          "message": "select() got multiple values for argument 'novelty_weight'",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 226, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 305, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 336, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 524, in _sample_in_cube\n    x = self._sample_with_lgs(cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 560, in _sample_with_lgs\n    idx = self._acquisition_selector.select(\nTypeError: select() got multiple values for argument 'novelty_weight'\n"
+        },
+        "72": {
+          "message": "select() got multiple values for argument 'novelty_weight'",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 226, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 305, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 336, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 524, in _sample_in_cube\n    x = self._sample_with_lgs(cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 560, in _sample_with_lgs\n    idx = self._acquisition_selector.select(\nTypeError: select() got multiple values for argument 'novelty_weight'\n"
+        },
+        "73": {
+          "message": "select() got multiple values for argument 'novelty_weight'",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 226, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 305, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 336, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 524, in _sample_in_cube\n    x = self._sample_with_lgs(cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 560, in _sample_with_lgs\n    idx = self._acquisition_selector.select(\nTypeError: select() got multiple values for argument 'novelty_weight'\n"
+        },
+        "74": {
+          "message": "select() got multiple values for argument 'novelty_weight'",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 226, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 305, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 336, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 524, in _sample_in_cube\n    x = self._sample_with_lgs(cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 560, in _sample_with_lgs\n    idx = self._acquisition_selector.select(\nTypeError: select() got multiple values for argument 'novelty_weight'\n"
+        },
+        "75": {
+          "message": "select() got multiple values for argument 'novelty_weight'",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 226, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 305, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 336, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 524, in _sample_in_cube\n    x = self._sample_with_lgs(cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 560, in _sample_with_lgs\n    idx = self._acquisition_selector.select(\nTypeError: select() got multiple values for argument 'novelty_weight'\n"
+        },
+        "76": {
+          "message": "select() got multiple values for argument 'novelty_weight'",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 226, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 305, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 336, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 524, in _sample_in_cube\n    x = self._sample_with_lgs(cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 560, in _sample_with_lgs\n    idx = self._acquisition_selector.select(\nTypeError: select() got multiple values for argument 'novelty_weight'\n"
+        },
+        "77": {
+          "message": "select() got multiple values for argument 'novelty_weight'",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 226, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 305, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 336, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 524, in _sample_in_cube\n    x = self._sample_with_lgs(cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 560, in _sample_with_lgs\n    idx = self._acquisition_selector.select(\nTypeError: select() got multiple values for argument 'novelty_weight'\n"
+        },
+        "78": {
+          "message": "select() got multiple values for argument 'novelty_weight'",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 226, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 305, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 336, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 524, in _sample_in_cube\n    x = self._sample_with_lgs(cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 560, in _sample_with_lgs\n    idx = self._acquisition_selector.select(\nTypeError: select() got multiple values for argument 'novelty_weight'\n"
+        },
+        "79": {
+          "message": "select() got multiple values for argument 'novelty_weight'",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 226, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 305, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 336, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 524, in _sample_in_cube\n    x = self._sample_with_lgs(cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 560, in _sample_with_lgs\n    idx = self._acquisition_selector.select(\nTypeError: select() got multiple values for argument 'novelty_weight'\n"
+        }
+      }
+    },
+    "colorectal_histology": {
+      "framework_param_space": {},
+      "experimental": {},
+      "errors": {
+        "70": {
+          "message": "select() got multiple values for argument 'novelty_weight'",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 226, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 305, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 336, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 524, in _sample_in_cube\n    x = self._sample_with_lgs(cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 560, in _sample_with_lgs\n    idx = self._acquisition_selector.select(\nTypeError: select() got multiple values for argument 'novelty_weight'\n"
+        },
+        "71": {
+          "message": "select() got multiple values for argument 'novelty_weight'",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 226, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 305, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 336, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 524, in _sample_in_cube\n    x = self._sample_with_lgs(cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 560, in _sample_with_lgs\n    idx = self._acquisition_selector.select(\nTypeError: select() got multiple values for argument 'novelty_weight'\n"
+        },
+        "72": {
+          "message": "select() got multiple values for argument 'novelty_weight'",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 226, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 305, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 336, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 524, in _sample_in_cube\n    x = self._sample_with_lgs(cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 560, in _sample_with_lgs\n    idx = self._acquisition_selector.select(\nTypeError: select() got multiple values for argument 'novelty_weight'\n"
+        },
+        "73": {
+          "message": "select() got multiple values for argument 'novelty_weight'",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 226, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 305, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 336, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 524, in _sample_in_cube\n    x = self._sample_with_lgs(cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 560, in _sample_with_lgs\n    idx = self._acquisition_selector.select(\nTypeError: select() got multiple values for argument 'novelty_weight'\n"
+        },
+        "74": {
+          "message": "select() got multiple values for argument 'novelty_weight'",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 226, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 305, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 336, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 524, in _sample_in_cube\n    x = self._sample_with_lgs(cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 560, in _sample_with_lgs\n    idx = self._acquisition_selector.select(\nTypeError: select() got multiple values for argument 'novelty_weight'\n"
+        },
+        "75": {
+          "message": "select() got multiple values for argument 'novelty_weight'",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 226, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 305, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 336, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 524, in _sample_in_cube\n    x = self._sample_with_lgs(cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 560, in _sample_with_lgs\n    idx = self._acquisition_selector.select(\nTypeError: select() got multiple values for argument 'novelty_weight'\n"
+        },
+        "76": {
+          "message": "select() got multiple values for argument 'novelty_weight'",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 226, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 305, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 336, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 524, in _sample_in_cube\n    x = self._sample_with_lgs(cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 560, in _sample_with_lgs\n    idx = self._acquisition_selector.select(\nTypeError: select() got multiple values for argument 'novelty_weight'\n"
+        },
+        "77": {
+          "message": "select() got multiple values for argument 'novelty_weight'",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 226, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 305, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 336, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 524, in _sample_in_cube\n    x = self._sample_with_lgs(cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 560, in _sample_with_lgs\n    idx = self._acquisition_selector.select(\nTypeError: select() got multiple values for argument 'novelty_weight'\n"
+        },
+        "78": {
+          "message": "select() got multiple values for argument 'novelty_weight'",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 226, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 305, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 336, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 524, in _sample_in_cube\n    x = self._sample_with_lgs(cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 560, in _sample_with_lgs\n    idx = self._acquisition_selector.select(\nTypeError: select() got multiple values for argument 'novelty_weight'\n"
+        },
+        "79": {
+          "message": "select() got multiple values for argument 'novelty_weight'",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 226, in main\n    cfg = opt_fw.ask()  # dict\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 305, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 336, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 524, in _sample_in_cube\n    x = self._sample_with_lgs(cube)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 560, in _sample_with_lgs\n    idx = self._acquisition_selector.select(\nTypeError: select() got multiple values for argument 'novelty_weight'\n"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,71 @@
+================================================================================
+ALBA DEBUG BENCHMARK
+================================================================================
+Task: cifar10
+Evaluations: 1000
+Seed: 0
+Evo Debug Mode: False
+Output: /mnt/workspace/thesis/results/alba_debug/debug_cifar10_seed0_20251229_130207.txt
+================================================================================
+
+Initializing JAHS-Bench-201...
+Dimension: 13
+
+============================================================
+Running ALBA Original...
+============================================================
+
+============================================================
+Running ALBA Evo...
+============================================================
+
+================================================================================
+DETAILED COMPARISON ANALYSIS
+================================================================================
+
+Final Errors:
+  Original: 0.084205
+  Evo:      0.084554
+  Difference: +0.000350 (Original wins)
+
+Leaf Management:
+  Original final leaves: 33
+  Evo final active:      16
+  Evo final suspended:   18
+  Evo total leaves:      34
+
+Resurrection Analysis (Evo only):
+  Total attempts:   49
+  Total successes:  2
+  Success rate:     4.08%
+  WARNING: Low resurrection success rate - success criteria may be too strict!
+
+Split Analysis:
+  Evo total splits: 33
+
+Convergence Analysis:
+  @50: Orig=0.105704, Evo=0.098415, diff=-0.007289
+  @100: Orig=0.101301, Evo=0.098415, diff=-0.002886
+  @200: Orig=0.088346, Evo=0.091085, diff=+0.002739
+  @500: Orig=0.086745, Evo=0.087144, diff=+0.000399
+
+Success Rate Evolution (Evo, last-20 window):
+  Early (iter 50):  25.00%
+  Mid (iter 250):   60.00%
+  Late (last):      70.00%
+  Average:          34.10%
+
+Gamma Evolution:
+  Orig: start=-0.1682, end=-0.1044
+  Evo:  start=-0.1711, end=-0.1002
+
+Pool Selection Distribution (Evo):
+  warmup: 25 (2.5%)
+  random: 50 (5.0%)
+  active: 694 (69.4%)
+  suspended: 49 (4.9%)
+  local_search: 182 (18.2%)
+
+JSON saved: /mnt/workspace/thesis/results/alba_debug/debug_stats_cifar10_seed0_20251229_130207.json
+
+Debug benchmark complete. Results in: /mnt/workspace/thesis/results/alba_debug

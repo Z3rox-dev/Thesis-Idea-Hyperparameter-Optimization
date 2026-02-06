@@ -1,0 +1,464 @@
+{
+  "suite": "synthetic",
+  "budget": 200,
+  "seeds": [
+    70,
+    71,
+    72,
+    73
+  ],
+  "timestamp": "20260112_004901",
+  "out_dir": "/mnt/workspace/thesis/benchmark_results/gravity_diagnostics",
+  "results": {
+    "synthetic": {
+      "sphere_4D": {
+        "bounds": [
+          -5.12,
+          5.12
+        ],
+        "per_seed": {
+          "70": {
+            "grav_warp0_grav0": {
+              "best": 0.1499167331316919,
+              "wall_s": 0.16588616371154785,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            },
+            "grav_warp0_grav1": {
+              "best": 0.35166280485082824,
+              "wall_s": 0.15619325637817383,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            },
+            "grav_warp1_grav0": {
+              "best": 1.0140349425213473,
+              "wall_s": 0.2064220905303955,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            },
+            "grav_warp1_grav1": {
+              "best": 0.03560390344498897,
+              "wall_s": 0.2470841407775879,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            }
+          },
+          "71": {
+            "grav_warp0_grav0": {
+              "best": 0.184365495303268,
+              "wall_s": 0.17431282997131348,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            },
+            "grav_warp0_grav1": {
+              "best": 0.447007984052241,
+              "wall_s": 0.15666699409484863,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            },
+            "grav_warp1_grav0": {
+              "best": 0.3432730867620426,
+              "wall_s": 0.26012492179870605,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            },
+            "grav_warp1_grav1": {
+              "best": 0.8893203539963715,
+              "wall_s": 0.2695143222808838,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            }
+          },
+          "72": {
+            "grav_warp0_grav0": {
+              "best": 0.22877561775781047,
+              "wall_s": 0.1638040542602539,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            },
+            "grav_warp0_grav1": {
+              "best": 0.11560114439615658,
+              "wall_s": 0.16640186309814453,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            },
+            "grav_warp1_grav0": {
+              "best": 0.3006892365284095,
+              "wall_s": 0.18648505210876465,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            },
+            "grav_warp1_grav1": {
+              "best": 0.09354566452625857,
+              "wall_s": 0.24270272254943848,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            }
+          },
+          "73": {
+            "grav_warp0_grav0": {
+              "best": 0.1077876467896168,
+              "wall_s": 0.1435256004333496,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            },
+            "grav_warp0_grav1": {
+              "best": 0.07144588550706404,
+              "wall_s": 0.1495814323425293,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            },
+            "grav_warp1_grav0": {
+              "best": 0.7222622855009004,
+              "wall_s": 0.2028820514678955,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            },
+            "grav_warp1_grav1": {
+              "best": 0.5643911878892502,
+              "wall_s": 0.20540666580200195,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            }
+          }
+        }
+      },
+      "sphere_15D": {
+        "bounds": [
+          -5.12,
+          5.12
+        ],
+        "per_seed": {
+          "70": {
+            "grav_warp0_grav0": {
+              "best": 23.365877186013375,
+              "wall_s": 0.5162794589996338,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            },
+            "grav_warp0_grav1": {
+              "best": 17.87573086027001,
+              "wall_s": 0.713477611541748,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            },
+            "grav_warp1_grav0": {
+              "best": 20.628554539760994,
+              "wall_s": 0.8017802238464355,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            },
+            "grav_warp1_grav1": {
+              "best": 6.530522238362657,
+              "wall_s": 0.635704517364502,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            }
+          },
+          "71": {
+            "grav_warp0_grav0": {
+              "best": 14.769924894700097,
+              "wall_s": 0.6126906871795654,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            },
+            "grav_warp0_grav1": {
+              "best": 13.883471815732836,
+              "wall_s": 0.544184684753418,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            },
+            "grav_warp1_grav0": {
+              "best": 31.648283676448177,
+              "wall_s": 0.7563066482543945,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            },
+            "grav_warp1_grav1": {
+              "best": 18.106645531513884,
+              "wall_s": 0.7813796997070312,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            }
+          },
+          "72": {
+            "grav_warp0_grav0": {
+              "best": 10.842775829944388,
+              "wall_s": 0.5972237586975098,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            },
+            "grav_warp0_grav1": {
+              "best": 6.828445372641746,
+              "wall_s": 0.5113048553466797,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            },
+            "grav_warp1_grav0": {
+              "best": 15.103309649732367,
+              "wall_s": 0.6939945220947266,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            },
+            "grav_warp1_grav1": {
+              "best": 5.748751441995813,
+              "wall_s": 1.3043065071105957,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            }
+          },
+          "73": {
+            "grav_warp0_grav0": {
+              "best": 18.32465073120062,
+              "wall_s": 0.6144070625305176,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            },
+            "grav_warp0_grav1": {
+              "best": 9.806023892090419,
+              "wall_s": 0.6147327423095703,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            },
+            "grav_warp1_grav0": {
+              "best": 21.993317823094678,
+              "wall_s": 0.738415002822876,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            },
+            "grav_warp1_grav1": {
+              "best": 11.094918520385443,
+              "wall_s": 0.8155207633972168,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            }
+          }
+        }
+      },
+      "rosenbrock_4D": {
+        "bounds": [
+          -5.0,
+          10.0
+        ],
+        "per_seed": {
+          "70": {
+            "grav_warp0_grav0": {
+              "best": 82.97975132203352,
+              "wall_s": 0.15900015830993652,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            },
+            "grav_warp0_grav1": {
+              "best": 12.437007936700958,
+              "wall_s": 0.1729130744934082,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            },
+            "grav_warp1_grav0": {
+              "best": 506.9675472447168,
+              "wall_s": 0.2078249454498291,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            },
+            "grav_warp1_grav1": {
+              "best": 432.340303730011,
+              "wall_s": 0.2060689926147461,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            }
+          },
+          "71": {
+            "grav_warp0_grav0": {
+              "best": 46.94022109973698,
+              "wall_s": 0.13399243354797363,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            },
+            "grav_warp0_grav1": {
+              "best": 41.23195505787756,
+              "wall_s": 0.17563962936401367,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            },
+            "grav_warp1_grav0": {
+              "best": 174.76188900848263,
+              "wall_s": 0.20279145240783691,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            },
+            "grav_warp1_grav1": {
+              "best": 109.34404166208107,
+              "wall_s": 0.2333984375,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            }
+          },
+          "72": {
+            "grav_warp0_grav0": {
+              "best": 34.255095671320376,
+              "wall_s": 0.13325047492980957,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            },
+            "grav_warp0_grav1": {
+              "best": 65.91518278561522,
+              "wall_s": 0.20490694046020508,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            },
+            "grav_warp1_grav0": {
+              "best": 177.40057845846246,
+              "wall_s": 0.2503190040588379,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            },
+            "grav_warp1_grav1": {
+              "best": 91.61602196116534,
+              "wall_s": 0.22364115715026855,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            }
+          },
+          "73": {
+            "grav_warp0_grav0": {
+              "best": 375.0324007001879,
+              "wall_s": 0.13962149620056152,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            },
+            "grav_warp0_grav1": {
+              "best": 931.9030723747497,
+              "wall_s": 0.15780091285705566,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            },
+            "grav_warp1_grav0": {
+              "best": 14.524688980865191,
+              "wall_s": 0.21538519859313965,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            },
+            "grav_warp1_grav1": {
+              "best": 104.04746503608766,
+              "wall_s": 0.2074437141418457,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            }
+          }
+        }
+      },
+      "rosenbrock_15D": {
+        "bounds": [
+          -5.0,
+          10.0
+        ],
+        "per_seed": {
+          "70": {
+            "grav_warp0_grav0": {
+              "best": 24898.590969419263,
+              "wall_s": 0.7068095207214355,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            },
+            "grav_warp0_grav1": {
+              "best": 7779.876227601262,
+              "wall_s": 0.5636651515960693,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            },
+            "grav_warp1_grav0": {
+              "best": 40338.73476324128,
+              "wall_s": 0.6998229026794434,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            },
+            "grav_warp1_grav1": {
+              "best": 26485.445720451073,
+              "wall_s": 0.7128291130065918,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            }
+          },
+          "71": {
+            "grav_warp0_grav0": {
+              "best": 8903.346966494995,
+              "wall_s": 0.5983407497406006,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            },
+            "grav_warp0_grav1": {
+              "best": 11132.64338729366,
+              "wall_s": 0.6970362663269043,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            },
+            "grav_warp1_grav0": {
+              "best": 7707.208990892645,
+              "wall_s": 1.035217046737671,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            },
+            "grav_warp1_grav1": {
+              "best": 5506.126398667485,
+              "wall_s": 0.793895959854126,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            }
+          },
+          "72": {
+            "grav_warp0_grav0": {
+              "best": 6630.814029500382,
+              "wall_s": 0.5712988376617432,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            },
+            "grav_warp0_grav1": {
+              "best": 8111.856575325311,
+              "wall_s": 0.6198225021362305,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            },
+            "grav_warp1_grav0": {
+              "best": 36477.438764565544,
+              "wall_s": 0.783801794052124,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            },
+            "grav_warp1_grav1": {
+              "best": 47440.284445851576,
+              "wall_s": 0.678391695022583,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            }
+          },
+          "73": {
+            "grav_warp0_grav0": {
+              "best": 3877.186447179346,
+              "wall_s": 0.6120724678039551,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            },
+            "grav_warp0_grav1": {
+              "best": 2453.8341559781784,
+              "wall_s": 0.6341359615325928,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            },
+            "grav_warp1_grav0": {
+              "best": 23491.585876081997,
+              "wall_s": 0.6548216342926025,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            },
+            "grav_warp1_grav1": {
+              "best": 12502.080456716918,
+              "wall_s": 0.7982578277587891,
+              "unique_keys": 0,
+              "switch_rate": 0.0
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,103 @@
+============================================================
+CopulaHPO - ParamNet Benchmark (Elite vs Latent-CMA)
+============================================================
+
+============================================================
+HPOBench ParamNet - adult
+Budget: 400, Seeds: [42, 43, 44]
+============================================================
+  Seed 42... Elite=0.1462, E-Ratio=0.1468, L-CMA=0.1466, Opt=0.1463, Rand=0.1465
+  Seed 43... Elite=0.1468, E-Ratio=0.1469, L-CMA=0.1459, Opt=0.1467, Rand=0.1486
+  Seed 44... Elite=0.1464, E-Ratio=0.1473, L-CMA=0.1466, Opt=0.1456, Rand=0.1479
+
+  Summary:
+    Elite:      0.1465 ± 0.0002
+    EliteRatio: 0.1470 ± 0.0002
+    Latent-CMA: 0.1464 ± 0.0003
+    Optuna:     0.1462 ± 0.0005
+    Random:     0.1477 ± 0.0009
+
+============================================================
+HPOBench ParamNet - mnist
+Budget: 400, Seeds: [42, 43, 44]
+============================================================
+  Seed 42... Elite=0.0151, E-Ratio=0.0147, L-CMA=0.0147, Opt=0.0147, Rand=0.0167
+  Seed 43... Elite=0.0148, E-Ratio=0.0163, L-CMA=0.0156, Opt=0.0157, Rand=0.0156
+  Seed 44... Elite=0.0152, E-Ratio=0.0147, L-CMA=0.0157, Opt=0.0146, Rand=0.0156
+
+  Summary:
+    Elite:      0.0150 ± 0.0001
+    EliteRatio: 0.0152 ± 0.0007
+    Latent-CMA: 0.0153 ± 0.0005
+    Optuna:     0.0150 ± 0.0005
+    Random:     0.0160 ± 0.0005
+
+============================================================
+HPOBench ParamNet - letter
+Budget: 400, Seeds: [42, 43, 44]
+============================================================
+  Seed 42... Elite=0.0348, E-Ratio=0.0351, L-CMA=0.0384, Opt=0.0334, Rand=0.0405
+  Seed 43... Elite=0.0357, E-Ratio=0.0367, L-CMA=0.0424, Opt=0.0336, Rand=0.0440
+  Seed 44... Elite=0.0347, E-Ratio=0.0348, L-CMA=0.0397, Opt=0.0337, Rand=0.0476
+
+  Summary:
+    Elite:      0.0351 ± 0.0004
+    EliteRatio: 0.0355 ± 0.0009
+    Latent-CMA: 0.0402 ± 0.0017
+    Optuna:     0.0336 ± 0.0001
+    Random:     0.0440 ± 0.0029
+
+============================================================
+HPOBench ParamNet - higgs
+Budget: 400, Seeds: [42, 43, 44]
+============================================================
+  Seed 42... Elite=0.2803, E-Ratio=0.2796, L-CMA=0.2803, Opt=0.2810, Rand=0.2811
+  Seed 43... Elite=0.2799, E-Ratio=0.2819, L-CMA=0.2785, Opt=0.2799, Rand=0.2822
+  Seed 44... Elite=0.2794, E-Ratio=0.2804, L-CMA=0.2784, Opt=0.2786, Rand=0.2825
+
+  Summary:
+    Elite:      0.2799 ± 0.0004
+    EliteRatio: 0.2806 ± 0.0009
+    Latent-CMA: 0.2791 ± 0.0009
+    Optuna:     0.2798 ± 0.0010
+    Random:     0.2819 ± 0.0006
+
+============================================================
+HPOBench ParamNet - optdigits
+Budget: 400, Seeds: [42, 43, 44]
+============================================================
+  Seed 42... Elite=0.0156, E-Ratio=0.0156, L-CMA=0.0173, Opt=0.0126, Rand=0.0169
+  Seed 43... Elite=0.0158, E-Ratio=0.0175, L-CMA=0.0182, Opt=0.0146, Rand=0.0172
+  Seed 44... Elite=0.0148, E-Ratio=0.0165, L-CMA=0.0146, Opt=0.0147, Rand=0.0176
+
+  Summary:
+    Elite:      0.0154 ± 0.0004
+    EliteRatio: 0.0165 ± 0.0008
+    Latent-CMA: 0.0167 ± 0.0015
+    Optuna:     0.0140 ± 0.0010
+    Random:     0.0172 ± 0.0003
+
+============================================================
+HPOBench ParamNet - poker
+Budget: 400, Seeds: [42, 43, 44]
+============================================================
+  Seed 42... Elite=0.0009, E-Ratio=0.0006, L-CMA=0.0005, Opt=0.0009, Rand=0.0017
+  Seed 43... Elite=0.0006, E-Ratio=0.0015, L-CMA=0.0004, Opt=0.0007, Rand=0.0011
+  Seed 44... Elite=0.0011, E-Ratio=0.0009, L-CMA=0.0005, Opt=0.0004, Rand=0.0017
+
+  Summary:
+    Elite:      0.0009 ± 0.0002
+    EliteRatio: 0.0010 ± 0.0004
+    Latent-CMA: 0.0005 ± 0.0000
+    Optuna:     0.0007 ± 0.0002
+    Random:     0.0015 ± 0.0003
+
+============================================================
+FINAL SUMMARY
+============================================================
+  adult     : Elite=0.1465, E-Ratio=0.1470, L-CMA=0.1464, Opt=0.1462, Rand=0.1477 -> Optuna
+  mnist     : Elite=0.0150, E-Ratio=0.0152, L-CMA=0.0153, Opt=0.0150, Rand=0.0160 -> Optuna
+  letter    : Elite=0.0351, E-Ratio=0.0355, L-CMA=0.0402, Opt=0.0336, Rand=0.0440 -> Optuna
+  higgs     : Elite=0.2799, E-Ratio=0.2806, L-CMA=0.2791, Opt=0.2798, Rand=0.2819 -> L-CMA
+  optdigits : Elite=0.0154, E-Ratio=0.0165, L-CMA=0.0167, Opt=0.0140, Rand=0.0172 -> Optuna
+  poker     : Elite=0.0009, E-Ratio=0.0010, L-CMA=0.0005, Opt=0.0007, Rand=0.0015 -> L-CMA

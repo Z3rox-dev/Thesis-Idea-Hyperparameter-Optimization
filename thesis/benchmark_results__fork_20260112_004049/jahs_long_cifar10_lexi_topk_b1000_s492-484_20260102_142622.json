@@ -1,0 +1,88 @@
+{
+  "config": {
+    "task": "cifar10",
+    "budget": 1000,
+    "checkpoints": [
+      100,
+      250,
+      500,
+      1000
+    ],
+    "seeds": [
+      492,
+      403,
+      484
+    ],
+    "meta_variant": "lexi_topk",
+    "meta_kwargs": {
+      "leaf_selection_mode": "lexi_topk",
+      "leaf_reward_topk": 5,
+      "cat_selection_mode": "lexi_topk",
+      "cat_reward_topk": 3,
+      "passion_during_study": false,
+      "adaptive_budget": false,
+      "study_budget_fraction": 0.25,
+      "study_budget_min": 50,
+      "study_budget_max_fraction": 0.6,
+      "adaptive_performance": false,
+      "performance_patience": 75,
+      "controller_enabled": true,
+      "controller_check_every": 25,
+      "controller_min_history": 4,
+      "controller_quantile_low": 0.4,
+      "controller_quantile_high": 0.6,
+      "controller_guardrail_init": 0.5,
+      "controller_guardrail_step": 0.1,
+      "controller_guardrail_min": 0.2,
+      "controller_guardrail_max": 0.9,
+      "debug": false,
+      "debug_every": 100
+    },
+    "timestamp": "20260102_142622"
+  },
+  "jahs": {
+    "cifar10": {
+      "dim": 13,
+      "alba_v1": {
+        "492": {
+          "100": 0.09817207336425782,
+          "250": 0.08964500427246092,
+          "500": 0.08364143371582033,
+          "1000": 0.08102081298828123
+        },
+        "403": {
+          "100": 0.08521553039550778,
+          "250": 0.0847437286376953,
+          "500": 0.08473152160644526,
+          "1000": 0.08097930908203121
+        },
+        "484": {
+          "100": 0.08985755920410154,
+          "250": 0.08812705993652348,
+          "500": 0.08548355102539062,
+          "1000": 0.08193771362304691
+        }
+      },
+      "alba_meta_lexi_topk": {
+        "492": {
+          "100": 0.09084136962890621,
+          "250": 0.08594947814941412,
+          "500": 0.08560546874999997,
+          "1000": 0.08342254638671875
+        },
+        "403": {
+          "100": 0.09887023925781246,
+          "250": 0.08359565734863283,
+          "500": 0.08340332031249997,
+          "1000": 0.08327934265136716
+        },
+        "484": {
+          "100": 0.09722846984863276,
+          "250": 0.08928993225097659,
+          "500": 0.08825386047363282,
+          "1000": 0.08440925598144533
+        }
+      }
+    }
+  }
+}

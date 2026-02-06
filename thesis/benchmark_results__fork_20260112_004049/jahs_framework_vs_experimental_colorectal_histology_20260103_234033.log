@@ -1,0 +1,41 @@
+Benchmark tasks: ['colorectal_histology'] | budget=400 | seeds=[70, 71, 72, 73, 74, 75, 76, 77, 78, 79]
+Checkpoints: [100, 200, 400]
+Saving to: /mnt/workspace/thesis/benchmark_results/jahs_framework_vs_experimental_colorectal_histology_20260103_234033.json
+Logging to: /mnt/workspace/thesis/benchmark_results/jahs_framework_vs_experimental_colorectal_histology_20260103_234033.log
+
+=== TASK colorectal_histology ===
+
+Task colorectal_histology | Seed 70...
+  FW=96.24%  EXP=96.11%  -> FW (5.1s)
+
+Task colorectal_histology | Seed 71...
+  FW=96.08%  EXP=96.13%  -> EXP (5.3s)
+
+Task colorectal_histology | Seed 72...
+  FW=96.04%  EXP=95.98%  -> FW (5.4s)
+
+Task colorectal_histology | Seed 73...
+  FW=96.15%  EXP=96.06%  -> FW (4.9s)
+
+Task colorectal_histology | Seed 74...
+  FW=96.19%  EXP=96.10%  -> FW (5.0s)
+
+Task colorectal_histology | Seed 75...
+  FW=96.09%  EXP=96.03%  -> FW (5.2s)
+
+Task colorectal_histology | Seed 76...
+  FW=96.03%  EXP=96.28%  -> EXP (5.2s)
+
+Task colorectal_histology | Seed 77...
+  FW=96.16%  EXP=95.96%  -> FW (5.4s)
+
+Task colorectal_histology | Seed 78...
+  FW=96.29%  EXP=95.77%  -> FW (5.1s)
+
+Task colorectal_histology | Seed 79...
+  FW=96.04%  EXP=96.01%  -> FW (5.0s)
+
+=== SUMMARY (final checkpoint) ===
+colorectal_histology: FW mean=96.13% std=0.09 | EXP mean=96.04% std=0.13 | wins FW=8 ties=0
+
+Saved: /mnt/workspace/thesis/benchmark_results/jahs_framework_vs_experimental_colorectal_histology_20260103_234033.json

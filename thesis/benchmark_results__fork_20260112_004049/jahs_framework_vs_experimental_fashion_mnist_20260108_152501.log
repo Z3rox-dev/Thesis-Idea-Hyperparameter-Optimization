@@ -1,0 +1,18 @@
+Benchmark tasks: ['fashion_mnist'] | budget=150 | seeds=[80, 81]
+Checkpoints: [150]
+Framework config: grid_bins=8 grid_batch_size=512 grid_batches=4 grid_sampling=grid_random grid_jitter=True grid_penalty_lambda=0.06 heatmap_ucb_beta=1.0 heatmap_ucb_explore_prob=0.25 heatmap_ucb_temperature=1.0
+Saving to: /mnt/workspace/thesis/benchmark_results/jahs_framework_vs_experimental_fashion_mnist_20260108_152501.json
+Logging to: /mnt/workspace/thesis/benchmark_results/jahs_framework_vs_experimental_fashion_mnist_20260108_152501.log
+
+=== TASK fashion_mnist ===
+
+Task fashion_mnist | Seed 80...
+  FW=94.93%  EXP=95.17%  -> EXP (4.5s)
+
+Task fashion_mnist | Seed 81...
+  FW=95.41%  EXP=95.32%  -> FW (4.6s)
+
+=== SUMMARY (final checkpoint) ===
+fashion_mnist: FW mean=95.17% std=0.24 | EXP mean=95.24% std=0.07 | wins FW=1 ties=0
+
+Saved: /mnt/workspace/thesis/benchmark_results/jahs_framework_vs_experimental_fashion_mnist_20260108_152501.json

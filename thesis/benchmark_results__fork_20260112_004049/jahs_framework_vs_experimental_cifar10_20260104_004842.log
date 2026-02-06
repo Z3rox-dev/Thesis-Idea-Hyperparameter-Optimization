@@ -1,0 +1,41 @@
+Benchmark tasks: ['cifar10'] | budget=400 | seeds=[70, 71, 72, 73, 74, 75, 76, 77, 78, 79]
+Checkpoints: [100, 200, 400]
+Saving to: /mnt/workspace/thesis/benchmark_results/jahs_framework_vs_experimental_cifar10_20260104_004842.json
+Logging to: /mnt/workspace/thesis/benchmark_results/jahs_framework_vs_experimental_cifar10_20260104_004842.log
+
+=== TASK cifar10 ===
+
+Task cifar10 | Seed 70...
+  FW=91.82%  EXP=91.45%  -> FW (6.9s)
+
+Task cifar10 | Seed 71...
+  FW=91.82%  EXP=91.10%  -> FW (7.0s)
+
+Task cifar10 | Seed 72...
+  FW=90.79%  EXP=91.67%  -> EXP (6.6s)
+
+Task cifar10 | Seed 73...
+  FW=91.02%  EXP=91.74%  -> EXP (6.8s)
+
+Task cifar10 | Seed 74...
+  FW=91.81%  EXP=91.53%  -> FW (6.7s)
+
+Task cifar10 | Seed 75...
+  FW=91.46%  EXP=91.67%  -> EXP (6.9s)
+
+Task cifar10 | Seed 76...
+  FW=91.47%  EXP=91.54%  -> EXP (6.7s)
+
+Task cifar10 | Seed 77...
+  FW=91.75%  EXP=91.72%  -> FW (6.9s)
+
+Task cifar10 | Seed 78...
+  FW=91.77%  EXP=91.52%  -> FW (6.8s)
+
+Task cifar10 | Seed 79...
+  FW=91.61%  EXP=91.44%  -> FW (6.8s)
+
+=== SUMMARY (final checkpoint) ===
+cifar10: FW mean=91.53% std=0.34 | EXP mean=91.54% std=0.18 | wins FW=6 ties=0
+
+Saved: /mnt/workspace/thesis/benchmark_results/jahs_framework_vs_experimental_cifar10_20260104_004842.json

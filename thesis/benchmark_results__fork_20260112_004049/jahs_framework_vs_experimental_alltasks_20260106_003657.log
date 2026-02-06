@@ -1,0 +1,40 @@
+Benchmark tasks: ['cifar10', 'fashion_mnist', 'colorectal_histology'] | budget=400 | seeds=[70, 71, 72, 73, 74, 75, 76, 77, 78, 79]
+Checkpoints: [100, 200, 400]
+Saving to: /mnt/workspace/thesis/benchmark_results/jahs_framework_vs_experimental_alltasks_20260106_003657.json
+Logging to: /mnt/workspace/thesis/benchmark_results/jahs_framework_vs_experimental_alltasks_20260106_003657.log
+
+=== TASK cifar10 ===
+
+Task cifar10 | Seed 70...
+  FW=91.79%  EXP=91.45%  -> FW (10.1s)
+
+Task cifar10 | Seed 71...
+  FW=91.48%  EXP=91.10%  -> FW (9.3s)
+
+Task cifar10 | Seed 72...
+  FW=91.62%  EXP=91.67%  -> EXP (9.2s)
+
+Task cifar10 | Seed 73...
+  FW=91.83%  EXP=91.74%  -> FW (9.7s)
+
+Task cifar10 | Seed 74...
+  FW=91.50%  EXP=91.53%  -> EXP (9.6s)
+
+Task cifar10 | Seed 75...
+  FW=91.59%  EXP=91.67%  -> EXP (8.3s)
+
+Task cifar10 | Seed 76...
+  FW=91.63%  EXP=91.54%  -> FW (9.4s)
+
+Task cifar10 | Seed 77...
+  FW=91.54%  EXP=91.72%  -> EXP (9.5s)
+
+Task cifar10 | Seed 78...
+  FW=91.82%  EXP=91.52%  -> FW (9.3s)
+
+Task cifar10 | Seed 79...
+  FW=90.91%  EXP=91.44%  -> EXP (8.0s)
+
+=== TASK fashion_mnist ===
+
+Task fashion_mnist | Seed 70...

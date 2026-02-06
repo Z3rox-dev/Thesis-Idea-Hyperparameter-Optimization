@@ -1,0 +1,181 @@
+nohup: ignoring input
+
+============================================================
+Task: cifar10
+============================================================
+
+--- Seed 0 ---
+  Running Original... done. Best: 0.962549 (11.7s)
+  Running V3-LHS... done. Best: 0.967181 (10.8s)
+
+--- Seed 1 ---
+  Running Original... done. Best: 0.972861 (11.2s)
+  Running V3-LHS... done. Best: 0.963908 (10.8s)
+
+--- Seed 2 ---
+  Running Original... done. Best: 0.975234 (11.4s)
+  Running V3-LHS... done. Best: 0.968148 (10.8s)
+
+--- Seed 3 ---
+  Running Original... done. Best: 0.958768 (11.8s)
+  Running V3-LHS... done. Best: 0.968414 (10.8s)
+
+--- Seed 4 ---
+  Running Original... done. Best: 0.972202 (11.4s)
+  Running V3-LHS... done. Best: 0.965451 (10.6s)
+
+--- Seed 5 ---
+  Running Original... done. Best: 0.972312 (11.0s)
+  Running V3-LHS... done. Best: 0.973538 (11.0s)
+
+--- Seed 6 ---
+  Running Original... done. Best: 0.957477 (11.8s)
+  Running V3-LHS... done. Best: 0.969489 (11.2s)
+
+--- Seed 7 ---
+  Running Original... done. Best: 0.966448 (11.1s)
+  Running V3-LHS... done. Best: 0.967054 (10.9s)
+
+--- Seed 8 ---
+  Running Original... done. Best: 0.960336 (11.6s)
+  Running V3-LHS... done. Best: 0.972915 (11.2s)
+
+--- Seed 9 ---
+  Running Original... done. Best: 0.964033 (11.6s)
+  Running V3-LHS... done. Best: 0.966825 (11.1s)
+
+============================================================
+Task: colorectal_histology
+============================================================
+
+--- Seed 0 ---
+  Running Original... done. Best: 0.936189 (11.4s)
+  Running V3-LHS... done. Best: 0.957757 (10.7s)
+
+--- Seed 1 ---
+  Running Original... done. Best: 0.922719 (11.4s)
+  Running V3-LHS... done. Best: 0.954669 (10.7s)
+
+--- Seed 2 ---
+  Running Original... done. Best: 0.955989 (11.6s)
+  Running V3-LHS... done. Best: 0.965722 (10.8s)
+
+--- Seed 3 ---
+  Running Original... done. Best: 0.957383 (11.2s)
+  Running V3-LHS... done. Best: 0.924900 (11.0s)
+
+--- Seed 4 ---
+  Running Original... done. Best: 0.912341 (11.6s)
+  Running V3-LHS... done. Best: 0.958868 (11.4s)
+
+--- Seed 5 ---
+  Running Original... done. Best: 0.944733 (11.5s)
+  Running V3-LHS... done. Best: 0.959088 (10.7s)
+
+--- Seed 6 ---
+  Running Original... done. Best: 0.962902 (11.4s)
+  Running V3-LHS... done. Best: 0.945629 (10.8s)
+
+--- Seed 7 ---
+  Running Original... done. Best: 0.922588 (11.4s)
+  Running V3-LHS... done. Best: 0.940138 (11.0s)
+
+--- Seed 8 ---
+  Running Original... done. Best: 0.951586 (11.7s)
+  Running V3-LHS... done. Best: 0.961005 (11.2s)
+
+--- Seed 9 ---
+  Running Original... done. Best: 0.959687 (11.6s)
+  Running V3-LHS... done. Best: 0.958367 (10.8s)
+
+============================================================
+Task: fashion_mnist
+============================================================
+
+--- Seed 0 ---
+  Running Original... done. Best: 0.944407 (11.3s)
+  Running V3-LHS... done. Best: 0.932676 (11.0s)
+
+--- Seed 1 ---
+  Running Original... done. Best: 0.894106 (12.0s)
+  Running V3-LHS... done. Best: 0.989554 (11.1s)
+
+--- Seed 2 ---
+  Running Original... done. Best: 0.972651 (11.4s)
+  Running V3-LHS... done. Best: 0.951569 (10.9s)
+
+--- Seed 3 ---
+  Running Original... done. Best: 0.948868 (11.4s)
+  Running V3-LHS... done. Best: 0.911400 (10.9s)
+
+--- Seed 4 ---
+  Running Original... done. Best: 0.960837 (11.9s)
+  Running V3-LHS... done. Best: 0.944257 (10.9s)
+
+--- Seed 5 ---
+  Running Original... done. Best: 0.959166 (11.0s)
+  Running V3-LHS... done. Best: 0.953252 (11.1s)
+
+--- Seed 6 ---
+  Running Original... done. Best: 0.944804 (11.2s)
+  Running V3-LHS... done. Best: 0.935376 (11.1s)
+
+--- Seed 7 ---
+  Running Original... done. Best: 0.942899 (11.6s)
+  Running V3-LHS... done. Best: 0.935687 (11.3s)
+
+--- Seed 8 ---
+  Running Original... done. Best: 0.948668 (11.1s)
+  Running V3-LHS... done. Best: 0.954781 (10.9s)
+
+--- Seed 9 ---
+  Running Original... done. Best: 0.960506 (11.3s)
+  Running V3-LHS... done. Best: 0.945368 (10.9s)
+
+Results saved to results/alba_v3_vs_orig/benchmark_20251229_134808.json
+
+============================================================
+SUMMARY
+============================================================
+
+cifar10:
+  Original    : 0.966222 ± 0.006190
+  V3-LHS      : 0.968292 ± 0.002874
+
+  Checkpoint comparison (V3-LHS - Original):
+      25: +0.164112 (V3 wins 7/10)
+      50: +0.062420 (V3 wins 7/10)
+     100: +0.035125 (V3 wins 6/10)
+     200: +0.006686 (V3 wins 6/10)
+     400: +0.005327 (V3 wins 7/10)
+     600: +0.002082 (V3 wins 5/10)
+     800: +0.005661 (V3 wins 8/10)
+    1000: +0.002071 (V3 wins 7/10)
+
+colorectal_histology:
+  Original    : 0.942612 ± 0.017145
+  V3-LHS      : 0.952614 ± 0.011660
+
+  Checkpoint comparison (V3-LHS - Original):
+      25: +0.182198 (V3 wins 6/10)
+      50: +0.010739 (V3 wins 6/10)
+     100: +0.035603 (V3 wins 6/10)
+     200: -0.003685 (V3 wins 6/10)
+     400: +0.001304 (V3 wins 5/10)
+     600: +0.008338 (V3 wins 6/10)
+     800: +0.009585 (V3 wins 6/10)
+    1000: +0.010003 (V3 wins 7/10)
+
+fashion_mnist:
+  Original    : 0.947691 ± 0.020019
+  V3-LHS      : 0.945392 ± 0.019109
+
+  Checkpoint comparison (V3-LHS - Original):
+      25: -0.010515 (V3 wins 6/10)
+      50: -0.085464 (V3 wins 4/10)
+     100: -0.078276 (V3 wins 3/10)
+     200: -0.040891 (V3 wins 1/10)
+     400: -0.008209 (V3 wins 2/10)
+     600: -0.014429 (V3 wins 2/10)
+     800: -0.009053 (V3 wins 4/10)
+    1000: -0.002299 (V3 wins 2/10)

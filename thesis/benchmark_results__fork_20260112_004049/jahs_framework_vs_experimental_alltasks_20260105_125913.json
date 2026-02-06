@@ -1,0 +1,169 @@
+{
+  "config": {
+    "tasks": [
+      "cifar10",
+      "fashion_mnist",
+      "colorectal_histology"
+    ],
+    "budget": 400,
+    "checkpoints": [
+      100,
+      200,
+      400
+    ],
+    "nepochs": 200,
+    "seeds": [
+      70,
+      71,
+      72,
+      73,
+      74,
+      75,
+      76,
+      77,
+      78,
+      79
+    ],
+    "timestamp": "20260105_125913"
+  },
+  "tasks": {
+    "cifar10": {
+      "framework_param_space": {},
+      "experimental": {},
+      "errors": {
+        "70": {
+          "message": "index 1 is out of bounds for axis 0 with size 1",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 224, in main\n    opt_fw.tell(cfg, (float(y), curve))\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 478, in tell\n    echo = self._echo_from_curve(curve_raw)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 324, in _echo_from_curve\n    echo = y_curve[-1] + (y_curve[-1] - y_curve[mid])\nIndexError: index 1 is out of bounds for axis 0 with size 1\n"
+        },
+        "71": {
+          "message": "index 1 is out of bounds for axis 0 with size 1",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 224, in main\n    opt_fw.tell(cfg, (float(y), curve))\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 478, in tell\n    echo = self._echo_from_curve(curve_raw)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 324, in _echo_from_curve\n    echo = y_curve[-1] + (y_curve[-1] - y_curve[mid])\nIndexError: index 1 is out of bounds for axis 0 with size 1\n"
+        },
+        "72": {
+          "message": "index 1 is out of bounds for axis 0 with size 1",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 224, in main\n    opt_fw.tell(cfg, (float(y), curve))\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 478, in tell\n    echo = self._echo_from_curve(curve_raw)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 324, in _echo_from_curve\n    echo = y_curve[-1] + (y_curve[-1] - y_curve[mid])\nIndexError: index 1 is out of bounds for axis 0 with size 1\n"
+        },
+        "73": {
+          "message": "index 1 is out of bounds for axis 0 with size 1",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 224, in main\n    opt_fw.tell(cfg, (float(y), curve))\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 478, in tell\n    echo = self._echo_from_curve(curve_raw)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 324, in _echo_from_curve\n    echo = y_curve[-1] + (y_curve[-1] - y_curve[mid])\nIndexError: index 1 is out of bounds for axis 0 with size 1\n"
+        },
+        "74": {
+          "message": "index 1 is out of bounds for axis 0 with size 1",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 224, in main\n    opt_fw.tell(cfg, (float(y), curve))\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 478, in tell\n    echo = self._echo_from_curve(curve_raw)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 324, in _echo_from_curve\n    echo = y_curve[-1] + (y_curve[-1] - y_curve[mid])\nIndexError: index 1 is out of bounds for axis 0 with size 1\n"
+        },
+        "75": {
+          "message": "index 1 is out of bounds for axis 0 with size 1",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 224, in main\n    opt_fw.tell(cfg, (float(y), curve))\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 478, in tell\n    echo = self._echo_from_curve(curve_raw)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 324, in _echo_from_curve\n    echo = y_curve[-1] + (y_curve[-1] - y_curve[mid])\nIndexError: index 1 is out of bounds for axis 0 with size 1\n"
+        },
+        "76": {
+          "message": "index 1 is out of bounds for axis 0 with size 1",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 224, in main\n    opt_fw.tell(cfg, (float(y), curve))\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 478, in tell\n    echo = self._echo_from_curve(curve_raw)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 324, in _echo_from_curve\n    echo = y_curve[-1] + (y_curve[-1] - y_curve[mid])\nIndexError: index 1 is out of bounds for axis 0 with size 1\n"
+        },
+        "77": {
+          "message": "index 1 is out of bounds for axis 0 with size 1",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 224, in main\n    opt_fw.tell(cfg, (float(y), curve))\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 478, in tell\n    echo = self._echo_from_curve(curve_raw)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 324, in _echo_from_curve\n    echo = y_curve[-1] + (y_curve[-1] - y_curve[mid])\nIndexError: index 1 is out of bounds for axis 0 with size 1\n"
+        },
+        "78": {
+          "message": "index 1 is out of bounds for axis 0 with size 1",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 224, in main\n    opt_fw.tell(cfg, (float(y), curve))\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 478, in tell\n    echo = self._echo_from_curve(curve_raw)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 324, in _echo_from_curve\n    echo = y_curve[-1] + (y_curve[-1] - y_curve[mid])\nIndexError: index 1 is out of bounds for axis 0 with size 1\n"
+        },
+        "79": {
+          "message": "index 1 is out of bounds for axis 0 with size 1",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 224, in main\n    opt_fw.tell(cfg, (float(y), curve))\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 478, in tell\n    echo = self._echo_from_curve(curve_raw)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 324, in _echo_from_curve\n    echo = y_curve[-1] + (y_curve[-1] - y_curve[mid])\nIndexError: index 1 is out of bounds for axis 0 with size 1\n"
+        }
+      }
+    },
+    "fashion_mnist": {
+      "framework_param_space": {},
+      "experimental": {},
+      "errors": {
+        "70": {
+          "message": "index 1 is out of bounds for axis 0 with size 1",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 224, in main\n    opt_fw.tell(cfg, (float(y), curve))\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 478, in tell\n    echo = self._echo_from_curve(curve_raw)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 324, in _echo_from_curve\n    echo = y_curve[-1] + (y_curve[-1] - y_curve[mid])\nIndexError: index 1 is out of bounds for axis 0 with size 1\n"
+        },
+        "71": {
+          "message": "index 1 is out of bounds for axis 0 with size 1",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 224, in main\n    opt_fw.tell(cfg, (float(y), curve))\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 478, in tell\n    echo = self._echo_from_curve(curve_raw)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 324, in _echo_from_curve\n    echo = y_curve[-1] + (y_curve[-1] - y_curve[mid])\nIndexError: index 1 is out of bounds for axis 0 with size 1\n"
+        },
+        "72": {
+          "message": "index 1 is out of bounds for axis 0 with size 1",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 224, in main\n    opt_fw.tell(cfg, (float(y), curve))\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 478, in tell\n    echo = self._echo_from_curve(curve_raw)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 324, in _echo_from_curve\n    echo = y_curve[-1] + (y_curve[-1] - y_curve[mid])\nIndexError: index 1 is out of bounds for axis 0 with size 1\n"
+        },
+        "73": {
+          "message": "index 1 is out of bounds for axis 0 with size 1",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 224, in main\n    opt_fw.tell(cfg, (float(y), curve))\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 478, in tell\n    echo = self._echo_from_curve(curve_raw)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 324, in _echo_from_curve\n    echo = y_curve[-1] + (y_curve[-1] - y_curve[mid])\nIndexError: index 1 is out of bounds for axis 0 with size 1\n"
+        },
+        "74": {
+          "message": "index 1 is out of bounds for axis 0 with size 1",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 224, in main\n    opt_fw.tell(cfg, (float(y), curve))\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 478, in tell\n    echo = self._echo_from_curve(curve_raw)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 324, in _echo_from_curve\n    echo = y_curve[-1] + (y_curve[-1] - y_curve[mid])\nIndexError: index 1 is out of bounds for axis 0 with size 1\n"
+        },
+        "75": {
+          "message": "index 1 is out of bounds for axis 0 with size 1",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 224, in main\n    opt_fw.tell(cfg, (float(y), curve))\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 478, in tell\n    echo = self._echo_from_curve(curve_raw)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 324, in _echo_from_curve\n    echo = y_curve[-1] + (y_curve[-1] - y_curve[mid])\nIndexError: index 1 is out of bounds for axis 0 with size 1\n"
+        },
+        "76": {
+          "message": "index 1 is out of bounds for axis 0 with size 1",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 224, in main\n    opt_fw.tell(cfg, (float(y), curve))\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 478, in tell\n    echo = self._echo_from_curve(curve_raw)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 324, in _echo_from_curve\n    echo = y_curve[-1] + (y_curve[-1] - y_curve[mid])\nIndexError: index 1 is out of bounds for axis 0 with size 1\n"
+        },
+        "77": {
+          "message": "index 1 is out of bounds for axis 0 with size 1",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 224, in main\n    opt_fw.tell(cfg, (float(y), curve))\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 478, in tell\n    echo = self._echo_from_curve(curve_raw)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 324, in _echo_from_curve\n    echo = y_curve[-1] + (y_curve[-1] - y_curve[mid])\nIndexError: index 1 is out of bounds for axis 0 with size 1\n"
+        },
+        "78": {
+          "message": "index 1 is out of bounds for axis 0 with size 1",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 224, in main\n    opt_fw.tell(cfg, (float(y), curve))\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 478, in tell\n    echo = self._echo_from_curve(curve_raw)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 324, in _echo_from_curve\n    echo = y_curve[-1] + (y_curve[-1] - y_curve[mid])\nIndexError: index 1 is out of bounds for axis 0 with size 1\n"
+        },
+        "79": {
+          "message": "index 1 is out of bounds for axis 0 with size 1",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 224, in main\n    opt_fw.tell(cfg, (float(y), curve))\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 478, in tell\n    echo = self._echo_from_curve(curve_raw)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 324, in _echo_from_curve\n    echo = y_curve[-1] + (y_curve[-1] - y_curve[mid])\nIndexError: index 1 is out of bounds for axis 0 with size 1\n"
+        }
+      }
+    },
+    "colorectal_histology": {
+      "framework_param_space": {},
+      "experimental": {},
+      "errors": {
+        "70": {
+          "message": "index 1 is out of bounds for axis 0 with size 1",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 224, in main\n    opt_fw.tell(cfg, (float(y), curve))\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 478, in tell\n    echo = self._echo_from_curve(curve_raw)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 324, in _echo_from_curve\n    echo = y_curve[-1] + (y_curve[-1] - y_curve[mid])\nIndexError: index 1 is out of bounds for axis 0 with size 1\n"
+        },
+        "71": {
+          "message": "index 1 is out of bounds for axis 0 with size 1",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 224, in main\n    opt_fw.tell(cfg, (float(y), curve))\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 478, in tell\n    echo = self._echo_from_curve(curve_raw)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 324, in _echo_from_curve\n    echo = y_curve[-1] + (y_curve[-1] - y_curve[mid])\nIndexError: index 1 is out of bounds for axis 0 with size 1\n"
+        },
+        "72": {
+          "message": "index 1 is out of bounds for axis 0 with size 1",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 224, in main\n    opt_fw.tell(cfg, (float(y), curve))\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 478, in tell\n    echo = self._echo_from_curve(curve_raw)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 324, in _echo_from_curve\n    echo = y_curve[-1] + (y_curve[-1] - y_curve[mid])\nIndexError: index 1 is out of bounds for axis 0 with size 1\n"
+        },
+        "73": {
+          "message": "index 1 is out of bounds for axis 0 with size 1",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 224, in main\n    opt_fw.tell(cfg, (float(y), curve))\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 478, in tell\n    echo = self._echo_from_curve(curve_raw)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 324, in _echo_from_curve\n    echo = y_curve[-1] + (y_curve[-1] - y_curve[mid])\nIndexError: index 1 is out of bounds for axis 0 with size 1\n"
+        },
+        "74": {
+          "message": "index 1 is out of bounds for axis 0 with size 1",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 224, in main\n    opt_fw.tell(cfg, (float(y), curve))\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 478, in tell\n    echo = self._echo_from_curve(curve_raw)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 324, in _echo_from_curve\n    echo = y_curve[-1] + (y_curve[-1] - y_curve[mid])\nIndexError: index 1 is out of bounds for axis 0 with size 1\n"
+        },
+        "75": {
+          "message": "index 1 is out of bounds for axis 0 with size 1",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 224, in main\n    opt_fw.tell(cfg, (float(y), curve))\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 478, in tell\n    echo = self._echo_from_curve(curve_raw)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 324, in _echo_from_curve\n    echo = y_curve[-1] + (y_curve[-1] - y_curve[mid])\nIndexError: index 1 is out of bounds for axis 0 with size 1\n"
+        },
+        "76": {
+          "message": "index 1 is out of bounds for axis 0 with size 1",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 224, in main\n    opt_fw.tell(cfg, (float(y), curve))\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 478, in tell\n    echo = self._echo_from_curve(curve_raw)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 324, in _echo_from_curve\n    echo = y_curve[-1] + (y_curve[-1] - y_curve[mid])\nIndexError: index 1 is out of bounds for axis 0 with size 1\n"
+        },
+        "77": {
+          "message": "index 1 is out of bounds for axis 0 with size 1",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 224, in main\n    opt_fw.tell(cfg, (float(y), curve))\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 478, in tell\n    echo = self._echo_from_curve(curve_raw)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 324, in _echo_from_curve\n    echo = y_curve[-1] + (y_curve[-1] - y_curve[mid])\nIndexError: index 1 is out of bounds for axis 0 with size 1\n"
+        },
+        "78": {
+          "message": "index 1 is out of bounds for axis 0 with size 1",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 224, in main\n    opt_fw.tell(cfg, (float(y), curve))\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 478, in tell\n    echo = self._echo_from_curve(curve_raw)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 324, in _echo_from_curve\n    echo = y_curve[-1] + (y_curve[-1] - y_curve[mid])\nIndexError: index 1 is out of bounds for axis 0 with size 1\n"
+        },
+        "79": {
+          "message": "index 1 is out of bounds for axis 0 with size 1",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 224, in main\n    opt_fw.tell(cfg, (float(y), curve))\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 478, in tell\n    echo = self._echo_from_curve(curve_raw)\n  File \"/mnt/workspace/thesis/alba_framework/optimizer.py\", line 324, in _echo_from_curve\n    echo = y_curve[-1] + (y_curve[-1] - y_curve[mid])\nIndexError: index 1 is out of bounds for axis 0 with size 1\n"
+        }
+      }
+    }
+  }
+}

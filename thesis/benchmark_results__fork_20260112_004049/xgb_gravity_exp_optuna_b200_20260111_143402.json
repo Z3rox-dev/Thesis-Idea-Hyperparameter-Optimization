@@ -1,0 +1,85 @@
+{
+  "benchmark": "xgboost_tabular",
+  "methods": {
+    "alba_experimental": {
+      "kind": "ALBA_V1_experimental"
+    },
+    "optuna": {
+      "kind": "optuna_TPE"
+    },
+    "alba_framework_gravity": {
+      "kind": "alba_framework_gravity"
+    }
+  },
+  "config": {
+    "budget": 200,
+    "seeds": [
+      70,
+      71,
+      72,
+      73
+    ],
+    "use_gpu": false,
+    "xgb_dim": 20,
+    "task": "XGBoost tabular classification (20D continuous)"
+  },
+  "tasks": {
+    "xgboost_tabular": {
+      "seeds": [
+        {
+          "seed": 70,
+          "alba_experimental": 0.95,
+          "optuna": 0.9475,
+          "alba_framework_gravity": 0.9475,
+          "time_exp": 20.634972095489502,
+          "time_opt": 14.950571537017822,
+          "time_grav": 22.1166672706604
+        },
+        {
+          "seed": 71,
+          "alba_experimental": 0.945,
+          "optuna": 0.95,
+          "alba_framework_gravity": 0.9475,
+          "time_exp": 27.969647884368896,
+          "time_opt": 11.460806131362915,
+          "time_grav": 26.90996026992798
+        },
+        {
+          "seed": 72,
+          "alba_experimental": 0.95,
+          "optuna": 0.9425,
+          "alba_framework_gravity": 0.94,
+          "time_exp": 22.82508659362793,
+          "time_opt": 16.917540311813354,
+          "time_grav": 21.123152017593384
+        },
+        {
+          "seed": 73,
+          "alba_experimental": 0.945,
+          "optuna": 0.945,
+          "alba_framework_gravity": 0.945,
+          "time_exp": 23.191120862960815,
+          "time_opt": 14.982473850250244,
+          "time_grav": 22.692627429962158
+        }
+      ],
+      "summary": {
+        "alba_experimental": {
+          "mean": 0.9474999999999999,
+          "std": 0.0025000000000000022,
+          "wins": 3
+        },
+        "optuna": {
+          "mean": 0.9462499999999999,
+          "std": 0.002795084971874727,
+          "wins": 2
+        },
+        "alba_framework_gravity": {
+          "mean": 0.945,
+          "std": 0.003061862178478998,
+          "wins": 1
+        }
+      }
+    }
+  }
+}

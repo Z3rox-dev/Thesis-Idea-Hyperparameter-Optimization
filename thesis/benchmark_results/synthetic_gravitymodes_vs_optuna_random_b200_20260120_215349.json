@@ -1,0 +1,236 @@
+{
+  "benchmark": "synthetic_gravitymodes_vs_optuna_random",
+  "methods": {
+    "alba_framework_gravity": {
+      "kind": "alba_framework_gravity",
+      "cube_gravity": true,
+      "gravity_modes": [
+        "potential",
+        "surrogate_gradient"
+      ]
+    },
+    "optuna_tpe": {
+      "kind": "optuna_TPE",
+      "sampler": "tpe",
+      "local_gravity": {
+        "locality_weight": 0.5,
+        "locality_sigma": 0.2,
+        "adaptive": true
+      }
+    },
+    "random": {
+      "kind": "random_search"
+    }
+  },
+  "config": {
+    "budget": 200,
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "dims": [
+      10
+    ],
+    "funcs": [
+      "sphere",
+      "rastrigin",
+      "ackley",
+      "levy",
+      "rosenbrock"
+    ],
+    "gravity_modes": [
+      "potential",
+      "surrogate_gradient"
+    ]
+  },
+  "tasks": {
+    "sphere_10D": [
+      {
+        "seed": 0,
+        "alba_gravity_potential": 7.487684349212819,
+        "alba_gravity_surrogate_gradient": 32.54429301825046,
+        "random": 14.325347328513885,
+        "optuna_tpe": 7.09521898198077
+      },
+      {
+        "seed": 1,
+        "alba_gravity_potential": 8.759220187920674,
+        "alba_gravity_surrogate_gradient": 8.398297697885667,
+        "random": 28.617758212407775,
+        "optuna_tpe": 7.373399535699729
+      },
+      {
+        "seed": 2,
+        "alba_gravity_potential": 14.794778106361017,
+        "alba_gravity_surrogate_gradient": 21.969197947997017,
+        "random": 26.816096702667206,
+        "optuna_tpe": 7.220073952692657
+      },
+      {
+        "seed": 3,
+        "alba_gravity_potential": 7.134688257269048,
+        "alba_gravity_surrogate_gradient": 12.278507492124461,
+        "random": 32.786641284388786,
+        "optuna_tpe": 3.241427332111775
+      },
+      {
+        "seed": 4,
+        "alba_gravity_potential": 7.58270859168608,
+        "alba_gravity_surrogate_gradient": 8.258073421791936,
+        "random": 37.026806625437615,
+        "optuna_tpe": 7.828624628911422
+      }
+    ],
+    "rastrigin_10D": [
+      {
+        "seed": 0,
+        "alba_gravity_potential": 80.41104858500316,
+        "alba_gravity_surrogate_gradient": 85.39503757105226,
+        "random": 96.43005529669438,
+        "optuna_tpe": 61.15638492761098
+      },
+      {
+        "seed": 1,
+        "alba_gravity_potential": 83.93994662998398,
+        "alba_gravity_surrogate_gradient": 100.56578323224944,
+        "random": 103.41625326285988,
+        "optuna_tpe": 97.89964884978568
+      },
+      {
+        "seed": 2,
+        "alba_gravity_potential": 94.43567194511917,
+        "alba_gravity_surrogate_gradient": 94.43567194511917,
+        "random": 109.77967823847902,
+        "optuna_tpe": 74.02322370596866
+      },
+      {
+        "seed": 3,
+        "alba_gravity_potential": 78.10514708803672,
+        "alba_gravity_surrogate_gradient": 83.13747979428335,
+        "random": 112.32634018784395,
+        "optuna_tpe": 89.65349076042385
+      },
+      {
+        "seed": 4,
+        "alba_gravity_potential": 69.29679140625903,
+        "alba_gravity_surrogate_gradient": 87.46494030589665,
+        "random": 90.674025878956,
+        "optuna_tpe": 98.72018840050289
+      }
+    ],
+    "ackley_10D": [
+      {
+        "seed": 0,
+        "alba_gravity_potential": 4.5405420742757165,
+        "alba_gravity_surrogate_gradient": 5.5064116366790685,
+        "random": 6.039911393114032,
+        "optuna_tpe": 4.578642750587779
+      },
+      {
+        "seed": 1,
+        "alba_gravity_potential": 3.6753300118968295,
+        "alba_gravity_surrogate_gradient": 4.1460261766272595,
+        "random": 7.410520852155612,
+        "optuna_tpe": 5.186783243662045
+      },
+      {
+        "seed": 2,
+        "alba_gravity_potential": 4.252532247592438,
+        "alba_gravity_surrogate_gradient": 4.916969329403798,
+        "random": 7.490353915846207,
+        "optuna_tpe": 5.331424297902917
+      },
+      {
+        "seed": 3,
+        "alba_gravity_potential": 5.3938740365206215,
+        "alba_gravity_surrogate_gradient": 3.9672908709721857,
+        "random": 7.847454149213997,
+        "optuna_tpe": 5.494380122500925
+      },
+      {
+        "seed": 4,
+        "alba_gravity_potential": 6.168977558874779,
+        "alba_gravity_surrogate_gradient": 4.880951351567894,
+        "random": 7.648974962359302,
+        "optuna_tpe": 5.484820100311982
+      }
+    ],
+    "levy_10D": [
+      {
+        "seed": 0,
+        "alba_gravity_potential": 12.342451983986603,
+        "alba_gravity_surrogate_gradient": 12.898106202230979,
+        "random": 25.93927547666555,
+        "optuna_tpe": 9.907013758214584
+      },
+      {
+        "seed": 1,
+        "alba_gravity_potential": 19.144919217542913,
+        "alba_gravity_surrogate_gradient": 23.06709444128262,
+        "random": 27.714654998373156,
+        "optuna_tpe": 6.6608332899283225
+      },
+      {
+        "seed": 2,
+        "alba_gravity_potential": 15.39354408125218,
+        "alba_gravity_surrogate_gradient": 14.8528044129613,
+        "random": 37.08336503820208,
+        "optuna_tpe": 5.971197908691212
+      },
+      {
+        "seed": 3,
+        "alba_gravity_potential": 19.501389090248036,
+        "alba_gravity_surrogate_gradient": 19.501389090248036,
+        "random": 11.257781684523914,
+        "optuna_tpe": 12.120536672074198
+      },
+      {
+        "seed": 4,
+        "alba_gravity_potential": 2.8838883984593164,
+        "alba_gravity_surrogate_gradient": 16.14902743612211,
+        "random": 30.044326604236897,
+        "optuna_tpe": 6.690967000683524
+      }
+    ],
+    "rosenbrock_10D": [
+      {
+        "seed": 0,
+        "alba_gravity_potential": 12767.770979925295,
+        "alba_gravity_surrogate_gradient": 27186.63571199155,
+        "random": 46122.2641464844,
+        "optuna_tpe": 2915.77622603685
+      },
+      {
+        "seed": 1,
+        "alba_gravity_potential": 5799.6944774156145,
+        "alba_gravity_surrogate_gradient": 11450.19466625405,
+        "random": 68285.92964009293,
+        "optuna_tpe": 6245.72343846512
+      },
+      {
+        "seed": 2,
+        "alba_gravity_potential": 10484.842218054444,
+        "alba_gravity_surrogate_gradient": 28082.591561440782,
+        "random": 14069.33031163269,
+        "optuna_tpe": 7270.525512885328
+      },
+      {
+        "seed": 3,
+        "alba_gravity_potential": 4920.7966791805275,
+        "alba_gravity_surrogate_gradient": 27222.798012748503,
+        "random": 78303.23777872049,
+        "optuna_tpe": 2237.0067460338337
+      },
+      {
+        "seed": 4,
+        "alba_gravity_potential": 6553.209732558174,
+        "alba_gravity_surrogate_gradient": 16121.411233772576,
+        "random": 48677.012949908705,
+        "optuna_tpe": 1898.7063535254247
+      }
+    ]
+  }
+}

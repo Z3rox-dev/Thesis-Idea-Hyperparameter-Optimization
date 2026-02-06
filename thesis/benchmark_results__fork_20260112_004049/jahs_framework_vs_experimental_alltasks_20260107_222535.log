@@ -1,0 +1,33 @@
+Benchmark tasks: ['cifar10', 'fashion_mnist'] | budget=60 | seeds=[70, 71, 72]
+Checkpoints: [30, 60]
+Framework config: grid_bins=8 grid_batch_size=512 grid_batches=4 grid_sampling=grid_random grid_jitter=True grid_penalty_lambda=0.1 heatmap_ucb_beta=1.0 heatmap_ucb_explore_prob=0.25 heatmap_ucb_temperature=1.0
+Saving to: /mnt/workspace/thesis/benchmark_results/jahs_framework_vs_experimental_alltasks_20260107_222535.json
+Logging to: /mnt/workspace/thesis/benchmark_results/jahs_framework_vs_experimental_alltasks_20260107_222535.log
+
+=== TASK cifar10 ===
+
+Task cifar10 | Seed 70...
+  FW=90.27%  EXP=91.09%  -> EXP (5.2s)
+
+Task cifar10 | Seed 71...
+  FW=91.04%  EXP=90.46%  -> FW (4.4s)
+
+Task cifar10 | Seed 72...
+  FW=89.01%  EXP=89.75%  -> EXP (4.7s)
+
+=== TASK fashion_mnist ===
+
+Task fashion_mnist | Seed 70...
+  FW=95.26%  EXP=94.87%  -> FW (4.2s)
+
+Task fashion_mnist | Seed 71...
+  FW=94.96%  EXP=94.70%  -> FW (4.4s)
+
+Task fashion_mnist | Seed 72...
+  FW=94.89%  EXP=95.12%  -> EXP (4.6s)
+
+=== SUMMARY (final checkpoint) ===
+cifar10: FW mean=90.11% std=0.83 | EXP mean=90.44% std=0.55 | wins FW=1 ties=0
+fashion_mnist: FW mean=95.04% std=0.16 | EXP mean=94.90% std=0.17 | wins FW=2 ties=0
+
+Saved: /mnt/workspace/thesis/benchmark_results/jahs_framework_vs_experimental_alltasks_20260107_222535.json

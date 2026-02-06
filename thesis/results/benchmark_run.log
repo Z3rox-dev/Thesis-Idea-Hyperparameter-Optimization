@@ -1,0 +1,205 @@
+nohup: ignoring input
+================================================================================
+BENCHMARK: ORIGINAL vs FIXED
+================================================================================
+Task IDs: [31, 53, 3917, 9952, 10101, 146818, 146821, 146822]
+Seeds: 100 (from 0)
+Budget: 600
+Log file: /mnt/workspace/thesis/results/benchmark_orig_vs_fixed_20251228_114049.txt
+JSON file: /mnt/workspace/thesis/results/benchmark_orig_vs_fixed_20251228_114049.json
+
+================================================================================
+TASK 31 (credit-g)
+================================================================================
+  Progress: 10/100 seeds | Elapsed: 38s | ETA: 344s
+  Progress: 20/100 seeds | Elapsed: 80s | ETA: 320s
+  Progress: 30/100 seeds | Elapsed: 121s | ETA: 281s
+  Progress: 40/100 seeds | Elapsed: 161s | ETA: 242s
+  Progress: 50/100 seeds | Elapsed: 203s | ETA: 203s
+  Progress: 60/100 seeds | Elapsed: 243s | ETA: 162s
+  Progress: 70/100 seeds | Elapsed: 283s | ETA: 121s
+  Progress: 80/100 seeds | Elapsed: 324s | ETA: 81s
+  Progress: 90/100 seeds | Elapsed: 365s | ETA: 41s
+  Progress: 100/100 seeds | Elapsed: 406s | ETA: 0s
+
+  RESULTS for credit-g:
+    ORIGINAL: 0.092256 ± 0.001469 (min=0.089562, max=0.096296)
+    FIXED:    0.092040 ± 0.001428 (min=0.089562, max=0.094949)
+    HEAD-TO-HEAD: FIXED wins 44, ORIGINAL wins 43, ties 13
+    WINNER: FIXED
+    Improvement: 0.23%
+    Time: 410.1s
+
+================================================================================
+TASK 53 (vehicle)
+================================================================================
+  Progress: 10/100 seeds | Elapsed: 38s | ETA: 341s
+  Progress: 20/100 seeds | Elapsed: 80s | ETA: 320s
+  Progress: 30/100 seeds | Elapsed: 122s | ETA: 284s
+  Progress: 40/100 seeds | Elapsed: 163s | ETA: 244s
+  Progress: 50/100 seeds | Elapsed: 205s | ETA: 205s
+  Progress: 60/100 seeds | Elapsed: 246s | ETA: 164s
+  Progress: 70/100 seeds | Elapsed: 287s | ETA: 123s
+  Progress: 80/100 seeds | Elapsed: 328s | ETA: 82s
+  Progress: 90/100 seeds | Elapsed: 368s | ETA: 41s
+  Progress: 100/100 seeds | Elapsed: 408s | ETA: 0s
+
+  RESULTS for vehicle:
+    ORIGINAL: 0.049778 ± 0.000770 (min=0.049206, max=0.052381)
+    FIXED:    0.049611 ± 0.000589 (min=0.049206, max=0.051587)
+    HEAD-TO-HEAD: FIXED wins 30, ORIGINAL wins 23, ties 47
+    WINNER: FIXED
+    Improvement: 0.33%
+    Time: 412.4s
+
+================================================================================
+TASK 3917 (kc1)
+================================================================================
+  Progress: 10/100 seeds | Elapsed: 37s | ETA: 337s
+  Progress: 20/100 seeds | Elapsed: 78s | ETA: 312s
+  Progress: 30/100 seeds | Elapsed: 118s | ETA: 276s
+  Progress: 40/100 seeds | Elapsed: 159s | ETA: 238s
+  Progress: 50/100 seeds | Elapsed: 199s | ETA: 199s
+  Progress: 60/100 seeds | Elapsed: 241s | ETA: 160s
+  Progress: 70/100 seeds | Elapsed: 282s | ETA: 121s
+  Progress: 80/100 seeds | Elapsed: 323s | ETA: 81s
+  Progress: 90/100 seeds | Elapsed: 364s | ETA: 40s
+  Progress: 100/100 seeds | Elapsed: 404s | ETA: 0s
+
+  RESULTS for kc1:
+    ORIGINAL: 0.068411 ± 0.000757 (min=0.066348, max=0.070494)
+    FIXED:    0.068236 ± 0.000757 (min=0.066348, max=0.069856)
+    HEAD-TO-HEAD: FIXED wins 42, ORIGINAL wins 42, ties 16
+    WINNER: FIXED
+    Improvement: 0.26%
+    Time: 408.2s
+
+================================================================================
+TASK 9952 (phoneme)
+================================================================================
+  Progress: 10/100 seeds | Elapsed: 37s | ETA: 335s
+  Progress: 20/100 seeds | Elapsed: 78s | ETA: 311s
+  Progress: 30/100 seeds | Elapsed: 118s | ETA: 276s
+  Progress: 40/100 seeds | Elapsed: 159s | ETA: 238s
+  Progress: 50/100 seeds | Elapsed: 199s | ETA: 199s
+  Progress: 60/100 seeds | Elapsed: 241s | ETA: 161s
+  Progress: 70/100 seeds | Elapsed: 282s | ETA: 121s
+  Progress: 80/100 seeds | Elapsed: 323s | ETA: 81s
+  Progress: 90/100 seeds | Elapsed: 363s | ETA: 40s
+  Progress: 100/100 seeds | Elapsed: 404s | ETA: 0s
+
+  RESULTS for phoneme:
+    ORIGINAL: 0.044897 ± 0.000857 (min=0.043738, max=0.047975)
+    FIXED:    0.044692 ± 0.000754 (min=0.043738, max=0.045981)
+    HEAD-TO-HEAD: FIXED wins 46, ORIGINAL wins 32, ties 22
+    WINNER: FIXED
+    Improvement: 0.46%
+    Time: 408.1s
+
+================================================================================
+TASK 10101 (blood-transfusion)
+================================================================================
+  Progress: 10/100 seeds | Elapsed: 38s | ETA: 345s
+  Progress: 20/100 seeds | Elapsed: 80s | ETA: 319s
+  Progress: 30/100 seeds | Elapsed: 120s | ETA: 281s
+  Progress: 40/100 seeds | Elapsed: 161s | ETA: 241s
+  Progress: 50/100 seeds | Elapsed: 201s | ETA: 201s
+  Progress: 60/100 seeds | Elapsed: 242s | ETA: 161s
+  Progress: 70/100 seeds | Elapsed: 282s | ETA: 121s
+  Progress: 80/100 seeds | Elapsed: 324s | ETA: 81s
+  Progress: 90/100 seeds | Elapsed: 365s | ETA: 41s
+  Progress: 100/100 seeds | Elapsed: 405s | ETA: 0s
+
+  RESULTS for blood-transfusion:
+    ORIGINAL: 0.170170 ± 0.002500 (min=0.168610, max=0.179372)
+    FIXED:    0.170081 ± 0.002344 (min=0.168610, max=0.178475)
+    HEAD-TO-HEAD: FIXED wins 29, ORIGINAL wins 27, ties 44
+    WINNER: FIXED
+    Improvement: 0.05%
+    Time: 409.6s
+
+================================================================================
+TASK 146818 (Australian)
+================================================================================
+  Progress: 10/100 seeds | Elapsed: 38s | ETA: 341s
+  Progress: 20/100 seeds | Elapsed: 79s | ETA: 316s
+  Progress: 30/100 seeds | Elapsed: 120s | ETA: 280s
+  Progress: 40/100 seeds | Elapsed: 161s | ETA: 241s
+  Progress: 50/100 seeds | Elapsed: 202s | ETA: 202s
+  Progress: 60/100 seeds | Elapsed: 242s | ETA: 161s
+  Progress: 70/100 seeds | Elapsed: 282s | ETA: 121s
+  Progress: 80/100 seeds | Elapsed: 322s | ETA: 81s
+  Progress: 90/100 seeds | Elapsed: 363s | ETA: 40s
+  Progress: 100/100 seeds | Elapsed: 403s | ETA: 0s
+
+  RESULTS for Australian:
+    ORIGINAL: 0.056400 ± 0.001350 (min=0.054634, max=0.058537)
+    FIXED:    0.056780 ± 0.001294 (min=0.054634, max=0.058537)
+    HEAD-TO-HEAD: FIXED wins 26, ORIGINAL wins 43, ties 31
+    WINNER: ORIGINAL
+    Time: 406.7s
+
+================================================================================
+TASK 146821 (car)
+================================================================================
+  Progress: 10/100 seeds | Elapsed: 38s | ETA: 341s
+  Progress: 20/100 seeds | Elapsed: 79s | ETA: 316s
+  Progress: 30/100 seeds | Elapsed: 120s | ETA: 281s
+  Progress: 40/100 seeds | Elapsed: 162s | ETA: 242s
+  Progress: 50/100 seeds | Elapsed: 202s | ETA: 202s
+  Progress: 60/100 seeds | Elapsed: 243s | ETA: 162s
+  Progress: 70/100 seeds | Elapsed: 283s | ETA: 121s
+  Progress: 80/100 seeds | Elapsed: 323s | ETA: 81s
+  Progress: 90/100 seeds | Elapsed: 363s | ETA: 40s
+  Progress: 100/100 seeds | Elapsed: 403s | ETA: 0s
+
+  RESULTS for car:
+    ORIGINAL: 0.000070 ± 0.000149 (min=0.000000, max=0.000389)
+    FIXED:    0.000078 ± 0.000165 (min=0.000000, max=0.000778)
+    HEAD-TO-HEAD: FIXED wins 16, ORIGINAL wins 17, ties 67
+    WINNER: ORIGINAL
+    Time: 407.4s
+
+================================================================================
+TASK 146822 (segment)
+================================================================================
+  Progress: 10/100 seeds | Elapsed: 38s | ETA: 344s
+  Progress: 20/100 seeds | Elapsed: 80s | ETA: 320s
+  Progress: 30/100 seeds | Elapsed: 122s | ETA: 284s
+  Progress: 40/100 seeds | Elapsed: 163s | ETA: 244s
+  Progress: 50/100 seeds | Elapsed: 204s | ETA: 204s
+  Progress: 60/100 seeds | Elapsed: 244s | ETA: 163s
+  Progress: 70/100 seeds | Elapsed: 285s | ETA: 122s
+  Progress: 80/100 seeds | Elapsed: 325s | ETA: 81s
+  Progress: 90/100 seeds | Elapsed: 366s | ETA: 41s
+  Progress: 100/100 seeds | Elapsed: 406s | ETA: 0s
+
+  RESULTS for segment:
+    ORIGINAL: 0.031735 ± 0.000520 (min=0.031441, max=0.034352)
+    FIXED:    0.031744 ± 0.000653 (min=0.031441, max=0.035226)
+    HEAD-TO-HEAD: FIXED wins 31, ORIGINAL wins 30, ties 39
+    WINNER: ORIGINAL
+    Time: 410.4s
+
+================================================================================
+FINAL SUMMARY
+================================================================================
+credit-g            : ORIG=0.092256 vs FIXED=0.092040 | Winner: FIXED    | H2H: F44-O43-T13
+vehicle             : ORIG=0.049778 vs FIXED=0.049611 | Winner: FIXED    | H2H: F30-O23-T47
+kc1                 : ORIG=0.068411 vs FIXED=0.068236 | Winner: FIXED    | H2H: F42-O42-T16
+phoneme             : ORIG=0.044897 vs FIXED=0.044692 | Winner: FIXED    | H2H: F46-O32-T22
+blood-transfusion   : ORIG=0.170170 vs FIXED=0.170081 | Winner: FIXED    | H2H: F29-O27-T44
+Australian          : ORIG=0.056400 vs FIXED=0.056780 | Winner: ORIGINAL | H2H: F26-O43-T31
+car                 : ORIG=0.000070 vs FIXED=0.000078 | Winner: ORIGINAL | H2H: F16-O17-T67
+segment             : ORIG=0.031735 vs FIXED=0.031744 | Winner: ORIGINAL | H2H: F31-O30-T39
+
+TOTAL HEAD-TO-HEAD across all tasks:
+  FIXED wins: 264
+  ORIGINAL wins: 257
+  Ties: 279
+
+Total time: 3322.4s (55.4min)
+
+Results saved to:
+  /mnt/workspace/thesis/results/benchmark_orig_vs_fixed_20251228_114049.txt
+  /mnt/workspace/thesis/results/benchmark_orig_vs_fixed_20251228_114049.json

@@ -1,0 +1,105 @@
+nohup: ignoring input
+================================================================================
+JAHS-BENCH-201 BENCHMARK
+================================================================================
+Task: cifar10
+Evaluations: 200
+Seeds: 10 (starting from 0)
+Optimizers: ['Random', 'Optuna_TPE', 'TuRBO', 'HPO_v5s_Fixed']
+================================================================================
+
+Initializing JAHS-Bench-201...
+Config space dimension: 13
+
+============================================================
+Running Random...
+============================================================
+  Seed 0: error=0.104199, time=0.5s
+  Seed 1: error=0.086173, time=0.5s
+  Seed 2: error=0.096518, time=0.5s
+  Seed 3: error=0.107195, time=0.5s
+  Seed 4: error=0.115630, time=0.5s
+  Seed 5: error=0.093940, time=0.5s
+  Seed 6: error=0.107188, time=0.5s
+  Seed 7: error=0.096453, time=0.5s
+  Seed 8: error=0.099421, time=0.5s
+  Seed 9: error=0.117344, time=0.5s
+
+Random Summary:
+  Mean error: 0.102406 ± 0.009280
+  Min/Max: 0.086173 / 0.117344
+
+============================================================
+Running Optuna_TPE...
+============================================================
+  Seed 0: error=0.085827, time=1.7s
+  Seed 1: error=0.094113, time=1.7s
+  Seed 2: error=0.084811, time=1.7s
+  Seed 3: error=0.087387, time=1.7s
+  Seed 4: error=0.084847, time=1.7s
+  Seed 5: error=0.087674, time=1.7s
+  Seed 6: error=0.088365, time=1.7s
+  Seed 7: error=0.095512, time=1.7s
+  Seed 8: error=0.085291, time=1.7s
+  Seed 9: error=0.084690, time=1.7s
+
+Optuna_TPE Summary:
+  Mean error: 0.087852 ± 0.003706
+  Min/Max: 0.084690 / 0.095512
+
+============================================================
+Running TuRBO...
+============================================================
+  Seed 0: error=0.095267, time=61.3s
+  Seed 1: error=0.097669, time=93.1s
+  Seed 2: error=0.090049, time=62.7s
+  Seed 3: error=0.086118, time=64.3s
+  Seed 4: error=0.085886, time=47.3s
+  Seed 5: error=0.123421, time=78.3s
+  Seed 6: error=0.090551, time=73.4s
+  Seed 7: error=0.096017, time=78.0s
+  Seed 8: error=0.085955, time=77.7s
+  Seed 9: error=0.088996, time=56.5s
+
+TuRBO Summary:
+  Mean error: 0.093993 ± 0.010630
+  Min/Max: 0.085886 / 0.123421
+
+============================================================
+Running HPO_v5s_Fixed...
+============================================================
+  Seed 0: error=0.107132, time=1.2s
+  Seed 1: error=0.085600, time=1.2s
+  Seed 2: error=0.089608, time=1.2s
+  Seed 3: error=0.089329, time=1.2s
+  Seed 4: error=0.089432, time=1.2s
+  Seed 5: error=0.089763, time=1.2s
+  Seed 6: error=0.086877, time=1.2s
+  Seed 7: error=0.088400, time=1.2s
+  Seed 8: error=0.089670, time=1.2s
+  Seed 9: error=0.088433, time=1.2s
+
+HPO_v5s_Fixed Summary:
+  Mean error: 0.090424 ± 0.005718
+  Min/Max: 0.085600 / 0.107132
+
+================================================================================
+FINAL RESULTS
+================================================================================
+  1. Optuna_TPE          : 0.087852 ± 0.003706
+  2. HPO_v5s_Fixed       : 0.090424 ± 0.005718
+  3. TuRBO               : 0.093993 ± 0.010630
+  4. Random              : 0.102406 ± 0.009280
+
+------------------------------------------------------------
+Head-to-Head Comparison (wins on each seed):
+------------------------------------------------------------
+  Random vs Optuna_TPE: 1-9-0
+  Random vs TuRBO: 2-8-0
+  Random vs HPO_v5s_Fixed: 1-9-0
+  Optuna_TPE vs TuRBO: 9-1-0
+  Optuna_TPE vs HPO_v5s_Fixed: 7-3-0
+  TuRBO vs HPO_v5s_Fixed: 4-6-0
+
+Results saved to: /mnt/workspace/thesis/results/jahs_benchmark_cifar10_20251228_131704.json
+Summary saved to: /mnt/workspace/thesis/results/jahs_benchmark_cifar10_20251228_131704.txt

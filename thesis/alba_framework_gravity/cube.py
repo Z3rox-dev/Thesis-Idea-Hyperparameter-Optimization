@@ -62,10 +62,17 @@ class Cube:
     depth: int = 0
     cat_stats: Dict[int, Dict[int, Tuple[int, int]]] = field(default_factory=dict)
     categorical_dims: Tuple[int, ...] = field(default_factory=tuple, repr=False)
+    warp_dim_sensitivity: Optional[np.ndarray] = field(default=None, repr=False)
+    warp_history: List[Tuple[np.ndarray, float]] = field(default_factory=list, repr=False)
+    warp_updates: int = 0
 
     # -------------------------------------------------------------------------
     # Geometry helpers
     # -------------------------------------------------------------------------
+
+    def __post_init__(self) -> None:
+        if self.warp_dim_sensitivity is None:
+            self.warp_dim_sensitivity = np.ones(len(self.bounds), dtype=float)
 
     def widths(self) -> np.ndarray:
         """Return the width of each dimension."""
@@ -131,6 +138,123 @@ class Cube:
         if score > self.best_score:
             self.best_score = score
             self.best_x = x.copy()
+
+    # -------------------------------------------------------------------------
+    # Local warp ("elastic" per-leaf metric)
+    # -------------------------------------------------------------------------
+
+    def get_warp_multipliers(self) -> np.ndarray:
+        """
+        Return per-dimension multipliers used to warp distances and steps.
+
+        Multipliers > 1 stretch that dimension (treat as farther / step smaller).
+        Multipliers < 1 compress that dimension (treat as closer / step larger).
+        """
+        dim = len(self.bounds)
+        s = self.warp_dim_sensitivity
+        if s is None or getattr(s, "shape", None) != (dim,):
+            return np.ones(dim, dtype=float)
+
+        cat_dims = {int(i) for i in self.categorical_dims}
+        cont_dims = [i for i in range(dim) if i not in cat_dims]
+        if not cont_dims:
+            return np.ones(dim, dtype=float)
+
+        s_cont = np.asarray([float(s[i]) for i in cont_dims], dtype=float)
+        s_cont = np.where(np.isfinite(s_cont), s_cont, 1.0)
+        mean_s = float(np.mean(s_cont))
+        if not np.isfinite(mean_s) or mean_s <= 1e-12:
+            return np.ones(dim, dtype=float)
+
+        rel = np.asarray(s, dtype=float) / mean_s
+        rel = np.where(np.isfinite(rel), rel, 1.0)
+        w = np.sqrt(np.clip(rel, 0.25, 4.0))
+        for i in cat_dims:
+            if 0 <= i < dim:
+                w[i] = 1.0
+        return w.astype(float)
+
+    def update_warp(self, x: np.ndarray, score: float) -> None:
+        """
+        Update per-dimension sensitivity from (x, score) using nearby pairs.
+
+        Uses only existing observations (no extra evaluations).
+        """
+        x = np.asarray(x, dtype=float)
+        y = float(score)
+        dim = len(self.bounds)
+        if x.shape[0] != dim:
+            return
+        if self.warp_dim_sensitivity is None or getattr(self.warp_dim_sensitivity, "shape", None) != (dim,):
+            self.warp_dim_sensitivity = np.ones(dim, dtype=float)
+
+        widths = np.maximum(self.widths(), 1e-9)
+        cat_dims = {int(i) for i in self.categorical_dims}
+        cont_dims = [i for i in range(dim) if i not in cat_dims]
+        if not cont_dims:
+            self.warp_history.append((x.copy(), y))
+            self.warp_updates += 1
+            if len(self.warp_history) > 80:
+                self.warp_history = self.warp_history[-80:]
+            return
+
+        alpha = 0.20
+        min_diff = 0.02
+        align_thresh = 0.40
+        window = 30
+
+        grads: List[List[float]] = [[] for _ in range(dim)]
+        try:
+            w = self.get_warp_multipliers()
+        except Exception:
+            w = None
+        if w is None or getattr(w, "shape", None) != (dim,):
+            w = np.ones(dim, dtype=float)
+
+        for px, py in self.warp_history[-window:]:
+            dx = (x - px) / widths
+            abs_dx = np.abs(dx)
+            abs_dx_w = abs_dx * np.asarray(w, dtype=float)
+            sum_abs_w = float(np.sum(abs_dx_w[cont_dims]))
+            if sum_abs_w < 1e-12:
+                continue
+            dy = float(abs(y - float(py)))
+            if not np.isfinite(dy):
+                continue
+
+            # Attribute this pair to the single most-changed dim in warped coordinates.
+            i_star = int(cont_dims[int(np.argmax(abs_dx_w[cont_dims]))])
+            di = float(abs_dx[i_star])
+            if di < min_diff:
+                continue
+            alignment = float(abs_dx_w[i_star]) / (sum_abs_w + 1e-12)
+            if alignment < align_thresh:
+                continue
+            g = dy / (di + 1e-12)
+            if np.isfinite(g):
+                grads[i_star].append(float(g))
+
+        for i in cont_dims:
+            if grads[i]:
+                med = float(np.median(np.asarray(grads[i], dtype=float)))
+                if np.isfinite(med) and med > 0.0:
+                    self.warp_dim_sensitivity[i] = float(
+                        (1.0 - alpha) * float(self.warp_dim_sensitivity[i]) + alpha * med
+                    )
+
+        self.warp_history.append((x.copy(), y))
+        self.warp_updates += 1
+        if len(self.warp_history) > 80:
+            self.warp_history = self.warp_history[-80:]
+
+    def rebuild_warp(self) -> None:
+        """Rebuild warp statistics from this cube's tested_pairs."""
+        dim = len(self.bounds)
+        self.warp_dim_sensitivity = np.ones(dim, dtype=float)
+        self.warp_history = []
+        self.warp_updates = 0
+        for pt, sc in self._tested_pairs:
+            self.update_warp(np.asarray(pt, dtype=float), float(sc))
 
     # -------------------------------------------------------------------------
     # Local Gradient Surrogate (LGS) Model
@@ -294,6 +418,7 @@ class Cube:
                 child.best_x = pt.copy()
 
         for ch in (child_lo, child_hi):
+            ch.rebuild_warp()
             ch.fit_lgs_model(gamma, dim, rng)
 
         return [child_lo, child_hi]

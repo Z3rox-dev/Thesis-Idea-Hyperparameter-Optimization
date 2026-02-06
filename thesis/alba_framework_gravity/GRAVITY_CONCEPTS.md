@@ -42,6 +42,24 @@ score(c) = -Φ_c + λ·attraction(c) - μ·visits(c)
 - `attraction`: Preferisci cubi attratti da altri buoni
 - `-visits`: Penalizza cubi già visitati troppo (repulsione)
 
+### 2.1b Modalità alternativa: gravità = “pendenza” del surrogato (LGS)
+
+Se l’obiettivo è avvicinarsi di più all’intuizione “più pendenza ⇒ più spinta”, si può
+usare una modalità di drift basata sul **gradiente stimato dal surrogato locale**.
+
+In pratica, quando un leaf ha un modello LGS, questo approssima localmente:
+```
+y(x) ≈ y_mean + ((x - center)/widths) · grad
+```
+quindi una stima della pendenza in coordinate `x` è:
+```
+∂y/∂x ≈ grad / widths
+```
+
+Questa quantità viene usata come “accelerazione”: il drift è più forte dove la pendenza
+stimata è più grande. Si abilita con:
+`cube_gravity=True, cube_gravity_mode="surrogate_gradient"`.
+
 ### 2.2 FreeGeometryEstimator - Geometria senza valutazioni extra
 
 **Problema**: Il landscape può avere scale diverse per ogni dimensione.

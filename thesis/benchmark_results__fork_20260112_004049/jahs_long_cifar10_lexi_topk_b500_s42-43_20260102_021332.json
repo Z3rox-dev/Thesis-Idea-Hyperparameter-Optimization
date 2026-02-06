@@ -1,0 +1,60 @@
+{
+  "config": {
+    "task": "cifar10",
+    "budget": 500,
+    "checkpoints": [
+      100,
+      250,
+      500
+    ],
+    "seeds": [
+      42,
+      43
+    ],
+    "meta_variant": "lexi_topk",
+    "meta_kwargs": {
+      "leaf_selection_mode": "lexi_topk",
+      "leaf_reward_topk": 5,
+      "cat_selection_mode": "lexi_topk",
+      "cat_reward_topk": 3,
+      "adaptive_budget": true,
+      "study_budget_fraction": 0.25,
+      "study_budget_min": 40,
+      "study_budget_max_fraction": 0.6,
+      "adaptive_performance": true,
+      "performance_patience": 60,
+      "debug": true,
+      "debug_every": 50
+    },
+    "timestamp": "20260102_021332"
+  },
+  "jahs": {
+    "cifar10": {
+      "dim": 13,
+      "alba_v1": {
+        "42": {
+          "100": 0.0910926818847656,
+          "250": 0.08367446899414066,
+          "500": 0.08208168029785157
+        },
+        "43": {
+          "100": 0.09164085388183596,
+          "250": 0.08563957214355467,
+          "500": 0.08235237121582029
+        }
+      },
+      "alba_meta_lexi_topk": {
+        "42": {
+          "100": 0.09658851623535158,
+          "250": 0.08727210998535151,
+          "500": 0.08553665161132817
+        },
+        "43": {
+          "100": 0.09972320556640624,
+          "250": 0.0891217041015625,
+          "500": 0.08533348083496095
+        }
+      }
+    }
+  }
+}

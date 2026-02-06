@@ -1,0 +1,33 @@
+Benchmark tasks: ['cifar10', 'fashion_mnist'] | budget=60 | seeds=[70, 71, 72]
+Checkpoints: [30, 60]
+Framework config: grid_bins=8 grid_batch_size=512 grid_batches=4 grid_sampling=grid_random grid_jitter=True grid_penalty_lambda=0.1 heatmap_ucb_beta=1.0 heatmap_ucb_explore_prob=0.25 heatmap_ucb_temperature=1.0
+Saving to: /mnt/workspace/thesis/benchmark_results/jahs_framework_vs_experimental_alltasks_20260107_223211.json
+Logging to: /mnt/workspace/thesis/benchmark_results/jahs_framework_vs_experimental_alltasks_20260107_223211.log
+
+=== TASK cifar10 ===
+
+Task cifar10 | Seed 70...
+  ERROR: local variable 'ucb_after' referenced before assignment
+
+Task cifar10 | Seed 71...
+  ERROR: local variable 'ucb_after' referenced before assignment
+
+Task cifar10 | Seed 72...
+  FW=89.21%  EXP=89.75%  -> EXP (4.4s)
+
+=== TASK fashion_mnist ===
+
+Task fashion_mnist | Seed 70...
+  FW=95.22%  EXP=94.87%  -> FW (4.0s)
+
+Task fashion_mnist | Seed 71...
+  FW=94.97%  EXP=94.70%  -> FW (3.8s)
+
+Task fashion_mnist | Seed 72...
+  ERROR: local variable 'ucb_after' referenced before assignment
+
+=== SUMMARY (final checkpoint) ===
+cifar10: FW mean=89.21% std=0.00 | EXP mean=89.75% std=0.00 | wins FW=0 ties=0
+fashion_mnist: FW mean=95.10% std=0.12 | EXP mean=94.79% std=0.08 | wins FW=2 ties=0
+
+Saved: /mnt/workspace/thesis/benchmark_results/jahs_framework_vs_experimental_alltasks_20260107_223211.json

@@ -1,0 +1,14 @@
+Benchmark tasks: ['fashion_mnist'] | budget=3 | seeds=[70]
+Checkpoints: [3]
+Saving to: /mnt/workspace/thesis/benchmark_results/jahs_framework_vs_experimental_fashion_mnist_20260106_140833.json
+Logging to: /mnt/workspace/thesis/benchmark_results/jahs_framework_vs_experimental_fashion_mnist_20260106_140833.log
+
+=== TASK fashion_mnist ===
+
+Task fashion_mnist | Seed 70...
+  FW=90.19%  EXP=93.13%  -> EXP (0.0s)
+
+=== SUMMARY (final checkpoint) ===
+fashion_mnist: FW mean=90.19% std=0.00 | EXP mean=93.13% std=0.00 | wins FW=0 ties=0
+
+Saved: /mnt/workspace/thesis/benchmark_results/jahs_framework_vs_experimental_fashion_mnist_20260106_140833.json

@@ -1,0 +1,159 @@
+{
+  "config": {
+    "budget": 400,
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "tasks": [
+      "cifar10",
+      "fashion_mnist",
+      "colorectal_histology"
+    ],
+    "checkpoints": [
+      100,
+      200,
+      400
+    ]
+  },
+  "runs": [
+    {
+      "task": "cifar10",
+      "seed": 0,
+      "coh_error": 0.08755798339843746,
+      "opt_error": 0.0853566741943359,
+      "coh_acc": 91.24420166015625,
+      "opt_acc": 91.4643325805664,
+      "winner": "OPT"
+    },
+    {
+      "task": "cifar10",
+      "seed": 1,
+      "coh_error": 0.08181808471679686,
+      "opt_error": 0.08625167846679682,
+      "coh_acc": 91.81819152832031,
+      "opt_acc": 91.37483215332031,
+      "winner": "COH"
+    },
+    {
+      "task": "cifar10",
+      "seed": 2,
+      "coh_error": 0.0874620819091797,
+      "opt_error": 0.08667686462402346,
+      "coh_acc": 91.25379180908203,
+      "opt_acc": 91.33231353759766,
+      "winner": "OPT"
+    },
+    {
+      "task": "cifar10",
+      "seed": 3,
+      "coh_error": 0.08434204101562504,
+      "opt_error": 0.08546020507812502,
+      "coh_acc": 91.5657958984375,
+      "opt_acc": 91.4539794921875,
+      "winner": "COH"
+    },
+    {
+      "task": "cifar10",
+      "seed": 4,
+      "coh_error": 0.08410812377929688,
+      "opt_error": 0.08265266418457029,
+      "coh_acc": 91.58918762207031,
+      "opt_acc": 91.73473358154297,
+      "winner": "OPT"
+    },
+    {
+      "task": "fashion_mnist",
+      "seed": 0,
+      "coh_error": 0.04987564086914065,
+      "opt_error": 0.04707199096679693,
+      "coh_acc": 95.01243591308594,
+      "opt_acc": 95.29280090332031,
+      "winner": "OPT"
+    },
+    {
+      "task": "fashion_mnist",
+      "seed": 1,
+      "coh_error": 0.047850875854492214,
+      "opt_error": 0.04685554504394529,
+      "coh_acc": 95.21491241455078,
+      "opt_acc": 95.31444549560547,
+      "winner": "OPT"
+    },
+    {
+      "task": "fashion_mnist",
+      "seed": 2,
+      "coh_error": 0.04665298461914058,
+      "opt_error": 0.04542533874511723,
+      "coh_acc": 95.33470153808594,
+      "opt_acc": 95.45746612548828,
+      "winner": "OPT"
+    },
+    {
+      "task": "fashion_mnist",
+      "seed": 3,
+      "coh_error": 0.047250518798828134,
+      "opt_error": 0.04887466430664067,
+      "coh_acc": 95.27494812011719,
+      "opt_acc": 95.11253356933594,
+      "winner": "COH"
+    },
+    {
+      "task": "fashion_mnist",
+      "seed": 4,
+      "coh_error": 0.04680213928222654,
+      "opt_error": 0.04926116943359371,
+      "coh_acc": 95.31978607177734,
+      "opt_acc": 95.07388305664062,
+      "winner": "COH"
+    },
+    {
+      "task": "colorectal_histology",
+      "seed": 0,
+      "coh_error": 0.03780937194824219,
+      "opt_error": 0.03929954528808599,
+      "coh_acc": 96.21906280517578,
+      "opt_acc": 96.0700454711914,
+      "winner": "COH"
+    },
+    {
+      "task": "colorectal_histology",
+      "seed": 1,
+      "coh_error": 0.038336791992187536,
+      "opt_error": 0.037815399169921826,
+      "coh_acc": 96.16632080078125,
+      "opt_acc": 96.21846008300781,
+      "winner": "OPT"
+    },
+    {
+      "task": "colorectal_histology",
+      "seed": 2,
+      "coh_error": 0.03927604675292973,
+      "opt_error": 0.04464019775390626,
+      "coh_acc": 96.07239532470703,
+      "opt_acc": 95.53598022460938,
+      "winner": "COH"
+    },
+    {
+      "task": "colorectal_histology",
+      "seed": 3,
+      "coh_error": 0.0398715209960937,
+      "opt_error": 0.03960395812988282,
+      "coh_acc": 96.01284790039062,
+      "opt_acc": 96.03960418701172,
+      "winner": "OPT"
+    },
+    {
+      "task": "colorectal_histology",
+      "seed": 4,
+      "coh_error": 0.03870285034179688,
+      "opt_error": 0.04240425109863277,
+      "coh_acc": 96.12971496582031,
+      "opt_acc": 95.75957489013672,
+      "winner": "COH"
+    }
+  ]
+}

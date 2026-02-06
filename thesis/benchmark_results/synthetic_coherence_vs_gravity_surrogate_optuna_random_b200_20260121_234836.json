@@ -1,0 +1,2618 @@
+{
+  "benchmark": "synthetic_coherence_vs_gravity_surrogate_optuna_random",
+  "methods": {
+    "alba_gravity_surrogate": {
+      "kind": "alba_framework_gravity",
+      "cube_gravity_mode": "surrogate_gradient"
+    },
+    "alba_coherence": {
+      "kind": "alba_framework_coherence",
+      "use_coherence_gating": true
+    },
+    "optuna_tpe": {
+      "kind": "optuna_TPE"
+    },
+    "random": {
+      "kind": "random_search"
+    }
+  },
+  "config": {
+    "budget": 200,
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19
+    ],
+    "dims": [
+      4,
+      15
+    ],
+    "funcs": [
+      "sphere",
+      "rosenbrock",
+      "rastrigin",
+      "ackley",
+      "levy",
+      "griewank",
+      "schwefel",
+      "zakharov",
+      "styblinski_tang"
+    ],
+    "coherence_gating": true
+  },
+  "tasks": {
+    "sphere_4D": [
+      {
+        "seed": 0,
+        "alba_gravity_surrogate": 0.5153142578398325,
+        "alba_coherence": 0.035518846649446045,
+        "random": 1.985827819355856,
+        "optuna_tpe": 0.2095035639334073
+      },
+      {
+        "seed": 1,
+        "alba_gravity_surrogate": 1.203790914746071,
+        "alba_coherence": 0.050697959170382,
+        "random": 0.2791141911929925,
+        "optuna_tpe": 0.028461108375661303
+      },
+      {
+        "seed": 2,
+        "alba_gravity_surrogate": 0.4435331506531883,
+        "alba_coherence": 0.09595201204119935,
+        "random": 3.8960640894183918,
+        "optuna_tpe": 0.22360695121525376
+      },
+      {
+        "seed": 3,
+        "alba_gravity_surrogate": 0.19183245408666802,
+        "alba_coherence": 0.27186450554789754,
+        "random": 2.624752320335893,
+        "optuna_tpe": 0.30793975135271767
+      },
+      {
+        "seed": 4,
+        "alba_gravity_surrogate": 0.3748611243866665,
+        "alba_coherence": 0.16179798532826112,
+        "random": 0.934525095634375,
+        "optuna_tpe": 0.011166745800096255
+      },
+      {
+        "seed": 5,
+        "alba_gravity_surrogate": 0.8214851161631902,
+        "alba_coherence": 0.8271490381619551,
+        "random": 3.8019430496215376,
+        "optuna_tpe": 0.08124720571093755
+      },
+      {
+        "seed": 6,
+        "alba_gravity_surrogate": 0.8373401938421936,
+        "alba_coherence": 0.22161793406415878,
+        "random": 6.177684194857631,
+        "optuna_tpe": 0.23526411246357043
+      },
+      {
+        "seed": 7,
+        "alba_gravity_surrogate": 0.6165524301695965,
+        "alba_coherence": 0.5090493655567325,
+        "random": 4.774861141473517,
+        "optuna_tpe": 0.11398083723920155
+      },
+      {
+        "seed": 8,
+        "alba_gravity_surrogate": 0.06683548539218567,
+        "alba_coherence": 0.5604391537554487,
+        "random": 3.02362582961052,
+        "optuna_tpe": 0.16431189599348398
+      },
+      {
+        "seed": 9,
+        "alba_gravity_surrogate": 0.4869422107294316,
+        "alba_coherence": 0.7905471487110558,
+        "random": 0.8090973081776018,
+        "optuna_tpe": 0.3581361841053367
+      },
+      {
+        "seed": 10,
+        "alba_gravity_surrogate": 0.23768295854707253,
+        "alba_coherence": 0.14359329232559676,
+        "random": 2.1161094606125603,
+        "optuna_tpe": 0.026543953903745504
+      },
+      {
+        "seed": 11,
+        "alba_gravity_surrogate": 0.7856556926575713,
+        "alba_coherence": 0.16310177180862245,
+        "random": 2.2757147944989047,
+        "optuna_tpe": 0.39957822116607983
+      },
+      {
+        "seed": 12,
+        "alba_gravity_surrogate": 0.7037079998917471,
+        "alba_coherence": 0.18841728790220577,
+        "random": 1.94295002049908,
+        "optuna_tpe": 0.16377974805115988
+      },
+      {
+        "seed": 13,
+        "alba_gravity_surrogate": 0.2745739937611859,
+        "alba_coherence": 0.21290233955738194,
+        "random": 1.4972043679573346,
+        "optuna_tpe": 0.1704071785294352
+      },
+      {
+        "seed": 14,
+        "alba_gravity_surrogate": 0.20320770109893882,
+        "alba_coherence": 0.5919361801118848,
+        "random": 0.8167485511758836,
+        "optuna_tpe": 0.06761619755959682
+      },
+      {
+        "seed": 15,
+        "alba_gravity_surrogate": 0.16583395771182402,
+        "alba_coherence": 0.06118483746969445,
+        "random": 1.7768543070027494,
+        "optuna_tpe": 0.08681113217226773
+      },
+      {
+        "seed": 16,
+        "alba_gravity_surrogate": 0.5569718112996669,
+        "alba_coherence": 0.5192439263190026,
+        "random": 1.031374053283657,
+        "optuna_tpe": 0.47983956433154434
+      },
+      {
+        "seed": 17,
+        "alba_gravity_surrogate": 0.7160512567017331,
+        "alba_coherence": 0.2581547340166142,
+        "random": 4.5991418029262245,
+        "optuna_tpe": 0.17103187661706795
+      },
+      {
+        "seed": 18,
+        "alba_gravity_surrogate": 0.41693646460184425,
+        "alba_coherence": 0.2880646459207287,
+        "random": 7.143030842276516,
+        "optuna_tpe": 0.13442874730164964
+      },
+      {
+        "seed": 19,
+        "alba_gravity_surrogate": 1.362627933967623,
+        "alba_coherence": 0.21255418268387916,
+        "random": 5.462343512501429,
+        "optuna_tpe": 0.15011855554310316
+      }
+    ],
+    "sphere_15D": [
+      {
+        "seed": 0,
+        "alba_gravity_surrogate": 29.66584488895536,
+        "alba_coherence": 19.45027836862109,
+        "random": 23.890062524251917,
+        "optuna_tpe": 25.070235690416144
+      },
+      {
+        "seed": 1,
+        "alba_gravity_surrogate": 19.50498827301338,
+        "alba_coherence": 18.69727005072383,
+        "random": 50.18644325125405,
+        "optuna_tpe": 32.78950283803443
+      },
+      {
+        "seed": 2,
+        "alba_gravity_surrogate": 41.16215215460213,
+        "alba_coherence": 18.148897089681093,
+        "random": 60.12860123218877,
+        "optuna_tpe": 21.770481441607423
+      },
+      {
+        "seed": 3,
+        "alba_gravity_surrogate": 24.325519781339946,
+        "alba_coherence": 21.99818872687947,
+        "random": 54.97785968994309,
+        "optuna_tpe": 29.1555183366202
+      },
+      {
+        "seed": 4,
+        "alba_gravity_surrogate": 48.28882003041054,
+        "alba_coherence": 26.822499957676207,
+        "random": 49.092091206018125,
+        "optuna_tpe": 30.889446223885066
+      },
+      {
+        "seed": 5,
+        "alba_gravity_surrogate": 16.149059405633363,
+        "alba_coherence": 7.592504636525001,
+        "random": 65.75434242742737,
+        "optuna_tpe": 42.044642448869695
+      },
+      {
+        "seed": 6,
+        "alba_gravity_surrogate": 22.342316304944998,
+        "alba_coherence": 13.525096919227554,
+        "random": 33.06811137451302,
+        "optuna_tpe": 22.74465862178399
+      },
+      {
+        "seed": 7,
+        "alba_gravity_surrogate": 18.56968685317238,
+        "alba_coherence": 14.1011455723147,
+        "random": 48.82366351891541,
+        "optuna_tpe": 26.968102397175016
+      },
+      {
+        "seed": 8,
+        "alba_gravity_surrogate": 32.39012769957319,
+        "alba_coherence": 18.42577882874025,
+        "random": 41.61689785444659,
+        "optuna_tpe": 20.942071994755583
+      },
+      {
+        "seed": 9,
+        "alba_gravity_surrogate": 30.74741961528713,
+        "alba_coherence": 20.18155109561908,
+        "random": 43.69797062975832,
+        "optuna_tpe": 20.72759153323669
+      },
+      {
+        "seed": 10,
+        "alba_gravity_surrogate": 11.348068811316079,
+        "alba_coherence": 13.897600460682897,
+        "random": 54.142923181464816,
+        "optuna_tpe": 22.080706875169565
+      },
+      {
+        "seed": 11,
+        "alba_gravity_surrogate": 19.45567662927655,
+        "alba_coherence": 23.676752922607292,
+        "random": 56.85099199126586,
+        "optuna_tpe": 31.816019234163413
+      },
+      {
+        "seed": 12,
+        "alba_gravity_surrogate": 14.593635731744081,
+        "alba_coherence": 12.593678096700053,
+        "random": 60.617761900123625,
+        "optuna_tpe": 25.88904609650381
+      },
+      {
+        "seed": 13,
+        "alba_gravity_surrogate": 19.231478713132233,
+        "alba_coherence": 33.320231717380295,
+        "random": 55.570756746728094,
+        "optuna_tpe": 32.90386058669465
+      },
+      {
+        "seed": 14,
+        "alba_gravity_surrogate": 43.877116538768064,
+        "alba_coherence": 26.17117168588153,
+        "random": 57.2373187795727,
+        "optuna_tpe": 24.901095104605297
+      },
+      {
+        "seed": 15,
+        "alba_gravity_surrogate": 20.236727789308144,
+        "alba_coherence": 21.333010054304204,
+        "random": 51.450262181705455,
+        "optuna_tpe": 29.61955009726699
+      },
+      {
+        "seed": 16,
+        "alba_gravity_surrogate": 30.88027132541207,
+        "alba_coherence": 21.51103202310527,
+        "random": 58.42704229126274,
+        "optuna_tpe": 47.7237249379637
+      },
+      {
+        "seed": 17,
+        "alba_gravity_surrogate": 22.742005018121898,
+        "alba_coherence": 15.066771220933886,
+        "random": 45.43665894090179,
+        "optuna_tpe": 20.323667641052527
+      },
+      {
+        "seed": 18,
+        "alba_gravity_surrogate": 13.337664686531465,
+        "alba_coherence": 20.86777006633758,
+        "random": 60.65556548504577,
+        "optuna_tpe": 36.288977404824855
+      },
+      {
+        "seed": 19,
+        "alba_gravity_surrogate": 22.715374882395846,
+        "alba_coherence": 12.294158651846052,
+        "random": 57.94931226092047,
+        "optuna_tpe": 33.494809772366395
+      }
+    ],
+    "rosenbrock_4D": [
+      {
+        "seed": 0,
+        "alba_gravity_surrogate": 284.5263501433249,
+        "alba_coherence": 192.57519583719466,
+        "random": 1430.7262852166223,
+        "optuna_tpe": 52.186387296487844
+      },
+      {
+        "seed": 1,
+        "alba_gravity_surrogate": 2115.683319678002,
+        "alba_coherence": 279.1730713637249,
+        "random": 1357.8053635767826,
+        "optuna_tpe": 4.992522385789842
+      },
+      {
+        "seed": 2,
+        "alba_gravity_surrogate": 48.10034605717034,
+        "alba_coherence": 42.37562166425144,
+        "random": 1539.1947256131577,
+        "optuna_tpe": 74.30809959304428
+      },
+      {
+        "seed": 3,
+        "alba_gravity_surrogate": 64.37375427299362,
+        "alba_coherence": 31.928274449050505,
+        "random": 299.84692433315956,
+        "optuna_tpe": 19.125144366035222
+      },
+      {
+        "seed": 4,
+        "alba_gravity_surrogate": 170.00979870157346,
+        "alba_coherence": 129.09115705893697,
+        "random": 403.4855936890591,
+        "optuna_tpe": 11.448126797207612
+      },
+      {
+        "seed": 5,
+        "alba_gravity_surrogate": 504.4405891041773,
+        "alba_coherence": 43.49751105975293,
+        "random": 2080.669646124734,
+        "optuna_tpe": 36.761115340865814
+      },
+      {
+        "seed": 6,
+        "alba_gravity_surrogate": 521.3151463838841,
+        "alba_coherence": 30.20941987777995,
+        "random": 123.69061771236089,
+        "optuna_tpe": 17.636356007822798
+      },
+      {
+        "seed": 7,
+        "alba_gravity_surrogate": 199.3645578375015,
+        "alba_coherence": 1033.8281881414691,
+        "random": 513.1146666521786,
+        "optuna_tpe": 32.76812229611183
+      },
+      {
+        "seed": 8,
+        "alba_gravity_surrogate": 103.11882119515354,
+        "alba_coherence": 23.730986085358882,
+        "random": 312.2747248015223,
+        "optuna_tpe": 13.449625752302339
+      },
+      {
+        "seed": 9,
+        "alba_gravity_surrogate": 63.860193469912105,
+        "alba_coherence": 100.33271902674515,
+        "random": 870.1293870384136,
+        "optuna_tpe": 23.088422234878536
+      },
+      {
+        "seed": 10,
+        "alba_gravity_surrogate": 5.172365236586954,
+        "alba_coherence": 1.5868908128931885,
+        "random": 309.0683359358361,
+        "optuna_tpe": 15.058078922168217
+      },
+      {
+        "seed": 11,
+        "alba_gravity_surrogate": 75.60761679740746,
+        "alba_coherence": 2.8006806239233986,
+        "random": 2293.943177887433,
+        "optuna_tpe": 19.851632450507722
+      },
+      {
+        "seed": 12,
+        "alba_gravity_surrogate": 365.170331032629,
+        "alba_coherence": 45.05719631324335,
+        "random": 621.7856807955425,
+        "optuna_tpe": 22.413878838218032
+      },
+      {
+        "seed": 13,
+        "alba_gravity_surrogate": 19.02598817214876,
+        "alba_coherence": 79.08454101695732,
+        "random": 295.8095517806132,
+        "optuna_tpe": 22.032614088495418
+      },
+      {
+        "seed": 14,
+        "alba_gravity_surrogate": 120.88865404784887,
+        "alba_coherence": 100.6961758672754,
+        "random": 589.9731481941054,
+        "optuna_tpe": 42.466220560411735
+      },
+      {
+        "seed": 15,
+        "alba_gravity_surrogate": 200.65305673233087,
+        "alba_coherence": 52.343680293906594,
+        "random": 561.0022916572458,
+        "optuna_tpe": 45.11002215984986
+      },
+      {
+        "seed": 16,
+        "alba_gravity_surrogate": 42.05195238652763,
+        "alba_coherence": 46.112745313754225,
+        "random": 604.1906977989895,
+        "optuna_tpe": 32.51203393704254
+      },
+      {
+        "seed": 17,
+        "alba_gravity_surrogate": 223.7498947275193,
+        "alba_coherence": 38.53014924052892,
+        "random": 1093.1448283362715,
+        "optuna_tpe": 61.14416186582316
+      },
+      {
+        "seed": 18,
+        "alba_gravity_surrogate": 90.90648879248053,
+        "alba_coherence": 539.8496476845919,
+        "random": 210.6906949499961,
+        "optuna_tpe": 18.61430164421749
+      },
+      {
+        "seed": 19,
+        "alba_gravity_surrogate": 597.8665452561294,
+        "alba_coherence": 429.2463901012722,
+        "random": 1586.6994421514298,
+        "optuna_tpe": 8.80629595177858
+      }
+    ],
+    "rosenbrock_15D": [
+      {
+        "seed": 0,
+        "alba_gravity_surrogate": 49464.5602511693,
+        "alba_coherence": 50056.29326105333,
+        "random": 111352.01836866194,
+        "optuna_tpe": 66488.29564291063
+      },
+      {
+        "seed": 1,
+        "alba_gravity_surrogate": 17431.918633131696,
+        "alba_coherence": 12256.633098361679,
+        "random": 278232.9778941456,
+        "optuna_tpe": 46623.56385887723
+      },
+      {
+        "seed": 2,
+        "alba_gravity_surrogate": 52530.21915629704,
+        "alba_coherence": 75602.61744189347,
+        "random": 72213.78085369497,
+        "optuna_tpe": 45237.95500032433
+      },
+      {
+        "seed": 3,
+        "alba_gravity_surrogate": 41004.780646292995,
+        "alba_coherence": 12060.264946137235,
+        "random": 273287.8557251174,
+        "optuna_tpe": 54427.83577150044
+      },
+      {
+        "seed": 4,
+        "alba_gravity_surrogate": 19314.545599268055,
+        "alba_coherence": 10798.4965219172,
+        "random": 337758.25938630116,
+        "optuna_tpe": 35526.84206520118
+      },
+      {
+        "seed": 5,
+        "alba_gravity_surrogate": 41530.76247795704,
+        "alba_coherence": 14697.637713235721,
+        "random": 339202.6832684711,
+        "optuna_tpe": 68088.46252888226
+      },
+      {
+        "seed": 6,
+        "alba_gravity_surrogate": 47360.205444655374,
+        "alba_coherence": 32744.153129117105,
+        "random": 87391.73051757127,
+        "optuna_tpe": 40634.349494813025
+      },
+      {
+        "seed": 7,
+        "alba_gravity_surrogate": 30977.60461327565,
+        "alba_coherence": 14216.051903902073,
+        "random": 191831.56179310943,
+        "optuna_tpe": 59229.202076216185
+      },
+      {
+        "seed": 8,
+        "alba_gravity_surrogate": 64345.15644891233,
+        "alba_coherence": 23907.3168431185,
+        "random": 327010.48839710304,
+        "optuna_tpe": 50697.66509407178
+      },
+      {
+        "seed": 9,
+        "alba_gravity_surrogate": 69707.69677850443,
+        "alba_coherence": 36384.52203266335,
+        "random": 294405.89271551394,
+        "optuna_tpe": 38439.18480955228
+      },
+      {
+        "seed": 10,
+        "alba_gravity_surrogate": 26315.129479553027,
+        "alba_coherence": 33844.36613338727,
+        "random": 125230.94138971726,
+        "optuna_tpe": 32692.309394155804
+      },
+      {
+        "seed": 11,
+        "alba_gravity_surrogate": 32426.419257516583,
+        "alba_coherence": 34063.642099457014,
+        "random": 232366.8687399552,
+        "optuna_tpe": 58321.38743033354
+      },
+      {
+        "seed": 12,
+        "alba_gravity_surrogate": 16960.317095301027,
+        "alba_coherence": 11265.39034975926,
+        "random": 186430.96266616374,
+        "optuna_tpe": 64242.005743863825
+      },
+      {
+        "seed": 13,
+        "alba_gravity_surrogate": 35326.755092085885,
+        "alba_coherence": 19475.07907056835,
+        "random": 98967.28103467023,
+        "optuna_tpe": 7113.264997685858
+      },
+      {
+        "seed": 14,
+        "alba_gravity_surrogate": 11687.987538374411,
+        "alba_coherence": 15049.950013409816,
+        "random": 325684.483363204,
+        "optuna_tpe": 38023.22959835074
+      },
+      {
+        "seed": 15,
+        "alba_gravity_surrogate": 68108.43180677795,
+        "alba_coherence": 37244.61430758591,
+        "random": 291711.54928541026,
+        "optuna_tpe": 78673.98906284304
+      },
+      {
+        "seed": 16,
+        "alba_gravity_surrogate": 71203.97727168327,
+        "alba_coherence": 83448.30826876726,
+        "random": 209548.96527340866,
+        "optuna_tpe": 34591.606219707835
+      },
+      {
+        "seed": 17,
+        "alba_gravity_surrogate": 10131.055504128772,
+        "alba_coherence": 13844.941218973892,
+        "random": 193710.92779794167,
+        "optuna_tpe": 22207.38647641942
+      },
+      {
+        "seed": 18,
+        "alba_gravity_surrogate": 52471.840708624884,
+        "alba_coherence": 10562.632188237532,
+        "random": 396842.06009331555,
+        "optuna_tpe": 20953.097290491267
+      },
+      {
+        "seed": 19,
+        "alba_gravity_surrogate": 39091.48114578759,
+        "alba_coherence": 16529.83167719882,
+        "random": 195474.58907999645,
+        "optuna_tpe": 50507.66567979089
+      }
+    ],
+    "rastrigin_4D": [
+      {
+        "seed": 0,
+        "alba_gravity_surrogate": 20.522841518517584,
+        "alba_coherence": 13.805149959042936,
+        "random": 31.31628235644601,
+        "optuna_tpe": 16.06193225827679
+      },
+      {
+        "seed": 1,
+        "alba_gravity_surrogate": 14.960589617704578,
+        "alba_coherence": 25.052726580772884,
+        "random": 24.562094017302677,
+        "optuna_tpe": 12.211095953227492
+      },
+      {
+        "seed": 2,
+        "alba_gravity_surrogate": 9.331622247556222,
+        "alba_coherence": 12.731405373099449,
+        "random": 34.06243708648483,
+        "optuna_tpe": 11.462464520828775
+      },
+      {
+        "seed": 3,
+        "alba_gravity_surrogate": 22.211886317255566,
+        "alba_coherence": 18.636582414128128,
+        "random": 14.612935814939494,
+        "optuna_tpe": 9.315090702347547
+      },
+      {
+        "seed": 4,
+        "alba_gravity_surrogate": 9.550120195926233,
+        "alba_coherence": 8.402060629083913,
+        "random": 30.07738549408786,
+        "optuna_tpe": 12.969073742079921
+      },
+      {
+        "seed": 5,
+        "alba_gravity_surrogate": 20.334407002024324,
+        "alba_coherence": 17.524748015605024,
+        "random": 21.18588012781138,
+        "optuna_tpe": 20.99579824102561
+      },
+      {
+        "seed": 6,
+        "alba_gravity_surrogate": 15.732892054070405,
+        "alba_coherence": 25.98090413071058,
+        "random": 23.97476497083872,
+        "optuna_tpe": 17.945141051307246
+      },
+      {
+        "seed": 7,
+        "alba_gravity_surrogate": 28.65357209302038,
+        "alba_coherence": 24.692488114062517,
+        "random": 30.22145170232031,
+        "optuna_tpe": 15.323761648787258
+      },
+      {
+        "seed": 8,
+        "alba_gravity_surrogate": 15.500598736870412,
+        "alba_coherence": 15.376842179347154,
+        "random": 21.180388074716685,
+        "optuna_tpe": 22.695787170911192
+      },
+      {
+        "seed": 9,
+        "alba_gravity_surrogate": 11.70721006315435,
+        "alba_coherence": 22.9255273477305,
+        "random": 24.452376728657036,
+        "optuna_tpe": 10.576382511277878
+      },
+      {
+        "seed": 10,
+        "alba_gravity_surrogate": 18.175794057712988,
+        "alba_coherence": 13.947777803183875,
+        "random": 27.500740137855132,
+        "optuna_tpe": 15.40586757288716
+      },
+      {
+        "seed": 11,
+        "alba_gravity_surrogate": 17.327386069715477,
+        "alba_coherence": 11.157377826876981,
+        "random": 15.505862710461304,
+        "optuna_tpe": 14.686776210892575
+      },
+      {
+        "seed": 12,
+        "alba_gravity_surrogate": 11.142325933654803,
+        "alba_coherence": 9.27888765889471,
+        "random": 22.633234703597232,
+        "optuna_tpe": 13.386518798001418
+      },
+      {
+        "seed": 13,
+        "alba_gravity_surrogate": 10.68750167264075,
+        "alba_coherence": 16.991713053498366,
+        "random": 25.032933720218182,
+        "optuna_tpe": 18.62531601048689
+      },
+      {
+        "seed": 14,
+        "alba_gravity_surrogate": 16.49718887230187,
+        "alba_coherence": 15.68138858889781,
+        "random": 26.469437897275384,
+        "optuna_tpe": 22.620853406213
+      },
+      {
+        "seed": 15,
+        "alba_gravity_surrogate": 22.374971295536685,
+        "alba_coherence": 19.301531454834304,
+        "random": 31.031171450870332,
+        "optuna_tpe": 8.472651752790732
+      },
+      {
+        "seed": 16,
+        "alba_gravity_surrogate": 15.091333769485914,
+        "alba_coherence": 21.921723848075874,
+        "random": 26.12809305947507,
+        "optuna_tpe": 11.548980524595187
+      },
+      {
+        "seed": 17,
+        "alba_gravity_surrogate": 22.503413691349255,
+        "alba_coherence": 13.036707426137085,
+        "random": 32.14939098207067,
+        "optuna_tpe": 16.01555592914648
+      },
+      {
+        "seed": 18,
+        "alba_gravity_surrogate": 18.09156092137117,
+        "alba_coherence": 11.830259124766492,
+        "random": 16.793670291316033,
+        "optuna_tpe": 16.50912989379385
+      },
+      {
+        "seed": 19,
+        "alba_gravity_surrogate": 18.17202836552914,
+        "alba_coherence": 16.66056760986418,
+        "random": 17.55538412711379,
+        "optuna_tpe": 14.414687195705483
+      }
+    ],
+    "rastrigin_15D": [
+      {
+        "seed": 0,
+        "alba_gravity_surrogate": 160.9946581220669,
+        "alba_coherence": 145.9012929602028,
+        "random": 171.57383937230054,
+        "optuna_tpe": 147.73095419335718
+      },
+      {
+        "seed": 1,
+        "alba_gravity_surrogate": 141.8316023050182,
+        "alba_coherence": 141.8316023050182,
+        "random": 162.94275262593413,
+        "optuna_tpe": 149.09524065965303
+      },
+      {
+        "seed": 2,
+        "alba_gravity_surrogate": 153.01415012423337,
+        "alba_coherence": 153.01415012423337,
+        "random": 170.19847135291292,
+        "optuna_tpe": 147.57112600863334
+      },
+      {
+        "seed": 3,
+        "alba_gravity_surrogate": 119.47292123802492,
+        "alba_coherence": 119.96215259998296,
+        "random": 163.11337912279416,
+        "optuna_tpe": 136.5068853276476
+      },
+      {
+        "seed": 4,
+        "alba_gravity_surrogate": 149.99450968073518,
+        "alba_coherence": 148.10563885913942,
+        "random": 179.2722841747599,
+        "optuna_tpe": 166.40585433848395
+      },
+      {
+        "seed": 5,
+        "alba_gravity_surrogate": 163.44276473085364,
+        "alba_coherence": 145.7858747916426,
+        "random": 172.26348421021697,
+        "optuna_tpe": 155.16538652688396
+      },
+      {
+        "seed": 6,
+        "alba_gravity_surrogate": 149.93015784576542,
+        "alba_coherence": 127.85769652372076,
+        "random": 163.76306364816273,
+        "optuna_tpe": 158.51539095629374
+      },
+      {
+        "seed": 7,
+        "alba_gravity_surrogate": 164.32343604024575,
+        "alba_coherence": 136.01629783072676,
+        "random": 183.84625477269955,
+        "optuna_tpe": 133.17529561145616
+      },
+      {
+        "seed": 8,
+        "alba_gravity_surrogate": 149.3506955765296,
+        "alba_coherence": 145.69656749670486,
+        "random": 185.7502036388002,
+        "optuna_tpe": 168.18751736758898
+      },
+      {
+        "seed": 9,
+        "alba_gravity_surrogate": 141.88743908989585,
+        "alba_coherence": 143.14614581287807,
+        "random": 170.9719890611749,
+        "optuna_tpe": 146.0758153304776
+      },
+      {
+        "seed": 10,
+        "alba_gravity_surrogate": 138.46467369453353,
+        "alba_coherence": 153.0065440776353,
+        "random": 176.05463091523723,
+        "optuna_tpe": 130.3843109684178
+      },
+      {
+        "seed": 11,
+        "alba_gravity_surrogate": 133.0756994266427,
+        "alba_coherence": 137.80588890906907,
+        "random": 159.30139076647797,
+        "optuna_tpe": 146.8591888702798
+      },
+      {
+        "seed": 12,
+        "alba_gravity_surrogate": 130.44493550865528,
+        "alba_coherence": 148.79012049141755,
+        "random": 147.74473497444018,
+        "optuna_tpe": 145.10058933323668
+      },
+      {
+        "seed": 13,
+        "alba_gravity_surrogate": 132.83344702753612,
+        "alba_coherence": 132.83344702753612,
+        "random": 194.3366741854823,
+        "optuna_tpe": 164.35644046905045
+      },
+      {
+        "seed": 14,
+        "alba_gravity_surrogate": 137.36919170072235,
+        "alba_coherence": 138.2602845097991,
+        "random": 186.26266686897168,
+        "optuna_tpe": 162.20260644765037
+      },
+      {
+        "seed": 15,
+        "alba_gravity_surrogate": 144.8035282984112,
+        "alba_coherence": 155.50489374589588,
+        "random": 160.60835001985458,
+        "optuna_tpe": 147.46398293546122
+      },
+      {
+        "seed": 16,
+        "alba_gravity_surrogate": 143.49557065792249,
+        "alba_coherence": 154.38204142529725,
+        "random": 184.5202593183729,
+        "optuna_tpe": 137.547389477252
+      },
+      {
+        "seed": 17,
+        "alba_gravity_surrogate": 145.85005446653915,
+        "alba_coherence": 125.19535273350782,
+        "random": 165.27346640972308,
+        "optuna_tpe": 135.66352031413393
+      },
+      {
+        "seed": 18,
+        "alba_gravity_surrogate": 126.92061626266698,
+        "alba_coherence": 112.8828816975896,
+        "random": 173.23699336283698,
+        "optuna_tpe": 160.06875024720915
+      },
+      {
+        "seed": 19,
+        "alba_gravity_surrogate": 152.67145435763214,
+        "alba_coherence": 138.2170268465939,
+        "random": 179.17063618951443,
+        "optuna_tpe": 162.4154652451495
+      }
+    ],
+    "ackley_4D": [
+      {
+        "seed": 0,
+        "alba_gravity_surrogate": 3.0079758046490785,
+        "alba_coherence": 1.4244195386060388,
+        "random": 4.132494175982117,
+        "optuna_tpe": 1.920614745430989
+      },
+      {
+        "seed": 1,
+        "alba_gravity_surrogate": 3.0991815011102593,
+        "alba_coherence": 2.0648700012803585,
+        "random": 2.589302610980479,
+        "optuna_tpe": 1.3919510165556237
+      },
+      {
+        "seed": 2,
+        "alba_gravity_surrogate": 3.777479918915088,
+        "alba_coherence": 2.4517420894563213,
+        "random": 5.109538308724556,
+        "optuna_tpe": 1.9984477773774008
+      },
+      {
+        "seed": 3,
+        "alba_gravity_surrogate": 2.4250137095589506,
+        "alba_coherence": 2.3359893252841286,
+        "random": 3.680309989490006,
+        "optuna_tpe": 1.9037726479971124
+      },
+      {
+        "seed": 4,
+        "alba_gravity_surrogate": 2.729712654022635,
+        "alba_coherence": 1.960743111234493,
+        "random": 3.4481714026775845,
+        "optuna_tpe": 1.9625083708704207
+      },
+      {
+        "seed": 5,
+        "alba_gravity_surrogate": 2.9397919689760674,
+        "alba_coherence": 3.257375011969771,
+        "random": 4.3072358094542125,
+        "optuna_tpe": 2.691456422010717
+      },
+      {
+        "seed": 6,
+        "alba_gravity_surrogate": 3.9129984904993447,
+        "alba_coherence": 2.8166982204492794,
+        "random": 5.860132294709597,
+        "optuna_tpe": 2.310677199111876
+      },
+      {
+        "seed": 7,
+        "alba_gravity_surrogate": 3.395833075182136,
+        "alba_coherence": 3.7215396803951397,
+        "random": 5.162739619157264,
+        "optuna_tpe": 2.8262175848919218
+      },
+      {
+        "seed": 8,
+        "alba_gravity_surrogate": 3.8458073371321153,
+        "alba_coherence": 5.8028923215598205,
+        "random": 4.276864254516237,
+        "optuna_tpe": 1.1807249967546096
+      },
+      {
+        "seed": 9,
+        "alba_gravity_surrogate": 3.3172345780991646,
+        "alba_coherence": 2.4806611023719474,
+        "random": 3.7791335865383755,
+        "optuna_tpe": 1.3464654264623417
+      },
+      {
+        "seed": 10,
+        "alba_gravity_surrogate": 3.989618748817272,
+        "alba_coherence": 2.656975442712778,
+        "random": 4.213564964266752,
+        "optuna_tpe": 2.767627314893183
+      },
+      {
+        "seed": 11,
+        "alba_gravity_surrogate": 2.010265182106711,
+        "alba_coherence": 2.2038297674881027,
+        "random": 3.7139470560651096,
+        "optuna_tpe": 1.1825111475377352
+      },
+      {
+        "seed": 12,
+        "alba_gravity_surrogate": 2.193990892152478,
+        "alba_coherence": 2.495523585767043,
+        "random": 3.673963947621154,
+        "optuna_tpe": 2.0576088356347566
+      },
+      {
+        "seed": 13,
+        "alba_gravity_surrogate": 2.2668137998690523,
+        "alba_coherence": 3.2954159454875698,
+        "random": 3.3968396010514046,
+        "optuna_tpe": 2.3679783164693835
+      },
+      {
+        "seed": 14,
+        "alba_gravity_surrogate": 2.872894229257224,
+        "alba_coherence": 3.309152460581594,
+        "random": 3.5751446513246923,
+        "optuna_tpe": 2.4989220513435453
+      },
+      {
+        "seed": 15,
+        "alba_gravity_surrogate": 2.4884269643543218,
+        "alba_coherence": 3.599211440542373,
+        "random": 4.403229817897582,
+        "optuna_tpe": 1.5089498413600464
+      },
+      {
+        "seed": 16,
+        "alba_gravity_surrogate": 2.414261783743435,
+        "alba_coherence": 0.8244072507690849,
+        "random": 3.7834669233522935,
+        "optuna_tpe": 0.7584370420570221
+      },
+      {
+        "seed": 17,
+        "alba_gravity_surrogate": 3.225811077811962,
+        "alba_coherence": 1.0526433065777572,
+        "random": 5.6685576737629475,
+        "optuna_tpe": 1.5036080352578378
+      },
+      {
+        "seed": 18,
+        "alba_gravity_surrogate": 1.9328153937543004,
+        "alba_coherence": 1.3224952134026187,
+        "random": 5.580242012594702,
+        "optuna_tpe": 1.7749103360005276
+      },
+      {
+        "seed": 19,
+        "alba_gravity_surrogate": 2.0489160471409282,
+        "alba_coherence": 3.2268907028447704,
+        "random": 5.385767000075383,
+        "optuna_tpe": 2.2777516749731643
+      }
+    ],
+    "ackley_15D": [
+      {
+        "seed": 0,
+        "alba_gravity_surrogate": 7.342894974952802,
+        "alba_coherence": 4.8881904638569935,
+        "random": 6.149951701799225,
+        "optuna_tpe": 6.393886703603513
+      },
+      {
+        "seed": 1,
+        "alba_gravity_surrogate": 6.7978143720172355,
+        "alba_coherence": 6.75381439360547,
+        "random": 7.620521794162784,
+        "optuna_tpe": 6.668714313196514
+      },
+      {
+        "seed": 2,
+        "alba_gravity_surrogate": 7.187734295137705,
+        "alba_coherence": 6.636085219864739,
+        "random": 8.138264539659911,
+        "optuna_tpe": 6.667563982814663
+      },
+      {
+        "seed": 3,
+        "alba_gravity_surrogate": 5.531987250459199,
+        "alba_coherence": 5.35155768665798,
+        "random": 8.021698548601691,
+        "optuna_tpe": 6.290469812167963
+      },
+      {
+        "seed": 4,
+        "alba_gravity_surrogate": 4.514078015257464,
+        "alba_coherence": 5.9277292785924764,
+        "random": 7.757670663097551,
+        "optuna_tpe": 6.3546135440543985
+      },
+      {
+        "seed": 5,
+        "alba_gravity_surrogate": 5.6364016629878115,
+        "alba_coherence": 5.81629857632479,
+        "random": 8.297242411968675,
+        "optuna_tpe": 6.507433193522907
+      },
+      {
+        "seed": 6,
+        "alba_gravity_surrogate": 6.069603055302817,
+        "alba_coherence": 5.476796189168809,
+        "random": 6.7526430143713,
+        "optuna_tpe": 6.803930802758375
+      },
+      {
+        "seed": 7,
+        "alba_gravity_surrogate": 5.727903349205761,
+        "alba_coherence": 5.523742302917906,
+        "random": 7.750098258661573,
+        "optuna_tpe": 6.622353235099087
+      },
+      {
+        "seed": 8,
+        "alba_gravity_surrogate": 5.075291096807284,
+        "alba_coherence": 6.0486876999994905,
+        "random": 7.238557338604764,
+        "optuna_tpe": 6.876083425830297
+      },
+      {
+        "seed": 9,
+        "alba_gravity_surrogate": 5.461107451145988,
+        "alba_coherence": 4.190082432110728,
+        "random": 7.178407759508611,
+        "optuna_tpe": 6.89627201473648
+      },
+      {
+        "seed": 10,
+        "alba_gravity_surrogate": 5.2627976909194665,
+        "alba_coherence": 6.645933742511865,
+        "random": 8.04882810904435,
+        "optuna_tpe": 6.525125218798664
+      },
+      {
+        "seed": 11,
+        "alba_gravity_surrogate": 4.985121266242132,
+        "alba_coherence": 5.231858045337031,
+        "random": 7.835740905520504,
+        "optuna_tpe": 7.06055093953527
+      },
+      {
+        "seed": 12,
+        "alba_gravity_surrogate": 5.979212350491235,
+        "alba_coherence": 5.773838519807043,
+        "random": 8.143543132953264,
+        "optuna_tpe": 6.45680237509395
+      },
+      {
+        "seed": 13,
+        "alba_gravity_surrogate": 6.638519938182181,
+        "alba_coherence": 6.896995091980148,
+        "random": 8.060469643024026,
+        "optuna_tpe": 7.37416921950776
+      },
+      {
+        "seed": 14,
+        "alba_gravity_surrogate": 6.5800474334432195,
+        "alba_coherence": 6.5800474334432195,
+        "random": 7.976045781594051,
+        "optuna_tpe": 6.279104079744361
+      },
+      {
+        "seed": 15,
+        "alba_gravity_surrogate": 5.904029453582037,
+        "alba_coherence": 4.980165635097162,
+        "random": 7.508159411619502,
+        "optuna_tpe": 6.655670539812924
+      },
+      {
+        "seed": 16,
+        "alba_gravity_surrogate": 7.401004915853125,
+        "alba_coherence": 6.995192940634718,
+        "random": 8.039597999286979,
+        "optuna_tpe": 6.320800321872277
+      },
+      {
+        "seed": 17,
+        "alba_gravity_surrogate": 5.681939569024159,
+        "alba_coherence": 5.697941827874942,
+        "random": 7.583928410896577,
+        "optuna_tpe": 6.529845058776939
+      },
+      {
+        "seed": 18,
+        "alba_gravity_surrogate": 4.970590512374152,
+        "alba_coherence": 5.387422830850074,
+        "random": 8.365067914746042,
+        "optuna_tpe": 6.979592746239888
+      },
+      {
+        "seed": 19,
+        "alba_gravity_surrogate": 5.0635304002187915,
+        "alba_coherence": 6.005995186080142,
+        "random": 7.964468574361106,
+        "optuna_tpe": 6.620612016861223
+      }
+    ],
+    "levy_4D": [
+      {
+        "seed": 0,
+        "alba_gravity_surrogate": 0.5690961030173183,
+        "alba_coherence": 1.9554608415363832,
+        "random": 2.183613931112389,
+        "optuna_tpe": 0.13256586135356005
+      },
+      {
+        "seed": 1,
+        "alba_gravity_surrogate": 0.1294780049864734,
+        "alba_coherence": 0.24905604514795754,
+        "random": 0.9021836043370491,
+        "optuna_tpe": 0.21009170358410417
+      },
+      {
+        "seed": 2,
+        "alba_gravity_surrogate": 0.7477437605805559,
+        "alba_coherence": 0.16524625473149515,
+        "random": 3.5174710515414445,
+        "optuna_tpe": 0.1557941494241311
+      },
+      {
+        "seed": 3,
+        "alba_gravity_surrogate": 0.8978416286540488,
+        "alba_coherence": 1.179697762714508,
+        "random": 2.009898028652735,
+        "optuna_tpe": 0.15525618638877442
+      },
+      {
+        "seed": 4,
+        "alba_gravity_surrogate": 3.9915102867523196,
+        "alba_coherence": 0.5374216945623753,
+        "random": 1.326367781694128,
+        "optuna_tpe": 0.5209604877263061
+      },
+      {
+        "seed": 5,
+        "alba_gravity_surrogate": 0.2444907380283607,
+        "alba_coherence": 0.46383247433167746,
+        "random": 1.6282766532983064,
+        "optuna_tpe": 0.4182747884834064
+      },
+      {
+        "seed": 6,
+        "alba_gravity_surrogate": 2.955190785379865,
+        "alba_coherence": 1.0296341717424438,
+        "random": 3.9712432147146473,
+        "optuna_tpe": 0.1504676711699484
+      },
+      {
+        "seed": 7,
+        "alba_gravity_surrogate": 0.6425409881962274,
+        "alba_coherence": 1.9223160650332962,
+        "random": 2.3064145569313066,
+        "optuna_tpe": 0.16367453400424092
+      },
+      {
+        "seed": 8,
+        "alba_gravity_surrogate": 0.38632837612107834,
+        "alba_coherence": 0.3007899559348325,
+        "random": 1.0380374950683373,
+        "optuna_tpe": 0.2660662649387836
+      },
+      {
+        "seed": 9,
+        "alba_gravity_surrogate": 0.024514299216097744,
+        "alba_coherence": 0.8799491358411737,
+        "random": 2.4711513506358616,
+        "optuna_tpe": 0.26054403664703324
+      },
+      {
+        "seed": 10,
+        "alba_gravity_surrogate": 0.5565796900136014,
+        "alba_coherence": 0.5858298375957482,
+        "random": 2.63979091898425,
+        "optuna_tpe": 0.1773372644297819
+      },
+      {
+        "seed": 11,
+        "alba_gravity_surrogate": 0.5245468792939214,
+        "alba_coherence": 1.6533492842369106,
+        "random": 1.5590398244474175,
+        "optuna_tpe": 0.1726932971587841
+      },
+      {
+        "seed": 12,
+        "alba_gravity_surrogate": 0.5667074275240581,
+        "alba_coherence": 1.278744041049421,
+        "random": 1.8041891362086757,
+        "optuna_tpe": 0.2726197508460434
+      },
+      {
+        "seed": 13,
+        "alba_gravity_surrogate": 0.5324715979615289,
+        "alba_coherence": 2.675426178715422,
+        "random": 0.8205693939172981,
+        "optuna_tpe": 0.07600233541249277
+      },
+      {
+        "seed": 14,
+        "alba_gravity_surrogate": 0.29935976894333977,
+        "alba_coherence": 0.5546402103377859,
+        "random": 0.17286806831367565,
+        "optuna_tpe": 0.2105117613613424
+      },
+      {
+        "seed": 15,
+        "alba_gravity_surrogate": 1.1850039652111326,
+        "alba_coherence": 0.2744139751529036,
+        "random": 1.2404743762708281,
+        "optuna_tpe": 0.1410495604162345
+      },
+      {
+        "seed": 16,
+        "alba_gravity_surrogate": 0.43028057557975985,
+        "alba_coherence": 0.7131555097391395,
+        "random": 1.8822287129676807,
+        "optuna_tpe": 0.3626634706305005
+      },
+      {
+        "seed": 17,
+        "alba_gravity_surrogate": 0.7133363647830729,
+        "alba_coherence": 0.5196809354880035,
+        "random": 3.761301083137967,
+        "optuna_tpe": 0.07196237074897416
+      },
+      {
+        "seed": 18,
+        "alba_gravity_surrogate": 0.16158405432848608,
+        "alba_coherence": 0.19803859363556073,
+        "random": 5.723861629163983,
+        "optuna_tpe": 0.19604884551224624
+      },
+      {
+        "seed": 19,
+        "alba_gravity_surrogate": 0.4582207084850357,
+        "alba_coherence": 0.35791501861570124,
+        "random": 3.5832794494991975,
+        "optuna_tpe": 0.24667463999818756
+      }
+    ],
+    "levy_15D": [
+      {
+        "seed": 0,
+        "alba_gravity_surrogate": 36.14693039470751,
+        "alba_coherence": 33.19328709755302,
+        "random": 38.52152757098857,
+        "optuna_tpe": 30.97224255922265
+      },
+      {
+        "seed": 1,
+        "alba_gravity_surrogate": 25.53565140893535,
+        "alba_coherence": 22.575826728685144,
+        "random": 68.10441529572545,
+        "optuna_tpe": 40.814213048686256
+      },
+      {
+        "seed": 2,
+        "alba_gravity_surrogate": 12.737613776975747,
+        "alba_coherence": 33.84637834032317,
+        "random": 50.58159761837139,
+        "optuna_tpe": 40.794442190794754
+      },
+      {
+        "seed": 3,
+        "alba_gravity_surrogate": 18.94413609310253,
+        "alba_coherence": 18.94413609310253,
+        "random": 64.51892229011128,
+        "optuna_tpe": 31.547789595933434
+      },
+      {
+        "seed": 4,
+        "alba_gravity_surrogate": 21.876117473024422,
+        "alba_coherence": 15.31029999606578,
+        "random": 49.76091867632155,
+        "optuna_tpe": 32.80921616364211
+      },
+      {
+        "seed": 5,
+        "alba_gravity_surrogate": 29.177226400161366,
+        "alba_coherence": 29.075428110039354,
+        "random": 54.52545840840139,
+        "optuna_tpe": 36.78594384296165
+      },
+      {
+        "seed": 6,
+        "alba_gravity_surrogate": 21.345821739610574,
+        "alba_coherence": 20.2209690055362,
+        "random": 61.20788471626725,
+        "optuna_tpe": 40.184570281356265
+      },
+      {
+        "seed": 7,
+        "alba_gravity_surrogate": 31.42308024275525,
+        "alba_coherence": 13.928344184804219,
+        "random": 56.22426469298683,
+        "optuna_tpe": 45.81450069013542
+      },
+      {
+        "seed": 8,
+        "alba_gravity_surrogate": 37.63702660661097,
+        "alba_coherence": 16.66752161803466,
+        "random": 38.590056324203374,
+        "optuna_tpe": 32.83880501437439
+      },
+      {
+        "seed": 9,
+        "alba_gravity_surrogate": 19.857713067072417,
+        "alba_coherence": 25.78579435806765,
+        "random": 57.52863580215511,
+        "optuna_tpe": 27.7426174034775
+      },
+      {
+        "seed": 10,
+        "alba_gravity_surrogate": 26.232066907972257,
+        "alba_coherence": 25.28504483575003,
+        "random": 58.99986184964726,
+        "optuna_tpe": 26.906552143893457
+      },
+      {
+        "seed": 11,
+        "alba_gravity_surrogate": 18.67072448574834,
+        "alba_coherence": 17.112564154079156,
+        "random": 51.8898755048346,
+        "optuna_tpe": 31.911105464098654
+      },
+      {
+        "seed": 12,
+        "alba_gravity_surrogate": 28.111262282735417,
+        "alba_coherence": 8.424389570442882,
+        "random": 67.82678373954808,
+        "optuna_tpe": 43.57879597258462
+      },
+      {
+        "seed": 13,
+        "alba_gravity_surrogate": 37.440632560290034,
+        "alba_coherence": 17.76627489895567,
+        "random": 63.0140735535886,
+        "optuna_tpe": 29.34514944314696
+      },
+      {
+        "seed": 14,
+        "alba_gravity_surrogate": 38.422683794455644,
+        "alba_coherence": 32.17314080791322,
+        "random": 62.820083337371145,
+        "optuna_tpe": 42.99949365046987
+      },
+      {
+        "seed": 15,
+        "alba_gravity_surrogate": 23.042374492298183,
+        "alba_coherence": 5.485629382824073,
+        "random": 60.7951698772633,
+        "optuna_tpe": 41.19784212203028
+      },
+      {
+        "seed": 16,
+        "alba_gravity_surrogate": 37.467507935508415,
+        "alba_coherence": 34.132222679135786,
+        "random": 67.34434908646594,
+        "optuna_tpe": 35.54228905498862
+      },
+      {
+        "seed": 17,
+        "alba_gravity_surrogate": 16.53363933072657,
+        "alba_coherence": 26.29703934674809,
+        "random": 69.20861964913995,
+        "optuna_tpe": 29.354370082051
+      },
+      {
+        "seed": 18,
+        "alba_gravity_surrogate": 20.540856686755337,
+        "alba_coherence": 38.964994697171804,
+        "random": 73.37968385744739,
+        "optuna_tpe": 23.04013473969799
+      },
+      {
+        "seed": 19,
+        "alba_gravity_surrogate": 29.180265646931275,
+        "alba_coherence": 13.64324343907575,
+        "random": 70.32031924338699,
+        "optuna_tpe": 36.61765317919769
+      }
+    ],
+    "griewank_4D": [
+      {
+        "seed": 0,
+        "alba_gravity_surrogate": 3.780641335415536,
+        "alba_coherence": 3.2592921630206066,
+        "random": 7.843937261186842,
+        "optuna_tpe": 1.4568318557149513
+      },
+      {
+        "seed": 1,
+        "alba_gravity_surrogate": 1.3731342256865324,
+        "alba_coherence": 2.347035456387182,
+        "random": 2.1679920893138886,
+        "optuna_tpe": 1.5517535147759844
+      },
+      {
+        "seed": 2,
+        "alba_gravity_surrogate": 7.3396639053608865,
+        "alba_coherence": 2.1444349701200833,
+        "random": 14.380215324187278,
+        "optuna_tpe": 1.544971833658592
+      },
+      {
+        "seed": 3,
+        "alba_gravity_surrogate": 1.8369852231622112,
+        "alba_coherence": 2.043020239409299,
+        "random": 9.873610703037038,
+        "optuna_tpe": 1.2926478852079533
+      },
+      {
+        "seed": 4,
+        "alba_gravity_surrogate": 1.5681137406575556,
+        "alba_coherence": 2.892240745183818,
+        "random": 4.108350335452368,
+        "optuna_tpe": 1.0852423518047094
+      },
+      {
+        "seed": 5,
+        "alba_gravity_surrogate": 1.727041266606621,
+        "alba_coherence": 1.2434525815559687,
+        "random": 13.918836729508119,
+        "optuna_tpe": 1.2779935795871713
+      },
+      {
+        "seed": 6,
+        "alba_gravity_surrogate": 2.0650927802650356,
+        "alba_coherence": 5.416621356847387,
+        "random": 22.097321898497302,
+        "optuna_tpe": 1.4617299510003259
+      },
+      {
+        "seed": 7,
+        "alba_gravity_surrogate": 2.3457581251125927,
+        "alba_coherence": 1.4743454597240833,
+        "random": 17.42963715887864,
+        "optuna_tpe": 2.073597323480958
+      },
+      {
+        "seed": 8,
+        "alba_gravity_surrogate": 1.7866569223942266,
+        "alba_coherence": 3.6647301292068675,
+        "random": 11.884893223684603,
+        "optuna_tpe": 1.0937962349887613
+      },
+      {
+        "seed": 9,
+        "alba_gravity_surrogate": 2.4857211559709924,
+        "alba_coherence": 4.812236020135158,
+        "random": 3.7623429203104783,
+        "optuna_tpe": 1.2724712176119035
+      },
+      {
+        "seed": 10,
+        "alba_gravity_surrogate": 3.9194929189068684,
+        "alba_coherence": 2.3353435333543953,
+        "random": 8.114281827955201,
+        "optuna_tpe": 1.3395016396636437
+      },
+      {
+        "seed": 11,
+        "alba_gravity_surrogate": 1.9968138242039517,
+        "alba_coherence": 2.29212084288916,
+        "random": 8.826173715484844,
+        "optuna_tpe": 2.0662245843020073
+      },
+      {
+        "seed": 12,
+        "alba_gravity_surrogate": 1.9595522027634327,
+        "alba_coherence": 1.8428290881863107,
+        "random": 7.676130857230198,
+        "optuna_tpe": 0.9746734297328977
+      },
+      {
+        "seed": 13,
+        "alba_gravity_surrogate": 4.286089346430644,
+        "alba_coherence": 1.353788883877372,
+        "random": 6.339423694141902,
+        "optuna_tpe": 1.5092701331955245
+      },
+      {
+        "seed": 14,
+        "alba_gravity_surrogate": 3.5006552585200494,
+        "alba_coherence": 1.0202719104998135,
+        "random": 3.9771006034546152,
+        "optuna_tpe": 2.1812719443181843
+      },
+      {
+        "seed": 15,
+        "alba_gravity_surrogate": 7.203395944497173,
+        "alba_coherence": 2.3173348420328987,
+        "random": 6.988007556078829,
+        "optuna_tpe": 1.3314191239190722
+      },
+      {
+        "seed": 16,
+        "alba_gravity_surrogate": 2.9575386012337375,
+        "alba_coherence": 1.6584896445704722,
+        "random": 4.481084260670855,
+        "optuna_tpe": 2.3201987655306393
+      },
+      {
+        "seed": 17,
+        "alba_gravity_surrogate": 1.963215194134449,
+        "alba_coherence": 1.411595236711057,
+        "random": 16.835705157434468,
+        "optuna_tpe": 1.481234166590826
+      },
+      {
+        "seed": 18,
+        "alba_gravity_surrogate": 1.9928719183607768,
+        "alba_coherence": 2.0311426476747196,
+        "random": 25.89313832438367,
+        "optuna_tpe": 1.5517648041941163
+      },
+      {
+        "seed": 19,
+        "alba_gravity_surrogate": 4.337050392778366,
+        "alba_coherence": 1.3711260601303628,
+        "random": 19.995939812011255,
+        "optuna_tpe": 1.4152835001206032
+      }
+    ],
+    "griewank_15D": [
+      {
+        "seed": 0,
+        "alba_gravity_surrogate": 114.79693599737031,
+        "alba_coherence": 72.25715745794199,
+        "random": 83.02003484526414,
+        "optuna_tpe": 87.07178524347289
+      },
+      {
+        "seed": 1,
+        "alba_gravity_surrogate": 28.634606952758435,
+        "alba_coherence": 76.17868110172685,
+        "random": 173.30123296881422,
+        "optuna_tpe": 113.57382865494851
+      },
+      {
+        "seed": 2,
+        "alba_gravity_surrogate": 95.0620631759103,
+        "alba_coherence": 40.2949258851801,
+        "random": 207.43516934034866,
+        "optuna_tpe": 75.74301657974485
+      },
+      {
+        "seed": 3,
+        "alba_gravity_surrogate": 42.81107432501375,
+        "alba_coherence": 53.27713559300011,
+        "random": 189.75200861403133,
+        "optuna_tpe": 101.09753301481541
+      },
+      {
+        "seed": 4,
+        "alba_gravity_surrogate": 92.45812969914377,
+        "alba_coherence": 87.52590266551627,
+        "random": 169.54431918909057,
+        "optuna_tpe": 107.05055922498458
+      },
+      {
+        "seed": 5,
+        "alba_gravity_surrogate": 43.92928059482003,
+        "alba_coherence": 54.326107192431266,
+        "random": 226.74962260235841,
+        "optuna_tpe": 145.3486829011733
+      },
+      {
+        "seed": 6,
+        "alba_gravity_surrogate": 67.5561428549046,
+        "alba_coherence": 65.10655263431954,
+        "random": 114.53035253568876,
+        "optuna_tpe": 79.08758868715734
+      },
+      {
+        "seed": 7,
+        "alba_gravity_surrogate": 82.4143055996993,
+        "alba_coherence": 67.77445810263787,
+        "random": 168.62275300380185,
+        "optuna_tpe": 93.58764002477346
+      },
+      {
+        "seed": 8,
+        "alba_gravity_surrogate": 97.95224786949416,
+        "alba_coherence": 123.40311117144917,
+        "random": 143.88028021626016,
+        "optuna_tpe": 72.89889837762355
+      },
+      {
+        "seed": 9,
+        "alba_gravity_surrogate": 77.31220524823748,
+        "alba_coherence": 54.21735661717166,
+        "random": 151.02507527162123,
+        "optuna_tpe": 72.16242776028247
+      },
+      {
+        "seed": 10,
+        "alba_gravity_surrogate": 150.40266194434284,
+        "alba_coherence": 92.73573251729056,
+        "random": 186.88497492985755,
+        "optuna_tpe": 76.80874767701765
+      },
+      {
+        "seed": 11,
+        "alba_gravity_surrogate": 87.89221262145576,
+        "alba_coherence": 67.53774106791256,
+        "random": 196.18236420133235,
+        "optuna_tpe": 110.2316331816517
+      },
+      {
+        "seed": 12,
+        "alba_gravity_surrogate": 75.17288629387909,
+        "alba_coherence": 79.66111227404318,
+        "random": 209.115230331075,
+        "optuna_tpe": 89.88298327583114
+      },
+      {
+        "seed": 13,
+        "alba_gravity_surrogate": 57.745372819978066,
+        "alba_coherence": 53.94209582023581,
+        "random": 191.7871571923342,
+        "optuna_tpe": 113.96668715765975
+      },
+      {
+        "seed": 14,
+        "alba_gravity_surrogate": 131.93035046290822,
+        "alba_coherence": 82.32250781336796,
+        "random": 197.50885773640513,
+        "optuna_tpe": 86.49115391357127
+      },
+      {
+        "seed": 15,
+        "alba_gravity_surrogate": 66.68247384356151,
+        "alba_coherence": 60.68387143395186,
+        "random": 177.64048315375328,
+        "optuna_tpe": 102.63317764580756
+      },
+      {
+        "seed": 16,
+        "alba_gravity_surrogate": 79.81745837007013,
+        "alba_coherence": 47.25966609473305,
+        "random": 201.59280384388418,
+        "optuna_tpe": 164.84642178724314
+      },
+      {
+        "seed": 17,
+        "alba_gravity_surrogate": 79.68067091836036,
+        "alba_coherence": 32.08223123181664,
+        "random": 156.99443560726425,
+        "optuna_tpe": 70.7756540118595
+      },
+      {
+        "seed": 18,
+        "alba_gravity_surrogate": 86.58083443823702,
+        "alba_coherence": 60.52704818835705,
+        "random": 209.24435635627339,
+        "optuna_tpe": 125.58827340282699
+      },
+      {
+        "seed": 19,
+        "alba_gravity_surrogate": 31.55970969783788,
+        "alba_coherence": 38.75739853746024,
+        "random": 199.94331557340303,
+        "optuna_tpe": 115.99529107536839
+      }
+    ],
+    "schwefel_4D": [
+      {
+        "seed": 0,
+        "alba_gravity_surrogate": 227.80052537990423,
+        "alba_coherence": 526.4885365852649,
+        "random": 666.7224463998842,
+        "optuna_tpe": 334.9678495161536
+      },
+      {
+        "seed": 1,
+        "alba_gravity_surrogate": 315.1549045682866,
+        "alba_coherence": 126.7159588481718,
+        "random": 610.827578279878,
+        "optuna_tpe": 604.5590194202944
+      },
+      {
+        "seed": 2,
+        "alba_gravity_surrogate": 420.9368255911447,
+        "alba_coherence": 334.58351554602336,
+        "random": 352.73803499597557,
+        "optuna_tpe": 447.05146428709486
+      },
+      {
+        "seed": 3,
+        "alba_gravity_surrogate": 554.8248694151964,
+        "alba_coherence": 737.3004274433368,
+        "random": 564.6960623973735,
+        "optuna_tpe": 423.53442772389144
+      },
+      {
+        "seed": 4,
+        "alba_gravity_surrogate": 452.06050269317143,
+        "alba_coherence": 493.1473889229401,
+        "random": 491.88747713925227,
+        "optuna_tpe": 284.49671050288816
+      },
+      {
+        "seed": 5,
+        "alba_gravity_surrogate": 323.8764221829965,
+        "alba_coherence": 335.82815506127326,
+        "random": 805.1397670925103,
+        "optuna_tpe": 502.2403990145374
+      },
+      {
+        "seed": 6,
+        "alba_gravity_surrogate": 771.2185356995626,
+        "alba_coherence": 315.84869960569904,
+        "random": 719.1565544872614,
+        "optuna_tpe": 207.4405336662919
+      },
+      {
+        "seed": 7,
+        "alba_gravity_surrogate": 239.09434428552163,
+        "alba_coherence": 501.33897081399346,
+        "random": 658.4134396945185,
+        "optuna_tpe": 484.48671566609914
+      },
+      {
+        "seed": 8,
+        "alba_gravity_surrogate": 598.912823140932,
+        "alba_coherence": 473.76916027755624,
+        "random": 614.5847492638218,
+        "optuna_tpe": 359.00650009212404
+      },
+      {
+        "seed": 9,
+        "alba_gravity_surrogate": 147.41618028325092,
+        "alba_coherence": 134.6962383668456,
+        "random": 611.7073156305105,
+        "optuna_tpe": 110.7451801983234
+      },
+      {
+        "seed": 10,
+        "alba_gravity_surrogate": 37.21926530644737,
+        "alba_coherence": 646.9557249851318,
+        "random": 730.5123771607485,
+        "optuna_tpe": 707.582785351309
+      },
+      {
+        "seed": 11,
+        "alba_gravity_surrogate": 359.6250209152304,
+        "alba_coherence": 457.6519378627663,
+        "random": 619.7266207639693,
+        "optuna_tpe": 413.5870025805443
+      },
+      {
+        "seed": 12,
+        "alba_gravity_surrogate": 569.2012647452486,
+        "alba_coherence": 172.49774392621953,
+        "random": 591.6058618280103,
+        "optuna_tpe": 406.7702116447945
+      },
+      {
+        "seed": 13,
+        "alba_gravity_surrogate": 600.6545938659426,
+        "alba_coherence": 345.25790398795334,
+        "random": 631.319085038368,
+        "optuna_tpe": 630.3763063954859
+      },
+      {
+        "seed": 14,
+        "alba_gravity_surrogate": 234.62366967483695,
+        "alba_coherence": 423.1504187463338,
+        "random": 677.386318763933,
+        "optuna_tpe": 319.79980964367815
+      },
+      {
+        "seed": 15,
+        "alba_gravity_surrogate": 359.756385053694,
+        "alba_coherence": 502.06762919889456,
+        "random": 490.202072412422,
+        "optuna_tpe": 334.8146023410677
+      },
+      {
+        "seed": 16,
+        "alba_gravity_surrogate": 756.4856996963268,
+        "alba_coherence": 506.9867713721774,
+        "random": 681.9574771887349,
+        "optuna_tpe": 296.2813337121679
+      },
+      {
+        "seed": 17,
+        "alba_gravity_surrogate": 599.128818241734,
+        "alba_coherence": 285.3908118489344,
+        "random": 847.671466309348,
+        "optuna_tpe": 449.500906257163
+      },
+      {
+        "seed": 18,
+        "alba_gravity_surrogate": 278.8103830735631,
+        "alba_coherence": 325.98198715584294,
+        "random": 369.44078058603463,
+        "optuna_tpe": 290.11824738104315
+      },
+      {
+        "seed": 19,
+        "alba_gravity_surrogate": 430.49927161464643,
+        "alba_coherence": 552.2644653482012,
+        "random": 696.4932622217773,
+        "optuna_tpe": 721.0374590408705
+      }
+    ],
+    "schwefel_15D": [
+      {
+        "seed": 0,
+        "alba_gravity_surrogate": 4355.983780726769,
+        "alba_coherence": 4546.55747233501,
+        "random": 4438.985903161866,
+        "optuna_tpe": 3977.118358247977
+      },
+      {
+        "seed": 1,
+        "alba_gravity_surrogate": 3983.8485185960153,
+        "alba_coherence": 3986.9798418737146,
+        "random": 3978.6654328800596,
+        "optuna_tpe": 4254.2535049564995
+      },
+      {
+        "seed": 2,
+        "alba_gravity_surrogate": 4283.700924953747,
+        "alba_coherence": 4283.700924953747,
+        "random": 4116.582028886677,
+        "optuna_tpe": 3715.9971164878434
+      },
+      {
+        "seed": 3,
+        "alba_gravity_surrogate": 4019.093260213931,
+        "alba_coherence": 4133.289938511811,
+        "random": 4036.96049470432,
+        "optuna_tpe": 3770.0452997803413
+      },
+      {
+        "seed": 4,
+        "alba_gravity_surrogate": 3922.9531923500763,
+        "alba_coherence": 3365.305623755651,
+        "random": 4113.209205960229,
+        "optuna_tpe": 4251.643279940142
+      },
+      {
+        "seed": 5,
+        "alba_gravity_surrogate": 4118.886027591746,
+        "alba_coherence": 4173.593021983306,
+        "random": 3632.052804609562,
+        "optuna_tpe": 3745.897904684863
+      },
+      {
+        "seed": 6,
+        "alba_gravity_surrogate": 4186.021327724399,
+        "alba_coherence": 4059.5125648091375,
+        "random": 4560.388772335118,
+        "optuna_tpe": 3885.6258506550394
+      },
+      {
+        "seed": 7,
+        "alba_gravity_surrogate": 3858.057456900385,
+        "alba_coherence": 3430.0530345408038,
+        "random": 4093.241025564599,
+        "optuna_tpe": 4353.488848593077
+      },
+      {
+        "seed": 8,
+        "alba_gravity_surrogate": 3950.570204438518,
+        "alba_coherence": 4148.825868975988,
+        "random": 4042.6458617821063,
+        "optuna_tpe": 3281.453874009827
+      },
+      {
+        "seed": 9,
+        "alba_gravity_surrogate": 4356.4907276663,
+        "alba_coherence": 4396.436799737079,
+        "random": 3580.9093643099236,
+        "optuna_tpe": 3597.485797836257
+      },
+      {
+        "seed": 10,
+        "alba_gravity_surrogate": 4645.169779000037,
+        "alba_coherence": 4379.691808944925,
+        "random": 4287.537123631937,
+        "optuna_tpe": 3787.276980120528
+      },
+      {
+        "seed": 11,
+        "alba_gravity_surrogate": 4540.863867274282,
+        "alba_coherence": 3771.419008612721,
+        "random": 4186.718724098708,
+        "optuna_tpe": 4067.9595901645757
+      },
+      {
+        "seed": 12,
+        "alba_gravity_surrogate": 4269.221219356674,
+        "alba_coherence": 4010.7494850115313,
+        "random": 3625.4967799526135,
+        "optuna_tpe": 4190.895938678239
+      },
+      {
+        "seed": 13,
+        "alba_gravity_surrogate": 4541.879112860283,
+        "alba_coherence": 3779.1632029947873,
+        "random": 4068.19795761803,
+        "optuna_tpe": 4133.001011977411
+      },
+      {
+        "seed": 14,
+        "alba_gravity_surrogate": 4682.2800616165405,
+        "alba_coherence": 4718.520570669959,
+        "random": 4322.8972595790965,
+        "optuna_tpe": 4380.71613210931
+      },
+      {
+        "seed": 15,
+        "alba_gravity_surrogate": 4679.391838501464,
+        "alba_coherence": 4561.695169561648,
+        "random": 3937.486690760487,
+        "optuna_tpe": 4589.756856141563
+      },
+      {
+        "seed": 16,
+        "alba_gravity_surrogate": 3952.718973424385,
+        "alba_coherence": 3351.738652148415,
+        "random": 4341.731256779435,
+        "optuna_tpe": 3580.246184468361
+      },
+      {
+        "seed": 17,
+        "alba_gravity_surrogate": 4211.3094849078225,
+        "alba_coherence": 3594.4359981613025,
+        "random": 4407.755149903802,
+        "optuna_tpe": 3433.012751373738
+      },
+      {
+        "seed": 18,
+        "alba_gravity_surrogate": 4530.764710152217,
+        "alba_coherence": 4541.3513627559005,
+        "random": 4360.602434002744,
+        "optuna_tpe": 4049.2580647098594
+      },
+      {
+        "seed": 19,
+        "alba_gravity_surrogate": 4154.313422613202,
+        "alba_coherence": 4429.197765230374,
+        "random": 4540.534111883354,
+        "optuna_tpe": 4185.844845538394
+      }
+    ],
+    "zakharov_4D": [
+      {
+        "seed": 0,
+        "alba_gravity_surrogate": 13.641640556683429,
+        "alba_coherence": 4.088993592368066,
+        "random": 22.741243189211133,
+        "optuna_tpe": 1.7864834113048438
+      },
+      {
+        "seed": 1,
+        "alba_gravity_surrogate": 4.560657111558529,
+        "alba_coherence": 9.504338517525873,
+        "random": 18.405577132371764,
+        "optuna_tpe": 1.829508310523724
+      },
+      {
+        "seed": 2,
+        "alba_gravity_surrogate": 4.221564901453231,
+        "alba_coherence": 2.165167255952329,
+        "random": 10.311771159333338,
+        "optuna_tpe": 0.7846721353427647
+      },
+      {
+        "seed": 3,
+        "alba_gravity_surrogate": 1.359785035196869,
+        "alba_coherence": 1.808013588345651,
+        "random": 17.966531217650164,
+        "optuna_tpe": 0.7902037247659984
+      },
+      {
+        "seed": 4,
+        "alba_gravity_surrogate": 2.3135958724021135,
+        "alba_coherence": 2.91952676474003,
+        "random": 7.632427190950426,
+        "optuna_tpe": 2.262108721494105
+      },
+      {
+        "seed": 5,
+        "alba_gravity_surrogate": 12.134933688248067,
+        "alba_coherence": 0.7122974887382958,
+        "random": 12.045387682876449,
+        "optuna_tpe": 1.0644731331837365
+      },
+      {
+        "seed": 6,
+        "alba_gravity_surrogate": 3.397027062442522,
+        "alba_coherence": 2.8941006833238947,
+        "random": 2.988980665911412,
+        "optuna_tpe": 2.3090453126851784
+      },
+      {
+        "seed": 7,
+        "alba_gravity_surrogate": 0.7556357512838616,
+        "alba_coherence": 1.7563834887815077,
+        "random": 15.083515462018614,
+        "optuna_tpe": 4.11954594528858
+      },
+      {
+        "seed": 8,
+        "alba_gravity_surrogate": 0.5724727255891087,
+        "alba_coherence": 1.260696518361265,
+        "random": 10.542300356773461,
+        "optuna_tpe": 1.0323159797882304
+      },
+      {
+        "seed": 9,
+        "alba_gravity_surrogate": 8.796353898259257,
+        "alba_coherence": 0.883421761742845,
+        "random": 9.016593073790999,
+        "optuna_tpe": 0.36021575699321007
+      },
+      {
+        "seed": 10,
+        "alba_gravity_surrogate": 2.929183227379663,
+        "alba_coherence": 2.6486569337944568,
+        "random": 21.92301276143388,
+        "optuna_tpe": 1.3893655095997641
+      },
+      {
+        "seed": 11,
+        "alba_gravity_surrogate": 8.859785432562477,
+        "alba_coherence": 6.57368463103099,
+        "random": 12.776031684336358,
+        "optuna_tpe": 0.3218819033968933
+      },
+      {
+        "seed": 12,
+        "alba_gravity_surrogate": 7.94483733282175,
+        "alba_coherence": 6.35815527244895,
+        "random": 22.5038848878266,
+        "optuna_tpe": 0.6798039481605208
+      },
+      {
+        "seed": 13,
+        "alba_gravity_surrogate": 1.0379737300639764,
+        "alba_coherence": 1.9695378533155807,
+        "random": 13.011566814088336,
+        "optuna_tpe": 0.3614069895709071
+      },
+      {
+        "seed": 14,
+        "alba_gravity_surrogate": 2.816493254319041,
+        "alba_coherence": 5.997262700618335,
+        "random": 25.97779625546266,
+        "optuna_tpe": 0.9326584702315057
+      },
+      {
+        "seed": 15,
+        "alba_gravity_surrogate": 2.843117363105714,
+        "alba_coherence": 1.013427308406765,
+        "random": 5.4930429648278745,
+        "optuna_tpe": 1.8716928571439397
+      },
+      {
+        "seed": 16,
+        "alba_gravity_surrogate": 0.8460336324649146,
+        "alba_coherence": 4.423777824912171,
+        "random": 8.595909007999728,
+        "optuna_tpe": 0.33020407912741
+      },
+      {
+        "seed": 17,
+        "alba_gravity_surrogate": 2.4243180448597546,
+        "alba_coherence": 2.1413397705539223,
+        "random": 13.267629685296722,
+        "optuna_tpe": 0.2923385133698853
+      },
+      {
+        "seed": 18,
+        "alba_gravity_surrogate": 38.029170859406264,
+        "alba_coherence": 0.33374206160032815,
+        "random": 8.058016357889622,
+        "optuna_tpe": 0.40027628139908233
+      },
+      {
+        "seed": 19,
+        "alba_gravity_surrogate": 4.60324831510502,
+        "alba_coherence": 1.7093583796647394,
+        "random": 8.392504852670118,
+        "optuna_tpe": 0.3558964066151927
+      }
+    ],
+    "zakharov_15D": [
+      {
+        "seed": 0,
+        "alba_gravity_surrogate": 58.12170410875648,
+        "alba_coherence": 78.60313791725893,
+        "random": 465.8328741415595,
+        "optuna_tpe": 103.85684727011002
+      },
+      {
+        "seed": 1,
+        "alba_gravity_surrogate": 200.60358530439396,
+        "alba_coherence": 267.9270758525098,
+        "random": 74545.87611353255,
+        "optuna_tpe": 200.61546641818083
+      },
+      {
+        "seed": 2,
+        "alba_gravity_surrogate": 112.95051314374098,
+        "alba_coherence": 79.2137329097522,
+        "random": 152.33596822484878,
+        "optuna_tpe": 186.46776407829077
+      },
+      {
+        "seed": 3,
+        "alba_gravity_surrogate": 113.01553032472061,
+        "alba_coherence": 116.00356386489786,
+        "random": 422.9585366960197,
+        "optuna_tpe": 134.41915821185026
+      },
+      {
+        "seed": 4,
+        "alba_gravity_surrogate": 221.59448483745211,
+        "alba_coherence": 221.59448483745211,
+        "random": 157.01260545015163,
+        "optuna_tpe": 230.08388281438982
+      },
+      {
+        "seed": 5,
+        "alba_gravity_surrogate": 159.7237871937299,
+        "alba_coherence": 210.45191222314563,
+        "random": 210.49789634388608,
+        "optuna_tpe": 176.4663636701472
+      },
+      {
+        "seed": 6,
+        "alba_gravity_surrogate": 87.13921689474103,
+        "alba_coherence": 160.2716417070615,
+        "random": 13148.106278986244,
+        "optuna_tpe": 218.23293747185397
+      },
+      {
+        "seed": 7,
+        "alba_gravity_surrogate": 173.99635456386648,
+        "alba_coherence": 136.66930943817357,
+        "random": 222.26754276613013,
+        "optuna_tpe": 165.62666254694395
+      },
+      {
+        "seed": 8,
+        "alba_gravity_surrogate": 78.24648388103904,
+        "alba_coherence": 60.73192997873825,
+        "random": 314.3578986648778,
+        "optuna_tpe": 134.73660602945137
+      },
+      {
+        "seed": 9,
+        "alba_gravity_surrogate": 125.51633478598175,
+        "alba_coherence": 206.73013933022125,
+        "random": 216.52986081222716,
+        "optuna_tpe": 225.27345922964213
+      },
+      {
+        "seed": 10,
+        "alba_gravity_surrogate": 102.8180695865278,
+        "alba_coherence": 99.00781943462836,
+        "random": 135.6974360165,
+        "optuna_tpe": 147.13074013003524
+      },
+      {
+        "seed": 11,
+        "alba_gravity_surrogate": 179.71369668294403,
+        "alba_coherence": 160.5423099173447,
+        "random": 695.8686487740688,
+        "optuna_tpe": 216.30874840473086
+      },
+      {
+        "seed": 12,
+        "alba_gravity_surrogate": 407.1889510038874,
+        "alba_coherence": 297.5266820795132,
+        "random": 220.8800519496343,
+        "optuna_tpe": 117.29968554098492
+      },
+      {
+        "seed": 13,
+        "alba_gravity_surrogate": 77.42543746311776,
+        "alba_coherence": 134.33200073798804,
+        "random": 166.33456833207183,
+        "optuna_tpe": 143.58286370785115
+      },
+      {
+        "seed": 14,
+        "alba_gravity_surrogate": 144.2258549472869,
+        "alba_coherence": 122.34078656569069,
+        "random": 257.97389263799516,
+        "optuna_tpe": 144.70436989212882
+      },
+      {
+        "seed": 15,
+        "alba_gravity_surrogate": 112.14934225672762,
+        "alba_coherence": 81.31490758995366,
+        "random": 227.18257216768873,
+        "optuna_tpe": 113.59026007997822
+      },
+      {
+        "seed": 16,
+        "alba_gravity_surrogate": 111.32116413884611,
+        "alba_coherence": 111.32116413884611,
+        "random": 326.55861960474414,
+        "optuna_tpe": 169.20525477753398
+      },
+      {
+        "seed": 17,
+        "alba_gravity_surrogate": 196.8663551480146,
+        "alba_coherence": 203.32806581238748,
+        "random": 258.07445949550964,
+        "optuna_tpe": 183.08895740994637
+      },
+      {
+        "seed": 18,
+        "alba_gravity_surrogate": 197.91438964027935,
+        "alba_coherence": 168.05699183522339,
+        "random": 666.4774972291164,
+        "optuna_tpe": 163.9216302929095
+      },
+      {
+        "seed": 19,
+        "alba_gravity_surrogate": 134.17838170234126,
+        "alba_coherence": 224.47511423455248,
+        "random": 206.97265878286618,
+        "optuna_tpe": 129.74576921330635
+      }
+    ],
+    "styblinski_tang_4D": [
+      {
+        "seed": 0,
+        "alba_gravity_surrogate": -137.54204936085864,
+        "alba_coherence": -140.79705386619318,
+        "random": -128.22899844340668,
+        "optuna_tpe": -140.2745407046633
+      },
+      {
+        "seed": 1,
+        "alba_gravity_surrogate": -149.78550835292975,
+        "alba_coherence": -128.7502398158431,
+        "random": -129.10775728278549,
+        "optuna_tpe": -155.34184313940446
+      },
+      {
+        "seed": 2,
+        "alba_gravity_surrogate": -152.13984197312467,
+        "alba_coherence": -123.28673640745146,
+        "random": -142.1155804470116,
+        "optuna_tpe": -154.47828126812726
+      },
+      {
+        "seed": 3,
+        "alba_gravity_surrogate": -150.82264298687087,
+        "alba_coherence": -150.31812066728617,
+        "random": -114.26769872900638,
+        "optuna_tpe": -155.2747277707767
+      },
+      {
+        "seed": 4,
+        "alba_gravity_surrogate": -139.873524447399,
+        "alba_coherence": -147.5071785531112,
+        "random": -129.4147890790768,
+        "optuna_tpe": -136.64394339056537
+      },
+      {
+        "seed": 5,
+        "alba_gravity_surrogate": -148.11781337747394,
+        "alba_coherence": -152.70444950121447,
+        "random": -122.53400891615891,
+        "optuna_tpe": -154.61203862668398
+      },
+      {
+        "seed": 6,
+        "alba_gravity_surrogate": -140.79559732746273,
+        "alba_coherence": -140.30641414547745,
+        "random": -117.49687356849694,
+        "optuna_tpe": -154.711960722653
+      },
+      {
+        "seed": 7,
+        "alba_gravity_surrogate": -134.74239519920064,
+        "alba_coherence": -123.02157971249771,
+        "random": -123.8647740462712,
+        "optuna_tpe": -142.18637471224508
+      },
+      {
+        "seed": 8,
+        "alba_gravity_surrogate": -141.38361254076506,
+        "alba_coherence": -155.07117939019005,
+        "random": -125.79202015860736,
+        "optuna_tpe": -154.80147275676092
+      },
+      {
+        "seed": 9,
+        "alba_gravity_surrogate": -137.11754753435713,
+        "alba_coherence": -149.2396375649247,
+        "random": -145.6947508334532,
+        "optuna_tpe": -137.48432693132824
+      },
+      {
+        "seed": 10,
+        "alba_gravity_surrogate": -153.21541744811532,
+        "alba_coherence": -152.69508576830535,
+        "random": -140.8129281212684,
+        "optuna_tpe": -137.16948138718277
+      },
+      {
+        "seed": 11,
+        "alba_gravity_surrogate": -152.54664215741218,
+        "alba_coherence": -153.23394602582493,
+        "random": -118.9450802464422,
+        "optuna_tpe": -152.1846561062173
+      },
+      {
+        "seed": 12,
+        "alba_gravity_surrogate": -146.89909951683154,
+        "alba_coherence": -140.5067004990123,
+        "random": -138.30125952328248,
+        "optuna_tpe": -126.27113984921726
+      },
+      {
+        "seed": 13,
+        "alba_gravity_surrogate": -133.15054056312908,
+        "alba_coherence": -154.93978342496945,
+        "random": -141.23343137904087,
+        "optuna_tpe": -153.138071505694
+      },
+      {
+        "seed": 14,
+        "alba_gravity_surrogate": -153.26177085907756,
+        "alba_coherence": -153.81356040575147,
+        "random": -134.0082893678157,
+        "optuna_tpe": -155.3965155462048
+      },
+      {
+        "seed": 15,
+        "alba_gravity_surrogate": -149.71829425288703,
+        "alba_coherence": -151.12804485633453,
+        "random": -131.74779861690988,
+        "optuna_tpe": -141.10222108408155
+      },
+      {
+        "seed": 16,
+        "alba_gravity_surrogate": -145.381843670011,
+        "alba_coherence": -147.09138118821366,
+        "random": -127.53285670358498,
+        "optuna_tpe": -151.69784114107296
+      },
+      {
+        "seed": 17,
+        "alba_gravity_surrogate": -125.13917622041124,
+        "alba_coherence": -156.02950409617,
+        "random": -115.0670386463027,
+        "optuna_tpe": -151.85421061489777
+      },
+      {
+        "seed": 18,
+        "alba_gravity_surrogate": -132.15502790904858,
+        "alba_coherence": -135.00088882081744,
+        "random": -128.4350134228019,
+        "optuna_tpe": -141.23217176064844
+      },
+      {
+        "seed": 19,
+        "alba_gravity_surrogate": -139.0634477845211,
+        "alba_coherence": -153.4812004911317,
+        "random": -133.57741681276855,
+        "optuna_tpe": -154.151166239965
+      }
+    ],
+    "styblinski_tang_15D": [
+      {
+        "seed": 0,
+        "alba_gravity_surrogate": -432.0904987718465,
+        "alba_coherence": -359.9201470502754,
+        "random": -327.5770803761506,
+        "optuna_tpe": -405.0517348428592
+      },
+      {
+        "seed": 1,
+        "alba_gravity_surrogate": -399.1047928275915,
+        "alba_coherence": -392.7497987957819,
+        "random": -359.52498286290603,
+        "optuna_tpe": -353.54932979816806
+      },
+      {
+        "seed": 2,
+        "alba_gravity_surrogate": -403.325533788048,
+        "alba_coherence": -357.08851982742317,
+        "random": -318.22039475695755,
+        "optuna_tpe": -374.62361965026645
+      },
+      {
+        "seed": 3,
+        "alba_gravity_surrogate": -352.4835839665734,
+        "alba_coherence": -396.6349293129581,
+        "random": -416.94410072194813,
+        "optuna_tpe": -317.0400308772412
+      },
+      {
+        "seed": 4,
+        "alba_gravity_surrogate": -349.2832082568816,
+        "alba_coherence": -392.3839511087774,
+        "random": -318.60267396960074,
+        "optuna_tpe": -424.4642319443367
+      },
+      {
+        "seed": 5,
+        "alba_gravity_surrogate": -370.1722366576066,
+        "alba_coherence": -357.67081222296997,
+        "random": -281.3485014762313,
+        "optuna_tpe": -334.9576190542318
+      },
+      {
+        "seed": 6,
+        "alba_gravity_surrogate": -384.887838336532,
+        "alba_coherence": -389.23212437178614,
+        "random": -319.6053784441491,
+        "optuna_tpe": -347.1033780513236
+      },
+      {
+        "seed": 7,
+        "alba_gravity_surrogate": -323.11311534377,
+        "alba_coherence": -372.6992868650475,
+        "random": -369.7271335525513,
+        "optuna_tpe": -307.9102335320486
+      },
+      {
+        "seed": 8,
+        "alba_gravity_surrogate": -418.2256358690908,
+        "alba_coherence": -436.74593318931886,
+        "random": -322.9313007447766,
+        "optuna_tpe": -318.5274496737888
+      },
+      {
+        "seed": 9,
+        "alba_gravity_surrogate": -357.7899312566491,
+        "alba_coherence": -462.22953119680375,
+        "random": -343.04961861896544,
+        "optuna_tpe": -349.76745584033256
+      },
+      {
+        "seed": 10,
+        "alba_gravity_surrogate": -443.1492906736336,
+        "alba_coherence": -412.3690513635509,
+        "random": -335.02359116190786,
+        "optuna_tpe": -337.01217889095585
+      },
+      {
+        "seed": 11,
+        "alba_gravity_surrogate": -373.9346956921652,
+        "alba_coherence": -388.877107118612,
+        "random": -334.93878844363854,
+        "optuna_tpe": -329.6494494215471
+      },
+      {
+        "seed": 12,
+        "alba_gravity_surrogate": -370.78965942202535,
+        "alba_coherence": -390.5007357139785,
+        "random": -323.1497306466345,
+        "optuna_tpe": -368.64429050928345
+      },
+      {
+        "seed": 13,
+        "alba_gravity_surrogate": -336.8579117210592,
+        "alba_coherence": -397.9118845830031,
+        "random": -303.79384980145386,
+        "optuna_tpe": -398.156422804435
+      },
+      {
+        "seed": 14,
+        "alba_gravity_surrogate": -319.31717813352185,
+        "alba_coherence": -363.09128309945487,
+        "random": -338.11403837026324,
+        "optuna_tpe": -369.4920966107044
+      },
+      {
+        "seed": 15,
+        "alba_gravity_surrogate": -315.84260621086025,
+        "alba_coherence": -385.43275409115705,
+        "random": -319.6747575220062,
+        "optuna_tpe": -362.27695702006855
+      },
+      {
+        "seed": 16,
+        "alba_gravity_surrogate": -376.3813407972219,
+        "alba_coherence": -407.71309832763376,
+        "random": -336.9836155317169,
+        "optuna_tpe": -365.2560441131811
+      },
+      {
+        "seed": 17,
+        "alba_gravity_surrogate": -370.4492380393856,
+        "alba_coherence": -378.7621636415702,
+        "random": -298.7730946194088,
+        "optuna_tpe": -335.4363279054794
+      },
+      {
+        "seed": 18,
+        "alba_gravity_surrogate": -379.7151833196651,
+        "alba_coherence": -443.48854881824724,
+        "random": -338.8326598493355,
+        "optuna_tpe": -382.3848116644905
+      },
+      {
+        "seed": 19,
+        "alba_gravity_surrogate": -364.0514157533367,
+        "alba_coherence": -381.9122585717172,
+        "random": -334.5258188989848,
+        "optuna_tpe": -418.93650371453015
+      }
+    ]
+  }
+}

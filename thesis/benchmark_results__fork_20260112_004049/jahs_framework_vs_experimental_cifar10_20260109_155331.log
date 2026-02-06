@@ -1,0 +1,24 @@
+Benchmark tasks: ['cifar10'] | budget=400 | seeds=[70, 71, 72, 73]
+Checkpoints: [100, 200, 400]
+Framework config: grid_bins=8 grid_batch_size=512 grid_batches=4 grid_sampling=grid_random grid_jitter=True grid_penalty_lambda=0.06 heatmap_ucb_beta=1.0 heatmap_ucb_explore_prob=0.25 heatmap_ucb_temperature=1.0
+Saving to: /mnt/workspace/thesis/benchmark_results/jahs_framework_vs_experimental_cifar10_20260109_155331.json
+Logging to: /mnt/workspace/thesis/benchmark_results/jahs_framework_vs_experimental_cifar10_20260109_155331.log
+
+=== TASK cifar10 ===
+
+Task cifar10 | Seed 70...
+  FW=90.98%  EXP=91.45%  -> EXP (32.4s)
+
+Task cifar10 | Seed 71...
+  FW=91.00%  EXP=91.10%  -> EXP (31.9s)
+
+Task cifar10 | Seed 72...
+  FW=89.59%  EXP=91.67%  -> EXP (30.6s)
+
+Task cifar10 | Seed 73...
+  FW=90.90%  EXP=91.74%  -> EXP (31.2s)
+
+=== SUMMARY (final checkpoint) ===
+cifar10: FW mean=90.62% std=0.59 | EXP mean=91.49% std=0.25 | wins FW=0 ties=0
+
+Saved: /mnt/workspace/thesis/benchmark_results/jahs_framework_vs_experimental_cifar10_20260109_155331.json

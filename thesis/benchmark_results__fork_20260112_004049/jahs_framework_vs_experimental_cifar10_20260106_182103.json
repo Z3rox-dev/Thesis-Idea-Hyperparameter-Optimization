@@ -1,0 +1,39 @@
+{
+  "config": {
+    "tasks": [
+      "cifar10"
+    ],
+    "budget": 50,
+    "checkpoints": [
+      50
+    ],
+    "nepochs": 200,
+    "seeds": [
+      70
+    ],
+    "framework": {
+      "grid_bins": 8,
+      "grid_batch_size": 512,
+      "grid_batches": 4,
+      "grid_sampling": "grid_random",
+      "grid_jitter": true,
+      "grid_penalty_lambda": 0.1
+    },
+    "timestamp": "20260106_182103"
+  },
+  "tasks": {
+    "cifar10": {
+      "framework": {
+        "70": {
+          "50": 0.1077552795410156
+        }
+      },
+      "experimental": {
+        "70": {
+          "50": 0.09671058654785158
+        }
+      },
+      "errors": {}
+    }
+  }
+}

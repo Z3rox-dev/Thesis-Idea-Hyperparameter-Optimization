@@ -1,0 +1,98 @@
+[
+  {
+    "scenario": "rbv2_xgboost",
+    "instance": "16",
+    "seed": 0,
+    "orig_best": 1.0,
+    "cop_best": 1.0,
+    "winner": "Tie"
+  },
+  {
+    "scenario": "rbv2_xgboost",
+    "instance": "16",
+    "seed": 1,
+    "orig_best": 1.0,
+    "cop_best": 1.0,
+    "winner": "Tie"
+  },
+  {
+    "scenario": "rbv2_xgboost",
+    "instance": "16",
+    "seed": 2,
+    "orig_best": 1.0,
+    "cop_best": 1.0,
+    "winner": "Tie"
+  },
+  {
+    "scenario": "rbv2_xgboost",
+    "instance": "40923",
+    "seed": 0,
+    "orig_best": 1.0,
+    "cop_best": 1.0,
+    "winner": "Tie"
+  },
+  {
+    "scenario": "rbv2_xgboost",
+    "instance": "40923",
+    "seed": 1,
+    "orig_best": 1.0,
+    "cop_best": 1.0,
+    "winner": "Tie"
+  },
+  {
+    "scenario": "rbv2_xgboost",
+    "instance": "40923",
+    "seed": 2,
+    "orig_best": 1.0,
+    "cop_best": 1.0,
+    "winner": "Tie"
+  },
+  {
+    "scenario": "iaml_xgboost",
+    "instance": "40981",
+    "seed": 0,
+    "orig_best": 1.0,
+    "cop_best": 1.0,
+    "winner": "Tie"
+  },
+  {
+    "scenario": "iaml_xgboost",
+    "instance": "40981",
+    "seed": 1,
+    "orig_best": 1.0,
+    "cop_best": 1.0,
+    "winner": "Tie"
+  },
+  {
+    "scenario": "iaml_xgboost",
+    "instance": "40981",
+    "seed": 2,
+    "orig_best": 1.0,
+    "cop_best": 1.0,
+    "winner": "Tie"
+  },
+  {
+    "scenario": "iaml_xgboost",
+    "instance": "41146",
+    "seed": 0,
+    "orig_best": 1.0,
+    "cop_best": 1.0,
+    "winner": "Tie"
+  },
+  {
+    "scenario": "iaml_xgboost",
+    "instance": "41146",
+    "seed": 1,
+    "orig_best": 1.0,
+    "cop_best": 1.0,
+    "winner": "Tie"
+  },
+  {
+    "scenario": "iaml_xgboost",
+    "instance": "41146",
+    "seed": 2,
+    "orig_best": 1.0,
+    "cop_best": 1.0,
+    "winner": "Tie"
+  }
+]

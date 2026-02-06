@@ -1,0 +1,43 @@
+{
+  "config": {
+    "budget": 20,
+    "seeds": "0-2",
+    "epochs": 3,
+    "subset": 5000
+  },
+  "results": [
+    {
+      "seed": 0,
+      "budget": 20,
+      "alba_best": 0.3745,
+      "alba_time": 22.846976041793823,
+      "optuna_best": 0.3675,
+      "optuna_time": 21.255207300186157,
+      "winner": "alba"
+    },
+    {
+      "seed": 1,
+      "budget": 20,
+      "alba_best": 0.3685,
+      "alba_time": 21.761375665664673,
+      "optuna_best": 0.3555,
+      "optuna_time": 22.007201433181763,
+      "winner": "alba"
+    },
+    {
+      "seed": 2,
+      "budget": 20,
+      "alba_best": 0.3555,
+      "alba_time": 21.90907621383667,
+      "optuna_best": 0.3735,
+      "optuna_time": 21.891090393066406,
+      "winner": "optuna"
+    }
+  ],
+  "summary": {
+    "alba_wins": 2,
+    "optuna_wins": 1,
+    "alba_avg": 0.3661666666666667,
+    "optuna_avg": 0.3655
+  }
+}

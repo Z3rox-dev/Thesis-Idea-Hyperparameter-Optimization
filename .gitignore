@@ -1,59 +1,31 @@
-future_work
-monitoring_logs
-tests
-_pychache_
-__pycache__
+# ===== Large/binary folders (never track) =====
+miniconda3/
+miniconda.sh
+.venv*/
+venv/
+env/
+data/
+jahs_bench_data/
+AutogluonModels/
+algo_logs/
+HPOBench/
+tabarena/
+monitoring_logs/
+std.out
+
+# ===== Python =====
+__pycache__/
 *.pyc
 *.pyo
 *.pyd
-env/
-venv/
-data
-.venv
-unit_tests
+*.egg-info/
+build/
+dist/
+*.whl
 
-# Ignore everything in thesis except selected scripts
-thesis/*
-!thesis/hpo_curvature.py
-!thesis/hpo_main.py
-!thesis/hpo_v15_backup.py
-!thesis/hpo_minimal.py
-!thesis/mini_benchmark.py
-!thesis/advanced_benchmark.py
-!thesis/benchmark_xgboost_tabular.py
-!thesis/benchmark_hpobench_paramnet_curv.py
-!thesis/benchmark_hpobench_xgb_tabular_curv.py
-!thesis/benchmark_jahs.py
-!thesis/ALBA_V1.py
-!benchmark_synthetic_cma.py
+# ===== OS =====
+.DS_Store
+Thumbs.db
 
-# Allow the modular framework package
-!thesis/alba_framework/
-!thesis/alba_framework/**
-
-# Allow the modular grid/heatmap package
-!thesis/alba_framework_grid/
-!thesis/alba_framework_grid/**
-
-# But still ignore caches inside it
-thesis/alba_framework/__pycache__/
-thesis/alba_framework/**/*.pyc
-
-# But still ignore caches inside it
-thesis/alba_framework_grid/__pycache__/
-thesis/alba_framework_grid/**/*.pyc
-
-# Large folders
-miniconda3/
-miniconda.sh
-algo_logs/
-HPOBench/
-!benchmark_synthetic.py
-# Allow the gravity framework package
-!thesis/alba_framework_gravity/
-!thesis/alba_framework_gravity/**
-thesis/alba_framework_gravity/__pycache__/
-thesis/alba_framework_gravity/**/*.pyc
-
-# Allow LLR gradient test
-!thesis/test_alba_llr_gradient.py
+# ===== Thesis: allow everything under thesis/ =====
+# (track all thesis code on dev branch)

@@ -1,0 +1,64 @@
+======================================================================
+BENCHMARK: ALBA vs Optuna
+======================================================================
+Budget: 400 evaluations
+Seeds: 10
+======================================================================
+
+======================================================================
+PART 2: JAHS-Bench-201 (colorectal_histology)
+======================================================================
+
+Initializing JAHS-Bench-201 (task=colorectal_histology)...
+  [JAHS colorectal_histology] seed=0 [W 2026-01-29 17:55:43,390] Trial 286 failed with parameters: {'LearningRate': 0.012307529565492529, 'WeightDecay': 6.264390745636823e-05, 'N': 5, 'W': 16, 'Resolution': 1.0, 'Activation': 'Mish', 'TrivialAugment': False, 'Op1': 0, 'Op2': 3, 'Op3': 3} because of the following error: KeyboardInterrupt().
+Traceback (most recent call last):
+  File "/mnt/workspace/miniconda3/envs/py39/lib/python3.9/site-packages/optuna/study/_optimize.py", line 205, in _run_trial
+    value_or_values = func(trial)
+  File "/mnt/workspace/thesis/nuovo_progetto/benchmark_alba_optuna_xgb_jahs.py", line 237, in optuna_objective
+    config[hp_name] = trial.suggest_categorical(hp_name, hp_spec['choices'])
+  File "/mnt/workspace/miniconda3/envs/py39/lib/python3.9/site-packages/optuna/trial/_trial.py", line 408, in suggest_categorical
+    return self._suggest(name, CategoricalDistribution(choices=choices))
+  File "/mnt/workspace/miniconda3/envs/py39/lib/python3.9/site-packages/optuna/trial/_trial.py", line 637, in _suggest
+    param_value = self.study.sampler.sample_independent(
+  File "/mnt/workspace/miniconda3/envs/py39/lib/python3.9/site-packages/optuna/samplers/_tpe/sampler.py", line 487, in sample_independent
+    return self._sample(study, trial, search_space, use_trial_cache=not self._constant_liar)[
+  File "/mnt/workspace/miniconda3/envs/py39/lib/python3.9/site-packages/optuna/samplers/_tpe/sampler.py", line 550, in _sample
+    mpe_above = self._build_parzen_estimator(
+  File "/mnt/workspace/miniconda3/envs/py39/lib/python3.9/site-packages/optuna/samplers/_tpe/sampler.py", line 570, in _build_parzen_estimator
+    observations = self._get_internal_repr(trials, search_space)
+  File "/mnt/workspace/miniconda3/envs/py39/lib/python3.9/site-packages/optuna/samplers/_tpe/sampler.py", line 513, in _get_internal_repr
+    for trial in trials:
+KeyboardInterrupt
+[W 2026-01-29 17:55:43,392] Trial 286 failed with value None.
+Traceback (most recent call last):
+  File "/mnt/workspace/thesis/nuovo_progetto/benchmark_alba_optuna_xgb_jahs.py", line 322, in <module>
+    main()
+  File "/mnt/workspace/thesis/nuovo_progetto/benchmark_alba_optuna_xgb_jahs.py", line 302, in main
+    jahs_results = run_jahs_benchmark(task=args.jahs_task, budget=args.budget, seeds=args.seeds)
+  File "/mnt/workspace/thesis/nuovo_progetto/benchmark_alba_optuna_xgb_jahs.py", line 242, in run_jahs_benchmark
+    study.optimize(optuna_objective, n_trials=budget, show_progress_bar=False)
+  File "/mnt/workspace/miniconda3/envs/py39/lib/python3.9/site-packages/optuna/study/study.py", line 490, in optimize
+    _optimize(
+  File "/mnt/workspace/miniconda3/envs/py39/lib/python3.9/site-packages/optuna/study/_optimize.py", line 67, in _optimize
+    _optimize_sequential(
+  File "/mnt/workspace/miniconda3/envs/py39/lib/python3.9/site-packages/optuna/study/_optimize.py", line 164, in _optimize_sequential
+    frozen_trial_id = _run_trial(study, func, catch)
+  File "/mnt/workspace/miniconda3/envs/py39/lib/python3.9/site-packages/optuna/study/_optimize.py", line 262, in _run_trial
+    raise func_err
+  File "/mnt/workspace/miniconda3/envs/py39/lib/python3.9/site-packages/optuna/study/_optimize.py", line 205, in _run_trial
+    value_or_values = func(trial)
+  File "/mnt/workspace/thesis/nuovo_progetto/benchmark_alba_optuna_xgb_jahs.py", line 237, in optuna_objective
+    config[hp_name] = trial.suggest_categorical(hp_name, hp_spec['choices'])
+  File "/mnt/workspace/miniconda3/envs/py39/lib/python3.9/site-packages/optuna/trial/_trial.py", line 408, in suggest_categorical
+    return self._suggest(name, CategoricalDistribution(choices=choices))
+  File "/mnt/workspace/miniconda3/envs/py39/lib/python3.9/site-packages/optuna/trial/_trial.py", line 637, in _suggest
+    param_value = self.study.sampler.sample_independent(
+  File "/mnt/workspace/miniconda3/envs/py39/lib/python3.9/site-packages/optuna/samplers/_tpe/sampler.py", line 487, in sample_independent
+    return self._sample(study, trial, search_space, use_trial_cache=not self._constant_liar)[
+  File "/mnt/workspace/miniconda3/envs/py39/lib/python3.9/site-packages/optuna/samplers/_tpe/sampler.py", line 550, in _sample
+    mpe_above = self._build_parzen_estimator(
+  File "/mnt/workspace/miniconda3/envs/py39/lib/python3.9/site-packages/optuna/samplers/_tpe/sampler.py", line 570, in _build_parzen_estimator
+    observations = self._get_internal_repr(trials, search_space)
+  File "/mnt/workspace/miniconda3/envs/py39/lib/python3.9/site-packages/optuna/samplers/_tpe/sampler.py", line 513, in _get_internal_repr
+    for trial in trials:
+KeyboardInterrupt

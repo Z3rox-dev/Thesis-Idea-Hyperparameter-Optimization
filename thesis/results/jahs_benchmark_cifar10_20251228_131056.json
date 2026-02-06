@@ -1,0 +1,23 @@
+{
+  "task": "cifar10",
+  "n_evals": 30,
+  "n_seeds": 2,
+  "seed_start": 0,
+  "timestamp": "20251228_131056",
+  "optimizers": {
+    "HPO_v5s_Fixed": {
+      "final_errors": [
+        NaN,
+        NaN
+      ],
+      "histories": [
+        [],
+        []
+      ],
+      "times": [
+        0,
+        0
+      ]
+    }
+  }
+}

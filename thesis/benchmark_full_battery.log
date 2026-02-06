@@ -1,0 +1,247 @@
+nohup: ignoring input
+Traceback (most recent call last):
+  File "/mnt/workspace/thesis/benchmark_full_battery.py", line 278, in run_jahs_benchmarks
+    wrapper = JAHSBenchWrapper(task=task)
+  File "/mnt/workspace/thesis/benchmark_jahs.py", line 73, in __init__
+    from jahs_bench import Benchmark
+ModuleNotFoundError: No module named 'jahs_bench'
+Traceback (most recent call last):
+  File "/mnt/workspace/thesis/benchmark_full_battery.py", line 278, in run_jahs_benchmarks
+    wrapper = JAHSBenchWrapper(task=task)
+  File "/mnt/workspace/thesis/benchmark_jahs.py", line 73, in __init__
+    from jahs_bench import Benchmark
+ModuleNotFoundError: No module named 'jahs_bench'
+================================================================================
+BATTERIA COMPLETA DI BENCHMARK
+Budget: 2000, Seeds: 10, Checkpoints: [100, 250, 500, 1000, 1500, 2000]
+Results file: /mnt/workspace/thesis/benchmark_results/full_benchmark_20260101_192215.json
+================================================================================
+
+================================================================================
+PARTE 1: YAHPO GYM
+================================================================================
+
+>>> YAHPO Scenario: rbv2_xgboost
+Please make sure to also cite:
+Binder M., Pfisterer F. & Bischl B. (2020). Collecting Empirical Data About Hyperparameters for Data Driven AutoML. 7th ICML Workshop on Automated Machine Learning.
+  Dim: 17, Cat: 3, Instances: 3
+
+  Instance: 16
+    Seed 42: ALBA=0.9989 Optuna=0.9901 → ALBA
+    Seed 43: ALBA=1.0000 Optuna=0.9882 → ALBA
+    Seed 44: ALBA=1.0000 Optuna=0.9877 → ALBA
+    Seed 45: ALBA=1.0000 Optuna=0.9893 → ALBA
+    Seed 46: ALBA=0.9990 Optuna=0.9898 → ALBA
+    Seed 47: ALBA=1.0000 Optuna=0.9887 → ALBA
+    Seed 48: ALBA=1.0000 Optuna=0.9872 → ALBA
+    Seed 49: ALBA=1.0000 Optuna=0.9893 → ALBA
+    Seed 50: ALBA=1.0000 Optuna=0.9886 → ALBA
+    Seed 51: ALBA=1.0000 Optuna=0.9882 → ALBA
+
+  Instance: 40923
+    Seed 42: ALBA=1.0000 Optuna=1.0000 → Optuna
+    Seed 43: ALBA=1.0000 Optuna=1.0000 → Optuna
+    Seed 44: ALBA=1.0000 Optuna=1.0000 → Optuna
+    Seed 45: ALBA=1.0000 Optuna=1.0000 → Optuna
+    Seed 46: ALBA=1.0000 Optuna=1.0000 → Optuna
+    Seed 47: ALBA=1.0000 Optuna=1.0000 → Optuna
+    Seed 48: ALBA=1.0000 Optuna=1.0000 → Optuna
+    Seed 49: ALBA=1.0000 Optuna=1.0000 → Optuna
+    Seed 50: ALBA=1.0000 Optuna=1.0000 → Optuna
+    Seed 51: ALBA=1.0000 Optuna=1.0000 → Optuna
+
+  Instance: 41143
+    Seed 42: ALBA=0.9030 Optuna=0.9068 → Optuna
+    Seed 43: ALBA=0.9215 Optuna=0.9063 → ALBA
+    Seed 44: ALBA=0.9213 Optuna=0.9031 → ALBA
+    Seed 45: ALBA=0.9268 Optuna=0.9146 → ALBA
+    Seed 46: ALBA=0.9035 Optuna=0.9037 → Optuna
+    Seed 47: ALBA=0.9037 Optuna=0.9099 → Optuna
+    Seed 48: ALBA=0.9120 Optuna=0.8948 → ALBA
+    Seed 49: ALBA=0.9258 Optuna=0.9127 → ALBA
+    Seed 50: ALBA=0.9232 Optuna=0.9116 → ALBA
+    Seed 51: ALBA=0.9212 Optuna=0.9079 → ALBA
+  [Saved to /mnt/workspace/thesis/benchmark_results/full_benchmark_20260101_192215.json]
+
+>>> YAHPO Scenario: rbv2_ranger
+Please make sure to also cite:
+Binder M., Pfisterer F. & Bischl B. (2020). Collecting Empirical Data About Hyperparameters for Data Driven AutoML. 7th ICML Workshop on Automated Machine Learning.
+  Dim: 11, Cat: 4, Instances: 3
+
+  Instance: 4135
+    Seed 42: ALBA=0.9785 Optuna=0.9784 → ALBA
+    Seed 43: ALBA=0.9786 Optuna=0.9784 → ALBA
+    Seed 44: ALBA=0.9785 Optuna=0.9784 → ALBA
+    Seed 45: ALBA=0.9787 Optuna=0.9785 → ALBA
+    Seed 46: ALBA=0.9868 Optuna=0.9783 → ALBA
+    Seed 47: ALBA=0.9786 Optuna=0.9766 → ALBA
+    Seed 48: ALBA=0.9788 Optuna=0.9784 → ALBA
+    Seed 49: ALBA=0.9788 Optuna=0.9764 → ALBA
+    Seed 50: ALBA=0.9869 Optuna=0.9767 → ALBA
+    Seed 51: ALBA=0.9786 Optuna=0.9786 → ALBA
+
+  Instance: 40981
+    Seed 42: ALBA=0.9206 Optuna=0.9077 → ALBA
+    Seed 43: ALBA=0.9206 Optuna=0.9194 → ALBA
+    Seed 44: ALBA=0.9206 Optuna=0.9199 → ALBA
+    Seed 45: ALBA=0.9081 Optuna=0.9192 → Optuna
+    Seed 46: ALBA=0.9206 Optuna=0.9157 → ALBA
+    Seed 47: ALBA=0.9206 Optuna=0.9156 → ALBA
+    Seed 48: ALBA=0.9206 Optuna=0.9159 → ALBA
+    Seed 49: ALBA=0.9206 Optuna=0.9152 → ALBA
+    Seed 50: ALBA=0.9205 Optuna=0.9194 → ALBA
+    Seed 51: ALBA=0.9206 Optuna=0.9188 → ALBA
+
+  Instance: 4134
+    Seed 42: ALBA=0.9199 Optuna=0.9062 → ALBA
+    Seed 43: ALBA=0.9199 Optuna=0.9075 → ALBA
+    Seed 44: ALBA=0.9199 Optuna=0.9128 → ALBA
+    Seed 45: ALBA=0.9199 Optuna=0.9012 → ALBA
+    Seed 46: ALBA=0.9199 Optuna=0.9046 → ALBA
+    Seed 47: ALBA=0.9199 Optuna=0.9074 → ALBA
+    Seed 48: ALBA=0.9199 Optuna=0.9070 → ALBA
+    Seed 49: ALBA=0.9199 Optuna=0.9079 → ALBA
+    Seed 50: ALBA=0.9199 Optuna=0.9062 → ALBA
+    Seed 51: ALBA=0.9199 Optuna=0.9101 → ALBA
+  [Saved to /mnt/workspace/thesis/benchmark_results/full_benchmark_20260101_192215.json]
+
+>>> YAHPO Scenario: rbv2_svm
+Please make sure to also cite:
+Binder M., Pfisterer F. & Bischl B. (2020). Collecting Empirical Data About Hyperparameters for Data Driven AutoML. 7th ICML Workshop on Automated Machine Learning.
+  Dim: 9, Cat: 3, Instances: 3
+
+  Instance: 40981
+    Seed 42: ALBA=0.8961 Optuna=0.8959 → ALBA
+    Seed 43: ALBA=0.8961 Optuna=0.8960 → ALBA
+    Seed 44: ALBA=0.8958 Optuna=0.8958 → Optuna
+    Seed 45: ALBA=0.8959 Optuna=0.8960 → Optuna
+    Seed 46: ALBA=0.8961 Optuna=0.8959 → ALBA
+    Seed 47: ALBA=0.8961 Optuna=0.8959 → ALBA
+    Seed 48: ALBA=0.8959 Optuna=0.8957 → ALBA
+    Seed 49: ALBA=0.8873 Optuna=0.8955 → Optuna
+    Seed 50: ALBA=0.8960 Optuna=0.8957 → ALBA
+    Seed 51: ALBA=0.8961 Optuna=0.8960 → ALBA
+
+  Instance: 4134
+    Seed 42: ALBA=0.7767 Optuna=0.7775 → Optuna
+    Seed 43: ALBA=0.7776 Optuna=0.7776 → ALBA
+    Seed 44: ALBA=0.7776 Optuna=0.7776 → ALBA
+    Seed 45: ALBA=0.7776 Optuna=0.7775 → ALBA
+    Seed 46: ALBA=0.7776 Optuna=0.7776 → Optuna
+    Seed 47: ALBA=0.7776 Optuna=0.7776 → Optuna
+    Seed 48: ALBA=0.7776 Optuna=0.7776 → ALBA
+    Seed 49: ALBA=0.7767 Optuna=0.7776 → Optuna
+    Seed 50: ALBA=0.7776 Optuna=0.7776 → ALBA
+    Seed 51: ALBA=0.7767 Optuna=0.7776 → Optuna
+
+  Instance: 1220
+    Seed 42: ALBA=0.8590 Optuna=0.8551 → ALBA
+    Seed 43: ALBA=0.8588 Optuna=0.8581 → ALBA
+    Seed 44: ALBA=0.8590 Optuna=0.8539 → ALBA
+    Seed 45: ALBA=0.8555 Optuna=0.8554 → ALBA
+    Seed 46: ALBA=0.8591 Optuna=0.8538 → ALBA
+    Seed 47: ALBA=0.8541 Optuna=0.8553 → Optuna
+    Seed 48: ALBA=0.8587 Optuna=0.8555 → ALBA
+    Seed 49: ALBA=0.8590 Optuna=0.8552 → ALBA
+    Seed 50: ALBA=0.8550 Optuna=0.8585 → Optuna
+    Seed 51: ALBA=0.8541 Optuna=0.8553 → Optuna
+  [Saved to /mnt/workspace/thesis/benchmark_results/full_benchmark_20260101_192215.json]
+
+>>> YAHPO Scenario: iaml_xgboost
+  Dim: 15, Cat: 2, Instances: 3
+
+  Instance: 40981
+    Seed 42: ALBA=0.1205 Optuna=0.1169 → Optuna
+    Seed 43: ALBA=0.1202 Optuna=0.1159 → Optuna
+    Seed 44: ALBA=0.1157 Optuna=0.1150 → Optuna
+    Seed 45: ALBA=0.1197 Optuna=0.1167 → Optuna
+    Seed 46: ALBA=0.1163 Optuna=0.1150 → Optuna
+    Seed 47: ALBA=0.1174 Optuna=0.1151 → Optuna
+    Seed 48: ALBA=0.1156 Optuna=0.1172 → ALBA
+    Seed 49: ALBA=0.1171 Optuna=0.1153 → Optuna
+    Seed 50: ALBA=0.1165 Optuna=0.1156 → Optuna
+    Seed 51: ALBA=0.1143 Optuna=0.1154 → ALBA
+
+  Instance: 41146
+    Seed 42: ALBA=0.0558 Optuna=0.0562 → ALBA
+    Seed 43: ALBA=0.0560 Optuna=0.0563 → ALBA
+    Seed 44: ALBA=0.0561 Optuna=0.0563 → ALBA
+    Seed 45: ALBA=0.0562 Optuna=0.0564 → ALBA
+    Seed 46: ALBA=0.0561 Optuna=0.0565 → ALBA
+    Seed 47: ALBA=0.0561 Optuna=0.0566 → ALBA
+    Seed 48: ALBA=0.0557 Optuna=0.0565 → ALBA
+    Seed 49: ALBA=0.0559 Optuna=0.0564 → ALBA
+    Seed 50: ALBA=0.0562 Optuna=0.0564 → ALBA
+    Seed 51: ALBA=0.0560 Optuna=0.0563 → ALBA
+
+  Instance: 1489
+    Seed 42: ALBA=0.0842 Optuna=0.0892 → ALBA
+    Seed 43: ALBA=0.0861 Optuna=0.0881 → ALBA
+    Seed 44: ALBA=0.0845 Optuna=0.0887 → ALBA
+    Seed 45: ALBA=0.0881 Optuna=0.0888 → ALBA
+    Seed 46: ALBA=0.0854 Optuna=0.0879 → ALBA
+    Seed 47: ALBA=0.0863 Optuna=0.0888 → ALBA
+    Seed 48: ALBA=0.0854 Optuna=0.0900 → ALBA
+    Seed 49: ALBA=0.0849 Optuna=0.0880 → ALBA
+    Seed 50: ALBA=0.0895 Optuna=0.0877 → Optuna
+    Seed 51: ALBA=0.0907 Optuna=0.0884 → Optuna
+  [Saved to /mnt/workspace/thesis/benchmark_results/full_benchmark_20260101_192215.json]
+
+================================================================================
+PARTE 2: JAHS-BENCH-201
+================================================================================
+
+>>> JAHS Task: cifar10
+  ERROR in cifar10: No module named 'jahs_bench'
+
+>>> JAHS Task: fashion_mnist
+  ERROR in fashion_mnist: No module named 'jahs_bench'
+
+>>> JAHS Task: colorectal_histology
+Traceback (most recent call last):
+  File "/mnt/workspace/thesis/benchmark_full_battery.py", line 278, in run_jahs_benchmarks
+    wrapper = JAHSBenchWrapper(task=task)
+  File "/mnt/workspace/thesis/benchmark_jahs.py", line 73, in __init__
+    from jahs_bench import Benchmark
+ModuleNotFoundError: No module named 'jahs_bench'
+  ERROR in colorectal_histology: No module named 'jahs_bench'
+
+================================================================================
+RIEPILOGO FINALE
+================================================================================
+
+--- YAHPO GYM ---
+  rbv2_xgboost: ALBA 17 - 3 Optuna (ties: 10)
+  rbv2_ranger: ALBA 29 - 1 Optuna (ties: 0)
+  rbv2_svm: ALBA 19 - 11 Optuna (ties: 0)
+  iaml_xgboost: ALBA 20 - 10 Optuna (ties: 0)
+
+  YAHPO TOTAL: ALBA 85 - 25 Optuna
+
+--- JAHS-BENCH-201 ---
+
+  JAHS TOTAL: ALBA 0 - 0 Optuna
+
+================================================================================
+GRAND TOTAL
+================================================================================
+ALBA: 85 wins
+Optuna: 25 wins
+Ties: 10
+
+🏆 VINCITORE ASSOLUTO: ALBA
+
+================================================================================
+ANALISI PER CHECKPOINT (convergenza)
+================================================================================
+  Budget  100: ALBA  44 -  66 Optuna
+  Budget  250: ALBA  49 -  61 Optuna
+  Budget  500: ALBA  46 -  64 Optuna
+  Budget 1000: ALBA  47 -  63 Optuna
+  Budget 1500: ALBA  56 -  54 Optuna
+  Budget 2000: ALBA  85 -  25 Optuna
+  [Saved to /mnt/workspace/thesis/benchmark_results/full_benchmark_20260101_192215.json]
+
+
+Tempo totale: 90.6 minuti
+Risultati salvati in: /mnt/workspace/thesis/benchmark_results/full_benchmark_20260101_192215.json

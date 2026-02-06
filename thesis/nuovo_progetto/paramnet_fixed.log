@@ -1,0 +1,119 @@
+/mnt/workspace/thesis/nuovo_progetto/benchmark_hpobench_full.py:28: FutureWarning: In the future `np.bool` will be defined as the corresponding NumPy scalar.
+  if not hasattr(np, "bool"):
+/mnt/workspace/miniconda3/envs/py39/lib/python3.9/site-packages/sklearn/experimental/enable_hist_gradient_boosting.py:16: UserWarning: Since version 1.0, it is not needed to import enable_hist_gradient_boosting anymore. HistGradientBoostingClassifier and HistGradientBoostingRegressor are now stable and can be normally imported from sklearn.ensemble.
+  warnings.warn(
+/mnt/workspace/miniconda3/envs/py39/lib/python3.9/site-packages/xgboost/compat.py:106: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+======================================================================
+HPOBench Benchmark: PARAMNET
+Datasets: adult, higgs, letter, mnist, optdigits, poker
+Budget: 200 | Seeds: 3
+Methods: Copula, Optuna, Random, CMA-ES, ALBA
+======================================================================
+
+======================================================================
+Dataset: adult | Budget: 200 | Seeds: 3
+Methods: Copula, Optuna, Random, CMA-ES, ALBA
+======================================================================
+  Params: 8 (7 cont, 1 int, 0 cat)
+  [seed=0] Copula=0.1473 Optuna=0.1470 Random=0.1485 CMA-ES=0.1476 ALBA=0.1477 [Optuna]
+  [seed=1] Copula=0.1473 Optuna=0.1456 Random=0.1490 CMA-ES=0.1472 ALBA=0.1466 [Optuna]
+  [seed=2] Copula=0.1469 Optuna=0.1455 Random=0.1494 CMA-ES=0.1474 ALBA=0.1472 [Optuna]
+
+  Summary for adult:
+    Copula  : 0.1472 ± 0.0002 (wins: 0)
+    Optuna  : 0.1460 ± 0.0007 (wins: 3)
+    Random  : 0.1490 ± 0.0004 (wins: 0)
+    CMA-ES  : 0.1474 ± 0.0002 (wins: 0)
+    ALBA    : 0.1471 ± 0.0005 (wins: 0)
+
+======================================================================
+Dataset: higgs | Budget: 200 | Seeds: 3
+Methods: Copula, Optuna, Random, CMA-ES, ALBA
+======================================================================
+  Params: 8 (7 cont, 1 int, 0 cat)
+  [seed=0] Copula=0.2802 Optuna=0.2812 Random=0.2844 CMA-ES=0.2806 ALBA=0.2801 [ALBA]
+  [seed=1] Copula=0.2827 Optuna=0.2803 Random=0.2839 CMA-ES=0.2808 ALBA=0.2816 [Optuna]
+  [seed=2] Copula=0.2808 Optuna=0.2805 Random=0.2830 CMA-ES=0.2822 ALBA=0.2805 [Optuna]
+
+  Summary for higgs:
+    Copula  : 0.2812 ± 0.0010 (wins: 0)
+    Optuna  : 0.2807 ± 0.0004 (wins: 2)
+    Random  : 0.2838 ± 0.0006 (wins: 0)
+    CMA-ES  : 0.2812 ± 0.0007 (wins: 0)
+    ALBA    : 0.2807 ± 0.0006 (wins: 1)
+
+======================================================================
+Dataset: letter | Budget: 200 | Seeds: 3
+Methods: Copula, Optuna, Random, CMA-ES, ALBA
+======================================================================
+  Params: 8 (7 cont, 1 int, 0 cat)
+  [seed=0] Copula=0.0353 Optuna=0.0367 Random=0.0501 CMA-ES=0.0365 ALBA=0.0341 [ALBA]
+  [seed=1] Copula=0.0335 Optuna=0.0351 Random=0.0498 CMA-ES=0.0354 ALBA=0.0335 [Copula]
+  [seed=2] Copula=0.0457 Optuna=0.0354 Random=0.0431 CMA-ES=0.0359 ALBA=0.0427 [Optuna]
+
+  Summary for letter:
+    Copula  : 0.0382 ± 0.0054 (wins: 1)
+    Optuna  : 0.0358 ± 0.0007 (wins: 1)
+    Random  : 0.0476 ± 0.0032 (wins: 0)
+    CMA-ES  : 0.0359 ± 0.0005 (wins: 0)
+    ALBA    : 0.0368 ± 0.0042 (wins: 1)
+
+======================================================================
+Dataset: mnist | Budget: 200 | Seeds: 3
+Methods: Copula, Optuna, Random, CMA-ES, ALBA
+======================================================================
+  Params: 8 (7 cont, 1 int, 0 cat)
+  [seed=0] Copula=0.0152 Optuna=0.0153 Random=0.0154 CMA-ES=0.0153 ALBA=0.0157 [Copula]
+  [seed=1] Copula=0.0153 Optuna=0.0154 Random=0.0179 CMA-ES=0.0147 ALBA=0.0147 [ALBA]
+  [seed=2] Copula=0.0156 Optuna=0.0153 Random=0.0171 CMA-ES=0.0156 ALBA=0.0153 [Optuna]
+
+  Summary for mnist:
+    Copula  : 0.0154 ± 0.0002 (wins: 1)
+    Optuna  : 0.0153 ± 0.0000 (wins: 1)
+    Random  : 0.0168 ± 0.0010 (wins: 0)
+    CMA-ES  : 0.0152 ± 0.0004 (wins: 0)
+    ALBA    : 0.0152 ± 0.0004 (wins: 1)
+
+======================================================================
+Dataset: optdigits | Budget: 200 | Seeds: 3
+Methods: Copula, Optuna, Random, CMA-ES, ALBA
+======================================================================
+  Params: 8 (7 cont, 1 int, 0 cat)
+  [seed=0] Copula=0.0157 Optuna=0.0163 Random=0.0179 CMA-ES=0.0161 ALBA=0.0175 [Copula]
+  [seed=1] Copula=0.0156 Optuna=0.0150 Random=0.0195 CMA-ES=0.0150 ALBA=0.0158 [CMA-ES]
+  [seed=2] Copula=0.0149 Optuna=0.0154 Random=0.0216 CMA-ES=0.0167 ALBA=0.0151 [Copula]
+
+  Summary for optdigits:
+    Copula  : 0.0154 ± 0.0004 (wins: 2)
+    Optuna  : 0.0156 ± 0.0005 (wins: 0)
+    Random  : 0.0196 ± 0.0015 (wins: 0)
+    CMA-ES  : 0.0160 ± 0.0007 (wins: 1)
+    ALBA    : 0.0162 ± 0.0010 (wins: 0)
+
+======================================================================
+Dataset: poker | Budget: 200 | Seeds: 3
+Methods: Copula, Optuna, Random, CMA-ES, ALBA
+======================================================================
+  Params: 8 (7 cont, 1 int, 0 cat)
+  [seed=0] Copula=0.0004 Optuna=0.0007 Random=0.0017 CMA-ES=0.0008 ALBA=0.0012 [Copula]
+  [seed=1] Copula=0.0009 Optuna=0.0009 Random=0.0017 CMA-ES=0.0006 ALBA=0.0012 [CMA-ES]
+  [seed=2] Copula=0.0008 Optuna=0.0008 Random=0.0018 CMA-ES=0.0005 ALBA=0.0008 [CMA-ES]
+
+  Summary for poker:
+    Copula  : 0.0007 ± 0.0002 (wins: 1)
+    Optuna  : 0.0008 ± 0.0001 (wins: 0)
+    Random  : 0.0017 ± 0.0000 (wins: 0)
+    CMA-ES  : 0.0007 ± 0.0001 (wins: 2)
+    ALBA    : 0.0011 ± 0.0002 (wins: 0)
+
+======================================================================
+FINAL RESULTS
+======================================================================
+  Copula  :   5 wins ( 27.8%)
+  Optuna  :   7 wins ( 38.9%) 🏆
+  Random  :   0 wins (  0.0%)
+  CMA-ES  :   3 wins ( 16.7%)
+  ALBA    :   3 wins ( 16.7%)
+
+  Winner: Optuna 🏆

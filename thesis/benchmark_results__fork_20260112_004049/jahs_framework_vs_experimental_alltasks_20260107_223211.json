@@ -1,0 +1,94 @@
+{
+  "config": {
+    "tasks": [
+      "cifar10",
+      "fashion_mnist"
+    ],
+    "budget": 60,
+    "checkpoints": [
+      30,
+      60
+    ],
+    "nepochs": 200,
+    "seeds": [
+      70,
+      71,
+      72
+    ],
+    "framework": {
+      "grid_bins": 8,
+      "grid_batch_size": 512,
+      "grid_batches": 4,
+      "grid_sampling": "grid_random",
+      "grid_jitter": true,
+      "grid_penalty_lambda": 0.1,
+      "grid_penalty_mode": "log_scaled",
+      "grid_penalty_v0": 0.0,
+      "grid_penalty_policy": "auto",
+      "heatmap_ucb": {
+        "beta": 1.0,
+        "explore_prob": 0.25,
+        "temperature": 1.0
+      },
+      "heatmap_blend_tau": 3.0,
+      "heatmap_soft_assignment": true,
+      "heatmap_multi_resolution": true,
+      "categorical_stage": "auto"
+    },
+    "timestamp": "20260107_223211"
+  },
+  "tasks": {
+    "cifar10": {
+      "framework": {
+        "72": {
+          "30": 0.11172012329101566,
+          "60": 0.10787300109863285
+        }
+      },
+      "experimental": {
+        "72": {
+          "30": 0.11177314758300783,
+          "60": 0.10246498107910151
+        }
+      },
+      "errors": {
+        "70": {
+          "message": "local variable 'ucb_after' referenced before assignment",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 315, in main\n    x = opt_fw.ask()\n  File \"/mnt/workspace/thesis/alba_framework_grid/optimizer.py\", line 578, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework_grid/optimizer.py\", line 609, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework_grid/optimizer.py\", line 1007, in _sample_in_cube\n    scale_used = float(max(abs(float(ucb_after)), float(beta) * float(sigma_adj_after), 1e-12))\nUnboundLocalError: local variable 'ucb_after' referenced before assignment\n"
+        },
+        "71": {
+          "message": "local variable 'ucb_after' referenced before assignment",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 315, in main\n    x = opt_fw.ask()\n  File \"/mnt/workspace/thesis/alba_framework_grid/optimizer.py\", line 578, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework_grid/optimizer.py\", line 609, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework_grid/optimizer.py\", line 1007, in _sample_in_cube\n    scale_used = float(max(abs(float(ucb_after)), float(beta) * float(sigma_adj_after), 1e-12))\nUnboundLocalError: local variable 'ucb_after' referenced before assignment\n"
+        }
+      }
+    },
+    "fashion_mnist": {
+      "framework": {
+        "70": {
+          "30": 0.052024459838867165,
+          "60": 0.04779373168945311
+        },
+        "71": {
+          "30": 0.05387565612792966,
+          "60": 0.05028511047363282
+        }
+      },
+      "experimental": {
+        "70": {
+          "30": 0.05539985656738278,
+          "60": 0.051258392333984326
+        },
+        "71": {
+          "30": 0.05295455932617188,
+          "60": 0.05295455932617188
+        }
+      },
+      "errors": {
+        "72": {
+          "message": "local variable 'ucb_after' referenced before assignment",
+          "traceback": "Traceback (most recent call last):\n  File \"/mnt/workspace/thesis/benchmark_jahs_framework_vs_experimental_battery.py\", line 315, in main\n    x = opt_fw.ask()\n  File \"/mnt/workspace/thesis/alba_framework_grid/optimizer.py\", line 578, in ask\n    x = self.ask_array()\n  File \"/mnt/workspace/thesis/alba_framework_grid/optimizer.py\", line 609, in ask_array\n    return self._sample_in_cube(self._last_cube)\n  File \"/mnt/workspace/thesis/alba_framework_grid/optimizer.py\", line 1007, in _sample_in_cube\n    scale_used = float(max(abs(float(ucb_after)), float(beta) * float(sigma_adj_after), 1e-12))\nUnboundLocalError: local variable 'ucb_after' referenced before assignment\n"
+        }
+      }
+    }
+  }
+}

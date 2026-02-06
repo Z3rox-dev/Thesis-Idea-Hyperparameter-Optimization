@@ -1,0 +1,48 @@
+nohup: ignoring input
+======================================================================
+REAL TRAINING BENCHMARK: Coherence vs Optuna
+======================================================================
+Budget: 20 evaluations
+Seeds: [0, 1, 2]
+Epochs per eval: 3
+Training subset: 5000 samples
+
+Device: cuda
+GPU: NVIDIA GeForce RTX 4080
+
+Loading CIFAR-10...
+Train samples: 5000, Val samples: 2000
+
+Estimating time per eval...
+Time per eval: 1.6s
+Estimated total time: 3.3 minutes
+
+
+[Seed 0] (1/3)
+    [ALBA] Starting with budget=20...
+    [ALBA] Best=0.3745 in 22.8s
+    [Optuna] Starting with budget=20...
+    [Optuna] Best=0.3675 in 21.3s
+
+[Seed 1] (2/3)
+    [ALBA] Starting with budget=20...
+    [ALBA] Best=0.3685 in 21.8s
+    [Optuna] Starting with budget=20...
+    [Optuna] Best=0.3555 in 22.0s
+
+[Seed 2] (3/3)
+    [ALBA] Starting with budget=20...
+    [ALBA] Best=0.3555 in 21.9s
+    [Optuna] Starting with budget=20...
+    [Optuna] Best=0.3735 in 21.9s
+
+======================================================================
+SUMMARY
+======================================================================
+ALBA avg: 0.3662 ± 0.0079
+Optuna avg: 0.3655 ± 0.0075
+
+ALBA wins: 2/3 (66.7%)
+Optuna wins: 1/3 (33.3%)
+
+Results saved to: /mnt/workspace/thesis/benchmark_results/real_training_20260122_174325.json

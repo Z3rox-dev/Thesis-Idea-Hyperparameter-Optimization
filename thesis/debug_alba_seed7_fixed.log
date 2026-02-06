@@ -1,0 +1,383 @@
+================================================================================
+DEBUG ALBA - Task: colorectal_histology, Seed: 7, Budget: 2000
+================================================================================
+
+Dimension: 13
+Bounds: [0, 1]^13
+
+ALBA initialized with:
+  - n_init: N/A
+  - maximize: False
+
+--------------------------------------------------------------------------------
+OPTIMIZATION LOG
+--------------------------------------------------------------------------------
+
+[Eval    1] Best: 0.240234 | Cubes: 1 | Stuck: 0
+  Cube volumes: min=1.00e+00, max=1.00e+00, mean=1.00e+00
+  Points/cube: min=1, max=1, total=1
+  Best cube: idx=0, vol=1.00e+00, n_pts=1, best_score=-0.240234
+  Top 3 cubes (by best_score):
+    1. cube[0]: best=-0.240234, vol=1.00e+00, pts=1
+
+[Eval    2] Best: 0.112026 | Cubes: 1 | Stuck: 0
+  Cube volumes: min=1.00e+00, max=1.00e+00, mean=1.00e+00
+  Points/cube: min=2, max=2, total=2
+  Best cube: idx=0, vol=1.00e+00, n_pts=2, best_score=-0.112026
+  Top 3 cubes (by best_score):
+    1. cube[0]: best=-0.112026, vol=1.00e+00, pts=2
+
+[Eval    3] Best: 0.112026 | Cubes: 1 | Stuck: 100
+  Cube volumes: min=1.00e+00, max=1.00e+00, mean=1.00e+00
+  Points/cube: min=3, max=3, total=3
+  Best cube: idx=0, vol=1.00e+00, n_pts=3, best_score=-0.112026
+  Top 3 cubes (by best_score):
+    1. cube[0]: best=-0.112026, vol=1.00e+00, pts=3
+
+[Eval    4] Best: 0.112026 | Cubes: 1 | Stuck: 200
+  Cube volumes: min=1.00e+00, max=1.00e+00, mean=1.00e+00
+  Points/cube: min=4, max=4, total=4
+  Best cube: idx=0, vol=1.00e+00, n_pts=4, best_score=-0.112026
+  Top 3 cubes (by best_score):
+    1. cube[0]: best=-0.112026, vol=1.00e+00, pts=4
+
+[Eval    5] Best: 0.112026 | Cubes: 1 | Stuck: 300
+  Cube volumes: min=1.00e+00, max=1.00e+00, mean=1.00e+00
+  Points/cube: min=5, max=5, total=5
+  Best cube: idx=0, vol=1.00e+00, n_pts=5, best_score=-0.112026
+  Top 3 cubes (by best_score):
+    1. cube[0]: best=-0.112026, vol=1.00e+00, pts=5
+
+[Eval    6] Best: 0.112026 | Cubes: 1 | Stuck: 400
+  Cube volumes: min=1.00e+00, max=1.00e+00, mean=1.00e+00
+  Points/cube: min=6, max=6, total=6
+  Best cube: idx=0, vol=1.00e+00, n_pts=6, best_score=-0.112026
+  Top 3 cubes (by best_score):
+    1. cube[0]: best=-0.112026, vol=1.00e+00, pts=6
+
+[Eval    7] Best: 0.088785 | Cubes: 1 | Stuck: 0
+  Cube volumes: min=1.00e+00, max=1.00e+00, mean=1.00e+00
+  Points/cube: min=6, max=6, total=6
+  Best cube: idx=0, vol=1.00e+00, n_pts=6, best_score=-0.112026
+  Top 3 cubes (by best_score):
+    1. cube[0]: best=-0.112026, vol=1.00e+00, pts=6
+
+[Eval    8] Best: 0.072450 | Cubes: 1 | Stuck: 0
+  Cube volumes: min=1.00e+00, max=1.00e+00, mean=1.00e+00
+  Points/cube: min=7, max=7, total=7
+  Best cube: idx=0, vol=1.00e+00, n_pts=7, best_score=-0.072450
+  Top 3 cubes (by best_score):
+    1. cube[0]: best=-0.072450, vol=1.00e+00, pts=7
+
+[Eval    9] Best: 0.072450 | Cubes: 1 | Stuck: 100
+  Cube volumes: min=1.00e+00, max=1.00e+00, mean=1.00e+00
+  Points/cube: min=8, max=8, total=8
+  Best cube: idx=0, vol=1.00e+00, n_pts=8, best_score=-0.072450
+  Top 3 cubes (by best_score):
+    1. cube[0]: best=-0.072450, vol=1.00e+00, pts=8
+
+[Eval   10] Best: 0.072450 | Cubes: 1 | Stuck: 200
+  Cube volumes: min=1.00e+00, max=1.00e+00, mean=1.00e+00
+  Points/cube: min=9, max=9, total=9
+  Best cube: idx=0, vol=1.00e+00, n_pts=9, best_score=-0.072450
+  Top 3 cubes (by best_score):
+    1. cube[0]: best=-0.072450, vol=1.00e+00, pts=9
+
+[Eval   11] Best: 0.072450 | Cubes: 1 | Stuck: 300
+  Cube volumes: min=1.00e+00, max=1.00e+00, mean=1.00e+00
+  Points/cube: min=10, max=10, total=10
+  Best cube: idx=0, vol=1.00e+00, n_pts=10, best_score=-0.072450
+  Top 3 cubes (by best_score):
+    1. cube[0]: best=-0.072450, vol=1.00e+00, pts=10
+
+[Eval   12] Best: 0.072450 | Cubes: 1 | Stuck: 400
+  Cube volumes: min=1.00e+00, max=1.00e+00, mean=1.00e+00
+  Points/cube: min=11, max=11, total=11
+  Best cube: idx=0, vol=1.00e+00, n_pts=11, best_score=-0.072450
+  Top 3 cubes (by best_score):
+    1. cube[0]: best=-0.072450, vol=1.00e+00, pts=11
+
+[Eval   13] Best: 0.072450 | Cubes: 1 | Stuck: 500
+  Cube volumes: min=1.00e+00, max=1.00e+00, mean=1.00e+00
+  Points/cube: min=12, max=12, total=12
+  Best cube: idx=0, vol=1.00e+00, n_pts=12, best_score=-0.072450
+  Top 3 cubes (by best_score):
+    1. cube[0]: best=-0.072450, vol=1.00e+00, pts=12
+
+[Eval   14] Best: 0.072450 | Cubes: 1 | Stuck: 600
+  Cube volumes: min=1.00e+00, max=1.00e+00, mean=1.00e+00
+  Points/cube: min=13, max=13, total=13
+  Best cube: idx=0, vol=1.00e+00, n_pts=13, best_score=-0.072450
+  Top 3 cubes (by best_score):
+    1. cube[0]: best=-0.072450, vol=1.00e+00, pts=13
+
+[Eval   15] Best: 0.072450 | Cubes: 1 | Stuck: 700
+  Cube volumes: min=1.00e+00, max=1.00e+00, mean=1.00e+00
+  Points/cube: min=14, max=14, total=14
+  Best cube: idx=0, vol=1.00e+00, n_pts=14, best_score=-0.072450
+  Top 3 cubes (by best_score):
+    1. cube[0]: best=-0.072450, vol=1.00e+00, pts=14
+
+[Eval   16] Best: 0.072450 | Cubes: 1 | Stuck: 800
+  Cube volumes: min=1.00e+00, max=1.00e+00, mean=1.00e+00
+  Points/cube: min=15, max=15, total=15
+  Best cube: idx=0, vol=1.00e+00, n_pts=15, best_score=-0.072450
+  Top 3 cubes (by best_score):
+    1. cube[0]: best=-0.072450, vol=1.00e+00, pts=15
+
+[Eval   17] Best: 0.072450 | Cubes: 1 | Stuck: 900
+  Cube volumes: min=1.00e+00, max=1.00e+00, mean=1.00e+00
+  Points/cube: min=16, max=16, total=16
+  Best cube: idx=0, vol=1.00e+00, n_pts=16, best_score=-0.072450
+  Top 3 cubes (by best_score):
+    1. cube[0]: best=-0.072450, vol=1.00e+00, pts=16
+
+[Eval   18] Best: 0.072450 | Cubes: 1 | Stuck: 1000
+  Cube volumes: min=1.00e+00, max=1.00e+00, mean=1.00e+00
+  Points/cube: min=17, max=17, total=17
+  Best cube: idx=0, vol=1.00e+00, n_pts=17, best_score=-0.072450
+  Top 3 cubes (by best_score):
+    1. cube[0]: best=-0.072450, vol=1.00e+00, pts=17
+
+[Eval   19] Best: 0.072450 | Cubes: 1 | Stuck: 1100
+  Cube volumes: min=1.00e+00, max=1.00e+00, mean=1.00e+00
+  Points/cube: min=18, max=18, total=18
+  Best cube: idx=0, vol=1.00e+00, n_pts=18, best_score=-0.072450
+  Top 3 cubes (by best_score):
+    1. cube[0]: best=-0.072450, vol=1.00e+00, pts=18
+
+[Eval   20] Best: 0.072450 | Cubes: 1 | Stuck: 1200
+  Cube volumes: min=1.00e+00, max=1.00e+00, mean=1.00e+00
+  Points/cube: min=19, max=19, total=19
+  Best cube: idx=0, vol=1.00e+00, n_pts=19, best_score=-0.072450
+  Top 3 cubes (by best_score):
+    1. cube[0]: best=-0.072450, vol=1.00e+00, pts=19
+
+[Eval  100] Best: 0.052789 | Cubes: 3 | Stuck: 0
+  Cube volumes: min=2.25e-02, max=8.50e-01, mean=3.33e-01
+  Points/cube: min=16, max=43, total=97
+  Best cube: idx=1, vol=1.28e-01, n_pts=38, best_score=-0.052789
+  Top 3 cubes (by best_score):
+    1. cube[1]: best=-0.052789, vol=1.28e-01, pts=38
+    2. cube[0]: best=-0.056919, vol=8.50e-01, pts=43
+    3. cube[2]: best=-0.057476, vol=2.25e-02, pts=16
+
+[Eval  200] Best: 0.049737 | Cubes: 6 | Stuck: 0
+  Cube volumes: min=1.91e-02, max=7.22e-01, mean=1.67e-01
+  Points/cube: min=19, max=43, total=189
+  Best cube: idx=5, vol=1.05e-01, n_pts=43, best_score=-0.049737
+  Top 3 cubes (by best_score):
+    1. cube[5]: best=-0.049737, vol=1.05e-01, pts=43
+    2. cube[3]: best=-0.049947, vol=1.91e-02, pts=36
+    3. cube[0]: best=-0.057476, vol=2.25e-02, pts=31
+
+[Eval  300] Best: 0.043779 | Cubes: 9 | Stuck: 0
+  Cube volumes: min=5.65e-03, max=5.95e-01, mean=1.11e-01
+  Points/cube: min=19, max=42, total=286
+  Best cube: idx=8, vol=1.27e-01, n_pts=19, best_score=-0.043779
+  Top 3 cubes (by best_score):
+    1. cube[8]: best=-0.043779, vol=1.27e-01, pts=19
+    2. cube[4]: best=-0.049737, vol=4.02e-02, pts=35
+    3. cube[5]: best=-0.049947, vol=5.65e-03, pts=23
+
+[Eval  400] Best: 0.043779 | Cubes: 12 | Stuck: 100
+  Cube volumes: min=2.92e-03, max=5.95e-01, mean=8.33e-02
+  Points/cube: min=12, max=44, total=380
+  Best cube: idx=5, vol=1.27e-01, n_pts=31, best_score=-0.043779
+  Top 3 cubes (by best_score):
+    1. cube[5]: best=-0.043779, vol=1.27e-01, pts=31
+    2. cube[7]: best=-0.046293, vol=1.01e-02, pts=25
+    3. cube[1]: best=-0.047772, vol=6.53e-02, pts=40
+
+[Eval  500] Best: 0.043779 | Cubes: 15 | Stuck: 200
+  Cube volumes: min=2.92e-03, max=5.95e-01, mean=6.67e-02
+  Points/cube: min=17, max=43, total=473
+  Best cube: idx=3, vol=1.27e-01, n_pts=36, best_score=-0.043779
+  Top 3 cubes (by best_score):
+    1. cube[3]: best=-0.043779, vol=1.27e-01, pts=36
+    2. cube[5]: best=-0.046293, vol=1.01e-02, pts=33
+    3. cube[8]: best=-0.046755, vol=2.92e-03, pts=25
+
+[Eval  600] Best: 0.040602 | Cubes: 18 | Stuck: 0
+  Cube volumes: min=2.27e-03, max=5.06e-01, mean=5.56e-02
+  Points/cube: min=25, max=42, total=569
+  Best cube: idx=0, vol=1.27e-01, n_pts=40, best_score=-0.040602
+  Top 3 cubes (by best_score):
+    1. cube[0]: best=-0.040602, vol=1.27e-01, pts=40
+    2. cube[13]: best=-0.044239, vol=9.79e-03, pts=27
+    3. cube[2]: best=-0.046293, vol=1.01e-02, pts=36
+
+[Eval  700] Best: 0.040602 | Cubes: 21 | Stuck: 100
+  Cube volumes: min=5.54e-04, max=5.06e-01, mean=4.76e-02
+  Points/cube: min=16, max=42, total=666
+  Best cube: idx=20, vol=1.91e-02, n_pts=16, best_score=-0.040602
+  Top 3 cubes (by best_score):
+    1. cube[20]: best=-0.040602, vol=1.91e-02, pts=16
+    2. cube[4]: best=-0.042674, vol=5.42e-02, pts=40
+    3. cube[19]: best=-0.043779, vol=1.08e-01, pts=30
+
+[Eval  800] Best: 0.040602 | Cubes: 23 | Stuck: 200
+  Cube volumes: min=5.54e-04, max=5.06e-01, mean=4.35e-02
+  Points/cube: min=17, max=43, total=763
+  Best cube: idx=18, vol=1.91e-02, n_pts=24, best_score=-0.040602
+  Top 3 cubes (by best_score):
+    1. cube[18]: best=-0.040602, vol=1.91e-02, pts=24
+    2. cube[8]: best=-0.042549, vol=9.79e-03, pts=43
+    3. cube[21]: best=-0.042674, vol=8.13e-03, pts=17
+
+[Eval  900] Best: 0.040602 | Cubes: 29 | Stuck: 300
+  Cube volumes: min=5.54e-04, max=5.06e-01, mean=3.45e-02
+  Points/cube: min=12, max=44, total=860
+  Best cube: idx=12, vol=1.91e-02, n_pts=27, best_score=-0.040602
+  Top 3 cubes (by best_score):
+    1. cube[12]: best=-0.040602, vol=1.91e-02, pts=27
+    2. cube[27]: best=-0.042549, vol=7.11e-03, pts=28
+    3. cube[15]: best=-0.042674, vol=8.13e-03, pts=19
+
+[Eval 1000] Best: 0.040602 | Cubes: 32 | Stuck: 400
+  Cube volumes: min=3.41e-04, max=5.06e-01, mean=3.12e-02
+  Points/cube: min=15, max=44, total=958
+  Best cube: idx=9, vol=1.91e-02, n_pts=30, best_score=-0.040602
+  Top 3 cubes (by best_score):
+    1. cube[9]: best=-0.040602, vol=1.91e-02, pts=30
+    2. cube[24]: best=-0.042549, vol=7.11e-03, pts=30
+    3. cube[12]: best=-0.042674, vol=8.13e-03, pts=24
+
+[Eval 1100] Best: 0.040602 | Cubes: 34 | Stuck: 500
+  Cube volumes: min=3.41e-04, max=5.06e-01, mean=2.94e-02
+  Points/cube: min=4, max=44, total=1055
+  Best cube: idx=7, vol=1.91e-02, n_pts=35, best_score=-0.040602
+  Top 3 cubes (by best_score):
+    1. cube[7]: best=-0.040602, vol=1.91e-02, pts=35
+    2. cube[22]: best=-0.042549, vol=7.11e-03, pts=31
+    3. cube[10]: best=-0.042674, vol=8.13e-03, pts=27
+
+[Eval 1200] Best: 0.040602 | Cubes: 36 | Stuck: 600
+  Cube volumes: min=3.41e-04, max=2.53e-01, mean=2.78e-02
+  Points/cube: min=5, max=44, total=1150
+  Best cube: idx=5, vol=1.91e-02, n_pts=41, best_score=-0.040602
+  Top 3 cubes (by best_score):
+    1. cube[5]: best=-0.040602, vol=1.91e-02, pts=41
+    2. cube[20]: best=-0.042549, vol=7.11e-03, pts=34
+    3. cube[8]: best=-0.042674, vol=8.13e-03, pts=29
+
+[Eval 1300] Best: 0.040602 | Cubes: 40 | Stuck: 700
+  Cube volumes: min=3.41e-04, max=2.53e-01, mean=2.50e-02
+  Points/cube: min=5, max=42, total=1247
+  Best cube: idx=36, vol=1.62e-02, n_pts=27, best_score=-0.040602
+  Top 3 cubes (by best_score):
+    1. cube[36]: best=-0.040602, vol=1.62e-02, pts=27
+    2. cube[17]: best=-0.042549, vol=7.11e-03, pts=36
+    3. cube[7]: best=-0.042674, vol=8.13e-03, pts=35
+
+[Eval 1400] Best: 0.040602 | Cubes: 41 | Stuck: 800
+  Cube volumes: min=3.41e-04, max=2.53e-01, mean=2.44e-02
+  Points/cube: min=9, max=44, total=1341
+  Best cube: idx=35, vol=1.62e-02, n_pts=31, best_score=-0.040602
+  Top 3 cubes (by best_score):
+    1. cube[35]: best=-0.040602, vol=1.62e-02, pts=31
+    2. cube[16]: best=-0.042549, vol=7.11e-03, pts=39
+    3. cube[6]: best=-0.042674, vol=8.13e-03, pts=36
+
+[Eval 1500] Best: 0.040602 | Cubes: 42 | Stuck: 900
+  Cube volumes: min=2.78e-04, max=2.53e-01, mean=2.38e-02
+  Points/cube: min=11, max=43, total=1382
+  Best cube: idx=34, vol=1.62e-02, n_pts=31, best_score=-0.040602
+  Top 3 cubes (by best_score):
+    1. cube[34]: best=-0.040602, vol=1.62e-02, pts=31
+    2. cube[15]: best=-0.042549, vol=7.11e-03, pts=39
+    3. cube[6]: best=-0.042674, vol=8.13e-03, pts=36
+
+[Eval 1600] Best: 0.040602 | Cubes: 44 | Stuck: 1000
+  Cube volumes: min=1.75e-04, max=2.53e-01, mean=2.27e-02
+  Points/cube: min=11, max=44, total=1423
+  Best cube: idx=32, vol=1.62e-02, n_pts=33, best_score=-0.040602
+  Top 3 cubes (by best_score):
+    1. cube[32]: best=-0.040602, vol=1.62e-02, pts=33
+    2. cube[13]: best=-0.042549, vol=7.11e-03, pts=40
+    3. cube[6]: best=-0.042674, vol=8.13e-03, pts=36
+
+[Eval 1700] Best: 0.040602 | Cubes: 46 | Stuck: 1100
+  Cube volumes: min=1.75e-04, max=2.53e-01, mean=2.17e-02
+  Points/cube: min=8, max=44, total=1456
+  Best cube: idx=30, vol=1.62e-02, n_pts=33, best_score=-0.040602
+  Top 3 cubes (by best_score):
+    1. cube[30]: best=-0.040602, vol=1.62e-02, pts=33
+    2. cube[11]: best=-0.042549, vol=7.11e-03, pts=40
+    3. cube[4]: best=-0.042674, vol=8.13e-03, pts=37
+
+[Eval 1800] Best: 0.040602 | Cubes: 48 | Stuck: 1200
+  Cube volumes: min=1.25e-04, max=2.53e-01, mean=2.08e-02
+  Points/cube: min=8, max=43, total=1484
+  Best cube: idx=28, vol=1.62e-02, n_pts=33, best_score=-0.040602
+  Top 3 cubes (by best_score):
+    1. cube[28]: best=-0.040602, vol=1.62e-02, pts=33
+    2. cube[10]: best=-0.042549, vol=7.11e-03, pts=41
+    3. cube[4]: best=-0.042674, vol=8.13e-03, pts=38
+
+[Eval 1900] Best: 0.040602 | Cubes: 48 | Stuck: 1300
+  Cube volumes: min=1.25e-04, max=2.53e-01, mean=2.08e-02
+  Points/cube: min=8, max=44, total=1502
+  Best cube: idx=28, vol=1.62e-02, n_pts=33, best_score=-0.040602
+  Top 3 cubes (by best_score):
+    1. cube[28]: best=-0.040602, vol=1.62e-02, pts=33
+    2. cube[10]: best=-0.042549, vol=7.11e-03, pts=42
+    3. cube[4]: best=-0.042674, vol=8.13e-03, pts=39
+
+[Eval 2000] Best: 0.040602 | Cubes: 48 | Stuck: 1400
+  Cube volumes: min=1.25e-04, max=2.53e-01, mean=2.08e-02
+  Points/cube: min=8, max=44, total=1514
+  Best cube: idx=28, vol=1.62e-02, n_pts=34, best_score=-0.040602
+  Top 3 cubes (by best_score):
+    1. cube[28]: best=-0.040602, vol=1.62e-02, pts=34
+    2. cube[10]: best=-0.042549, vol=7.11e-03, pts=42
+    3. cube[4]: best=-0.042674, vol=8.13e-03, pts=39
+
+================================================================================
+FINAL ANALYSIS
+================================================================================
+
+Final best: 0.040602
+Stagnation started at eval: 534
+Evaluations without improvement: 1466
+
+Hit ~0.0406 at evaluation: 534
+
+Final cube count: 48
+Volume distribution:
+  min: 1.25e-04
+  max: 2.53e-01
+  mean: 2.08e-02
+  median: 4.91e-03
+
+Best cube analysis:
+  Volume: 1.62e-02
+  Points inside: 34
+  Best value (internal score): -0.040602
+  Depth: 5
+  Bounds:
+    dim 0: [0.0000, 1.0000] (width: 1.0000)
+    dim 1: [0.0000, 1.0000] (width: 1.0000)
+    dim 2: [0.0000, 1.0000] (width: 1.0000)
+    dim 3: [0.0000, 0.8500] (width: 0.8500)
+    dim 4: [0.8240, 1.0000] (width: 0.1760)
+    ... (8 more dimensions)
+
+------------------------------------------------------------
+CONVERGENCE ANALYSIS
+------------------------------------------------------------
+
+Checkpoint analysis:
+  @ 100: 0.052789 (Δ = 0.187445)
+  @ 200: 0.049737 (Δ = 0.003053)
+  @ 400: 0.043779 (Δ = 0.005958)
+  @ 600: 0.040602 (Δ = 0.003177)
+  @ 800: 0.040602 (Δ = 0.000000)
+  @1000: 0.040602 (Δ = 0.000000)
+  @1500: 0.040602 (Δ = 0.000000)
+  @2000: 0.040602 (Δ = 0.000000)
+
+Plateau analysis:
+  Plateau: evals 169 to 286 (length: 117, value: 0.049737)
+  Plateau: evals 287 to 533 (length: 246, value: 0.043779)
+  Plateau: evals 534 to 2000 (length: 1466, value: 0.040602)

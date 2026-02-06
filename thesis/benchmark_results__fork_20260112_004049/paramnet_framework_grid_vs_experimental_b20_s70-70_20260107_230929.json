@@ -1,0 +1,45 @@
+{
+  "config": {
+    "datasets": [
+      "letter"
+    ],
+    "budget": 20,
+    "checkpoints": [
+      10,
+      20
+    ],
+    "seeds": [
+      70
+    ],
+    "step": 50,
+    "framework": {
+      "grid_bins": 8,
+      "grid_batch_size": 512,
+      "grid_batches": 4,
+      "grid_sampling": "grid_random",
+      "grid_jitter": true,
+      "grid_penalty_lambda": 0.1,
+      "heatmap_blend_tau": 3.0,
+      "heatmap_soft_assignment": true,
+      "heatmap_multi_resolution": true
+    },
+    "timestamp": "20260107_230929"
+  },
+  "datasets": {
+    "letter": {
+      "framework": {
+        "70": {
+          "10": 0.17969244587602037,
+          "20": 0.046087744069120994
+        }
+      },
+      "experimental": {
+        "70": {
+          "10": 0.17969244587602037,
+          "20": 0.046087744069120994
+        }
+      },
+      "errors": {}
+    }
+  }
+}

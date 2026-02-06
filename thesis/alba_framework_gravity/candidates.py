@@ -34,6 +34,14 @@ class MixtureCandidateGenerator:
     def generate(self, cube: Cube, dim: int, rng: np.random.Generator, n: int) -> List[np.ndarray]:
         candidates: List[np.ndarray] = []
         widths = cube.widths()
+        try:
+            w = cube.get_warp_multipliers()
+        except Exception:
+            w = None
+        if w is not None and getattr(w, "shape", None) == (dim,):
+            step_widths = widths / np.asarray(w, dtype=float)
+        else:
+            step_widths = widths
         center = cube.center()
         model = cube.lgs_model
 
@@ -42,14 +50,14 @@ class MixtureCandidateGenerator:
 
             if strategy < 0.25 and model is not None and len(model["top_k_pts"]) > 0:
                 idx = int(rng.integers(len(model["top_k_pts"])))
-                x = model["top_k_pts"][idx] + rng.normal(0, self.sigma_topk, dim) * widths
+                x = model["top_k_pts"][idx] + rng.normal(0, self.sigma_topk, dim) * step_widths
             elif strategy < 0.40 and model is not None and model["gradient_dir"] is not None:
                 top_center = model["top_k_pts"].mean(axis=0)
                 step = float(rng.uniform(self.step_min, self.step_max))
-                x = top_center + step * model["gradient_dir"] * widths
-                x = x + rng.normal(0, self.sigma_gradient_noise, dim) * widths
+                x = top_center + step * model["gradient_dir"] * step_widths
+                x = x + rng.normal(0, self.sigma_gradient_noise, dim) * step_widths
             elif strategy < 0.55:
-                x = center + rng.normal(0, self.sigma_center, dim) * widths
+                x = center + rng.normal(0, self.sigma_center, dim) * step_widths
             else:
                 x = np.array([rng.uniform(lo, hi) for lo, hi in cube.bounds], dtype=float)
 

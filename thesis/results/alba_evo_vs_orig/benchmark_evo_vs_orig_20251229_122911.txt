@@ -1,0 +1,63 @@
+================================================================================
+ALBA EVOLUTIONARY vs ORIGINAL BENCHMARK
+================================================================================
+Tasks: ['cifar10']
+Max Budget: 100
+Checkpoints: [20, 50, 100]
+Seeds: 2 (starting from 0)
+Optimizers: ['ALBA_Original', 'ALBA_Evo']
+Smoke Test: True
+Output: /mnt/workspace/thesis/results/alba_evo_vs_orig/benchmark_evo_vs_orig_20251229_122911.txt
+================================================================================
+
+============================================================
+TASK: cifar10
+============================================================
+  Initializing JAHS-Bench-201 for cifar10...
+  Config space dimension: 13
+
+  Running ALBA_Original...
+    [1/4] ALBA_Original seed=0
+      Final: 0.087766 | Time: 0.7s
+    [2/4] ALBA_Original seed=1
+      Final: 0.094100 | Time: 0.7s
+
+  Running ALBA_Evo...
+    [3/4] ALBA_Evo seed=0
+      Final: 0.091390 | Time: 0.7s
+    [4/4] ALBA_Evo seed=1
+      Final: 0.091272 | Time: 0.7s
+
+  cifar10 Summary:
+    Checkpoint @20:
+      ALBA_Original: 0.124920 ± 0.026028
+      ALBA_Evo: 0.098012 ± 0.002158
+    Checkpoint @50:
+      ALBA_Original: 0.112373 ± 0.013481
+      ALBA_Evo: 0.096639 ± 0.000785
+    Checkpoint @100:
+      ALBA_Original: 0.090933 ± 0.003167
+      ALBA_Evo: 0.091331 ± 0.000059
+
+================================================================================
+FINAL RESULTS - CROSS-TASK COMPARISON
+================================================================================
+
+--- cifar10 ---
+Optimizer       | @  20 | @  50 | @ 100
+---------------------------------------
+ALBA_Original   | 0.1249 | 0.1124 | 0.0909 | 
+ALBA_Evo        | 0.0980 | 0.0966 | 0.0913 | 
+
+------------------------------------------------------------
+WIN/LOSS SUMMARY @ 100 evaluations
+------------------------------------------------------------
+  cifar10: ALBA_Original wins (0.090933)
+
+Total wins: {'ALBA_Original': 1, 'ALBA_Evo': 0}
+
+JSON results saved: /mnt/workspace/thesis/results/alba_evo_vs_orig/results_evo_vs_orig_20251229_122911.json
+
+================================================================================
+BENCHMARK COMPLETED
+================================================================================

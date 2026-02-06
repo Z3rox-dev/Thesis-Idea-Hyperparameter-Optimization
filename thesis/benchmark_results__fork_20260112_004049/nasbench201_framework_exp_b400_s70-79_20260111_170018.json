@@ -1,0 +1,25 @@
+{
+  "config": {
+    "budget": 400,
+    "seeds": [
+      70,
+      71,
+      72,
+      73,
+      74,
+      75,
+      76,
+      77,
+      78,
+      79
+    ],
+    "datasets": [
+      "cifar10-valid",
+      "cifar100",
+      "ImageNet16-120"
+    ],
+    "epoch": 200,
+    "timestamp": "20260111_170018"
+  },
+  "datasets": {}
+}

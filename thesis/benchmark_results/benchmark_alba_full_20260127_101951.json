@@ -1,0 +1,54 @@
+[
+  {
+    "method": "TuRBO-m",
+    "function": "sphere",
+    "dim": 10,
+    "seed": 42,
+    "best_score": 1.2155196318109898,
+    "time_seconds": 40.33961248397827,
+    "evaluations": 200
+  },
+  {
+    "method": "ALBA-Coherence",
+    "function": "sphere",
+    "dim": 10,
+    "seed": 42,
+    "error": "name 'ALBA_Coherence' is not defined"
+  },
+  {
+    "method": "ALBA-V1",
+    "function": "sphere",
+    "dim": 10,
+    "seed": 42,
+    "best_score": 8.485693360781765,
+    "time_seconds": 0.42652130126953125,
+    "evaluations": 200
+  },
+  {
+    "method": "HPO-Minimal",
+    "function": "sphere",
+    "dim": 10,
+    "seed": 42,
+    "best_score": 3.704484564841497e-07,
+    "time_seconds": 1.0808475017547607,
+    "evaluations": 200
+  },
+  {
+    "method": "HPO-LGS",
+    "function": "sphere",
+    "dim": 10,
+    "seed": 42,
+    "best_score": 5.121476311921444,
+    "time_seconds": 0.5218155384063721,
+    "evaluations": 200
+  },
+  {
+    "method": "Random",
+    "function": "sphere",
+    "dim": 10,
+    "seed": 42,
+    "best_score": 25.6796721723712,
+    "time_seconds": 0.0032188892364501953,
+    "evaluations": 200
+  }
+]

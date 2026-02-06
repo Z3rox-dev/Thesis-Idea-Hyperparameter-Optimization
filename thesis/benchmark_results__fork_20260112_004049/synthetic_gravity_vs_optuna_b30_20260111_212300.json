@@ -1,0 +1,32 @@
+{
+  "benchmark": "synthetic_gravity_vs_optuna",
+  "methods": {
+    "alba_framework_gravity": {
+      "kind": "alba_framework_gravity"
+    },
+    "optuna_tpe": {
+      "kind": "optuna_TPE"
+    }
+  },
+  "config": {
+    "budget": 30,
+    "seeds": [
+      0
+    ],
+    "dims": [
+      4
+    ],
+    "funcs": [
+      "sphere"
+    ]
+  },
+  "tasks": {
+    "sphere_4D": [
+      {
+        "seed": 0,
+        "alba_framework_gravity": 2.955522255000076,
+        "optuna_tpe": 0.9711289888578898
+      }
+    ]
+  }
+}

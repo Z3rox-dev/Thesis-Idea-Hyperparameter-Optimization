@@ -1,0 +1,36 @@
+======================================================================
+  BENCHMARK TRIPLO: hpo_minimal_improved vs lgs_v3 vs ALBA su JAHS-Bench-201
+======================================================================
+
+📊 Task: colorectal_histology
+📊 Budget: 500 evaluations
+📊 Seeds: [0, 1, 2, 3, 4]
+📊 Checkpoints: [50, 100, 200, 300, 500]
+📄 Streaming log: /mnt/workspace/thesis/results/jahs_checkpoints/benchmark_triple_colorectal_histology_20251229_021943.txt
+
+============================================================
+  SEED = 0
+============================================================
+
+🔄 Running Random...
+   ✅ Random: 0.048914 in 1.5s (500 evals)
+      @50: 0.084941
+      @100: 0.048914
+      @200: 0.048914
+   📌 Random checkpoints: @50=0.084941, @100=0.048914, @200=0.048914, @300=0.048914, @500=0.048914
+
+🔄 Running hpo_minimal_improved...
+   ✅ hpo_minimal_improved: 0.048236 in 14.5s (500 evals)
+      @50: 0.055813
+      @100: 0.054396
+      @200: 0.048889
+   📌 hpo_minimal_improved checkpoints: @50=0.055813, @100=0.054396, @200=0.048889, @300=0.048889, @500=0.048236
+
+🔄 Running lgs_v3...
+   ✅ lgs_v3: 0.040258 in 3.0s (500 evals)
+      @50: 0.044138
+      @100: 0.041463
+      @200: 0.040980
+   📌 lgs_v3 checkpoints: @50=0.044138, @100=0.041463, @200=0.040980, @300=0.040722, @500=0.040258
+
+🔄 Running ALBA...

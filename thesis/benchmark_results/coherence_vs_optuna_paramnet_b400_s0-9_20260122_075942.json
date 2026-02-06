@@ -1,0 +1,55 @@
+{
+  "config": {
+    "budget": 400,
+    "checkpoints": [
+      100,
+      200,
+      400
+    ],
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "timestamp": "20260122_075942"
+  },
+  "datasets": {
+    "Adult": {
+      "coherence": {},
+      "optuna": {}
+    },
+    "Higgs": {
+      "coherence": {},
+      "optuna": {}
+    },
+    "Letter": {
+      "coherence": {},
+      "optuna": {}
+    },
+    "Mnist": {
+      "coherence": {},
+      "optuna": {}
+    },
+    "Optdigits": {
+      "coherence": {},
+      "optuna": {}
+    },
+    "Poker": {
+      "coherence": {},
+      "optuna": {}
+    }
+  },
+  "summary": {
+    "coherence_wins": 0,
+    "optuna_wins": 0,
+    "ties": 0,
+    "coherence_winrate": 0.0
+  }
+}

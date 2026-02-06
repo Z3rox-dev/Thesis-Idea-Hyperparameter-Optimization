@@ -1,0 +1,1526 @@
+diff --git a/thesis/alba_framework/acquisition.py b/thesis/alba_framework/acquisition.py
+index c4dbdb94..5d470f69 100644
+--- a/thesis/alba_framework/acquisition.py
++++ b/thesis/alba_framework/acquisition.py
+@@ -4,8 +4,8 @@ This module defines how ALBA selects one candidate among many using the
+ surrogate mean (mu) and uncertainty (sigma).
+ 
+ Default implementation matches ALBA_V1:
+-- UCB score = mu + beta * sigma, where beta = novelty_weight * 2
+-- softmax over z-scored UCB with temperature 3.0
++- UCB score = mu + beta * sigma, where be                        ta = novelty_weight * 2
++- stable softmax over z-scored UCB with temperature 3.0
+ """
+ 
+ from __future__ import annotations
+@@ -44,14 +44,23 @@ class UCBSoftmaxSelector:
+         mu = np.asarray(mu, dtype=float)
+         sigma = np.asarray(sigma, dtype=float)
+ 
++        if mu.size == 0:
++            raise ValueError("AcquisitionSelector requires at least one candidate")
++
+         beta = float(novelty_weight) * self.beta_multiplier
+         score = mu + beta * sigma
+ 
+-        if score.std() > 1e-9:
+-            score_z = (score - score.mean()) / score.std()
++        score_std = float(np.std(score))
++        if score_std > 1e-9:
++            score_z = (score - score.mean()) / score_std
+         else:
+             score_z = np.zeros_like(score)
+ 
+-        probs = np.exp(score_z * self.softmax_temperature)
+-        probs = probs / probs.sum()
++        logits = score_z * self.softmax_temperature
++        logits = logits - np.max(logits)
++        probs = np.exp(logits)
++        denom = probs.sum()
++        if not np.isfinite(denom) or denom <= 0:
++            return int(np.argmax(score))
++        probs = probs / denom
+         return int(rng.choice(len(score), p=probs))
+diff --git a/thesis/alba_framework/categorical.py b/thesis/alba_framework/categorical.py
+index d3190f98..b2018192 100644
+--- a/thesis/alba_framework/categorical.py
++++ b/thesis/alba_framework/categorical.py
+@@ -68,6 +68,8 @@ class CategoricalSampler:
+ 
+         # Track visit counts for curiosity
+         self._visit_counts: Dict[Tuple[int, ...], int] = {}
++        # Global categorical stats: {dim_idx: {val_idx: (n_good, n_total)}}
++        self._global_stats: Dict[int, Dict[int, Tuple[int, int]]] = {}
+ 
+         # Elite pool: [(cat_key, score), ...] sorted by score descending
+         self._elite_configs: List[Tuple[Tuple[int, ...], float]] = []
+@@ -97,7 +99,14 @@ class CategoricalSampler:
+         int
+             Category index in [0, n_choices - 1].
+         """
+-        return min(int(round(x_val * (n_choices - 1))), n_choices - 1)
++        if n_choices <= 1:
++            return 0
++        idx = int(np.floor(float(x_val) * n_choices))
++        if idx < 0:
++            idx = 0
++        elif idx >= n_choices:
++            idx = n_choices - 1
++        return idx
+ 
+     def to_continuous(self, val_idx: int, n_choices: int) -> float:
+         """
+@@ -115,7 +124,9 @@ class CategoricalSampler:
+         float
+             Value in [0, 1].
+         """
+-        return val_idx / (n_choices - 1) if n_choices > 1 else 0.5
++        if n_choices <= 1:
++            return 0.5
++        return (float(val_idx) + 0.5) / float(n_choices)
+ 
+     def get_cat_key(self, x: np.ndarray) -> Tuple[int, ...]:
+         """
+@@ -169,6 +180,7 @@ class CategoricalSampler:
+         self,
+         x: np.ndarray,
+         score: float,
++        is_good: bool,
+     ) -> None:
+         """
+         Record an observation for categorical tracking.
+@@ -188,11 +200,38 @@ class CategoricalSampler:
+         # Update visit counts
+         self._visit_counts[cat_key] = self._visit_counts.get(cat_key, 0) + 1
+ 
++        # Update global categorical stats
++        for i, (dim_idx, n_choices) in enumerate(self.categorical_dims):
++            val_idx = cat_key[i]
++            if dim_idx not in self._global_stats:
++                self._global_stats[dim_idx] = {}
++            n_g, n_t = self._global_stats[dim_idx].get(val_idx, (0, 0))
++            self._global_stats[dim_idx][val_idx] = (n_g + (1 if is_good else 0), n_t + 1)
++
+         # Update elite pool
+         self._elite_configs.append((cat_key, score))
+         self._elite_configs.sort(key=lambda p: p[1], reverse=True)
+         self._elite_configs = self._elite_configs[: self.elite_size]
+ 
++    def recompute_global_stats(
++        self,
++        X_all: List[np.ndarray],
++        y_all: List[float],
++        gamma: float,
++    ) -> None:
++        """Recompute global categorical stats based on current gamma."""
++        self._global_stats = {}
++        if not self.has_categoricals:
++            return
++        for x, y in zip(X_all, y_all):
++            is_good = y >= gamma
++            for dim_idx, n_choices in self.categorical_dims:
++                val_idx = self.discretize(x[dim_idx], n_choices)
++                if dim_idx not in self._global_stats:
++                    self._global_stats[dim_idx] = {}
++                n_g, n_t = self._global_stats[dim_idx].get(val_idx, (0, 0))
++                self._global_stats[dim_idx][val_idx] = (n_g + (1 if is_good else 0), n_t + 1)
++
+     def get_visit_count(self, cat_key: Tuple[int, ...]) -> int:
+         """Get the number of times a categorical combination was visited."""
+         return self._visit_counts.get(cat_key, 0)
+@@ -311,13 +350,17 @@ class CategoricalSampler:
+         for _ in range(n_candidates):
+             cat_vals = []
+             for dim_idx, n_choices in self.categorical_dims:
+-                stats = cube.cat_stats.get(dim_idx, {})
++                stats_local = cube.cat_stats.get(dim_idx, {})
++                stats_global = self._global_stats.get(dim_idx, {})
+ 
+                 # Thompson Sampling: sample from Beta distribution for each category
+                 samples = []
+                 K = n_choices * exploration_boost
+                 for v in range(n_choices):
+-                    n_g, n_t = stats.get(v, (0, 0))
++                    n_g_l, n_t_l = stats_local.get(v, (0, 0))
++                    n_g_g, n_t_g = stats_global.get(v, (0, 0))
++                    n_g = n_g_l + n_g_g
++                    n_t = n_t_l + n_t_g
+                     alpha = n_g + 1
+                     beta_param = (n_t - n_g) + K
+                     sample = rng.beta(alpha, beta_param)
+@@ -332,7 +375,7 @@ class CategoricalSampler:
+         # Score candidates by curiosity (inverse visit count)
+         scores = []
+         for cat_key in candidates:
+-            visit_count = self._visit_counts.get(cat_key, 0)
++            visit_count = self.get_visit_count(cat_key)
+             curiosity = self.curiosity_bonus / (1 + visit_count)
+             scores.append(curiosity)
+ 
+@@ -348,6 +391,20 @@ class CategoricalSampler:
+ 
+         return self.apply_cat_key(chosen_key, x)
+ 
++    def update_cube_stats(
++        self,
++        cube: "Cube",
++        x: np.ndarray,
++        is_good: bool,
++    ) -> None:
++        """Update categorical stats for a cube with a single observation."""
++        for dim_idx, n_choices in self.categorical_dims:
++            val_idx = self.discretize(x[dim_idx], n_choices)
++            if dim_idx not in cube.cat_stats:
++                cube.cat_stats[dim_idx] = {}
++            n_g, n_t = cube.cat_stats[dim_idx].get(val_idx, (0, 0))
++            cube.cat_stats[dim_idx][val_idx] = (n_g + (1 if is_good else 0), n_t + 1)
++
+     def recompute_cube_cat_stats(
+         self,
+         cube: "Cube",
+diff --git a/thesis/alba_framework/cube.py b/thesis/alba_framework/cube.py
+index f4ff8942..cc085fcd 100644
+--- a/thesis/alba_framework/cube.py
++++ b/thesis/alba_framework/cube.py
+@@ -49,6 +49,8 @@ class Cube:
+         Depth in the partition tree (0 for root).
+     cat_stats : dict
+         Per-dimension categorical statistics: {dim_idx: {val_idx: (n_good, n_total)}}.
++    categorical_dims : Optional[List[int]]
++        Indices of categorical dimensions (used to avoid splitting on them).
+     """
+ 
+     bounds: List[Tuple[float, float]]
+@@ -61,6 +63,7 @@ class Cube:
+     lgs_model: Optional[Dict] = field(default=None, init=False)
+     depth: int = 0
+     cat_stats: Dict[int, Dict[int, Tuple[int, int]]] = field(default_factory=dict)
++    categorical_dims: Optional[List[int]] = None
+ 
+     # -------------------------------------------------------------------------
+     # Geometry helpers
+@@ -167,10 +170,13 @@ class Cube:
+             Index of the dimension to split along.
+         """
+         widths = self.widths()
++        cat_dims = set(self.categorical_dims or [])
+ 
+         # Primary: gradient direction (if available and reliable)
+-        if self.lgs_model is not None and self.lgs_model["gradient_dir"] is not None:
+-            grad_dir = np.abs(self.lgs_model["gradient_dir"])
++        if self.lgs_model is not None and self.lgs_model.get("gradient_dir") is not None:
++            grad_dir = np.abs(self.lgs_model["gradient_dir"]).copy()
++            if cat_dims:
++                grad_dir[list(cat_dims)] = 0.0
+             # Only trust gradient if it's reasonably strong in one direction
+             if grad_dir.max() > 0.3:
+                 return int(np.argmax(grad_dir))
+@@ -184,10 +190,17 @@ class Cube:
+             var_per_dim = np.var(good_pts / (widths + 1e-9), axis=0)
+             # Prefer dimensions with high variance AND reasonable width
+             score = var_per_dim * (widths / (widths.max() + 1e-9))
++            if cat_dims:
++                score[list(cat_dims)] = 0.0
+             if score.max() > 0.01:
+                 return int(np.argmax(score))
+ 
+         # Fallback: widest dimension
++        if cat_dims and len(cat_dims) < len(widths):
++            masked = widths.copy()
++            masked[list(cat_dims)] = 0.0
++            if masked.max() > 0:
++                return int(np.argmax(masked))
+         return int(np.argmax(widths))
+ 
+     def split(
+@@ -249,8 +262,8 @@ class Cube:
+         bounds_lo[axis] = (lo, cut)
+         bounds_hi[axis] = (cut, hi)
+ 
+-        child_lo = Cube(bounds=bounds_lo, parent=self)
+-        child_hi = Cube(bounds=bounds_hi, parent=self)
++        child_lo = Cube(bounds=bounds_lo, parent=self, categorical_dims=self.categorical_dims)
++        child_hi = Cube(bounds=bounds_hi, parent=self, categorical_dims=self.categorical_dims)
+         child_lo.depth = self.depth + 1
+         child_hi.depth = self.depth + 1
+ 
+diff --git a/thesis/alba_framework/gamma.py b/thesis/alba_framework/gamma.py
+index e3c266ab..85f669d8 100644
+--- a/thesis/alba_framework/gamma.py
++++ b/thesis/alba_framework/gamma.py
+@@ -1,6 +1,6 @@
+ """ALBA Framework - Gamma Scheduler
+ 
+-Gamma ($\gamma$) is the dynamic threshold used to label points as "good".
++Gamma ($\\gamma$) is the dynamic threshold used to label points as "good".
+ 
+ This module defines an interchangeable interface for gamma scheduling.
+ The default implementation matches the ALBA_V1 behavior (quantile annealing).
+diff --git a/thesis/alba_framework/lgs.py b/thesis/alba_framework/lgs.py
+index de1106b4..6c5d2146 100644
+--- a/thesis/alba_framework/lgs.py
++++ b/thesis/alba_framework/lgs.py
+@@ -67,9 +67,12 @@ def fit_lgs_model(
+ 
+     widths = np.maximum(cube.widths(), 1e-9)
+     center = cube.center()
++    cat_dims = list(cube.categorical_dims or [])
+ 
+     if len(pairs) >= dim + 3:
+         X_norm = (all_pts - center) / widths
++        if cat_dims:
++            X_norm[:, cat_dims] = 0.0
+         y_mean = all_scores.mean()
+         y_std = all_scores.std() + 1e-6
+         y_centered = (all_scores - y_mean) / y_std
+@@ -127,6 +130,7 @@ def fit_lgs_model(
+         "noise_var": noise_var,
+         "widths": widths,
+         "center": center,
++        "categorical_dims": cat_dims,
+     }
+ 
+ 
+@@ -143,6 +147,9 @@ def predict_bayesian(model: Optional[Dict], candidates: List[np.ndarray]) -> Tup
+     y_mean = model["y_mean"]
+ 
+     C_norm = (np.array(candidates) - center) / widths
++    cat_dims = model.get("categorical_dims") or []
++    if cat_dims:
++        C_norm[:, cat_dims] = 0.0
+     mu = y_mean + C_norm @ grad
+ 
+     model_var = np.clip(np.sum((C_norm @ inv_cov) * C_norm, axis=1), 0, 10.0)
+diff --git a/thesis/alba_framework/optimizer.py b/thesis/alba_framework/optimizer.py
+index a23159cc..9cabe765 100644
+--- a/thesis/alba_framework/optimizer.py
++++ b/thesis/alba_framework/optimizer.py
+@@ -118,7 +118,7 @@ class ALBA:
+         param_order: Optional[List[str]] = None,
+         maximize: bool = False,
+         seed: int = 42,
+-        # Strategy components (optional). If not provided, defaults match ALBA_V1.
++        # Strategy components (optional). Defaults track ALBA_V1 with adaptive extensions.
+         gamma_scheduler: Optional[GammaScheduler] = None,
+         leaf_selector: Optional[LeafSelector] = None,
+         candidate_generator: Optional[CandidateGenerator] = None,
+@@ -143,15 +143,40 @@ class ALBA:
+         # Initialize param space handler if using param_space mode
+         self._param_space_handler: Optional[ParamSpaceHandler] = None
+         self._param_space_mode = param_space is not None
++        self._all_categorical = False
++        self._all_discrete = False
++        self._discrete_dims: List[Tuple[int, int]] = []
++        self._discrete_counts: Dict[int, np.ndarray] = {}
++        self._discrete_good_counts: Dict[int, np.ndarray] = {}
++        self._discrete_score_sums: Dict[int, np.ndarray] = {}
++        self._pair_counts: Dict[Tuple[int, int], np.ndarray] = {}
++        self._pair_good_counts: Dict[Tuple[int, int], np.ndarray] = {}
++        self._pair_score_sums: Dict[Tuple[int, int], np.ndarray] = {}
++        self._ordinal_dims: List[Tuple[int, int]] = []
++        self._sweep_queue: List[np.ndarray] = []
++        self._sweep_anchor_key: Optional[tuple] = None
++        self._seen_discrete_idx: set = set()
++        self._discrete_grid: Optional[np.ndarray] = None
++        self._discrete_grid_dims: List[int] = []
+ 
+         if self._param_space_mode:
+             self._param_space_handler = ParamSpaceHandler(param_space, param_order)
+             bounds = self._param_space_handler.get_bounds()
+             categorical_dims = self._param_space_handler.categorical_dims
++            self._all_categorical = self._param_space_handler.is_all_categorical()
++            self._all_discrete = self._param_space_handler.is_all_discrete()
++            self._discrete_dims = list(self._param_space_handler.discrete_dims)
++            self._ordinal_dims = list(self._param_space_handler.ordinal_dims)
+ 
+         if bounds is None:
+             raise TypeError("ALBA requires either bounds=... or param_space=...")
+ 
++        if not self._param_space_mode and categorical_dims is not None:
++            if len(categorical_dims) == len(bounds):
++                self._all_categorical = True
++                self._all_discrete = True
++                self._discrete_dims = list(categorical_dims)
++
+         # Core attributes
+         self.bounds = bounds
+         self.dim = len(bounds)
+@@ -185,8 +210,12 @@ class ALBA:
+         self.stagnation = 0
+         self.last_improvement_iter = 0
+ 
+-        # Initialize cube tree
+-        self.root = Cube(bounds=list(bounds))
++        # Track categorical dims (true categorical only) separately from ordinal.
++        self._categorical_dims_only: List[Tuple[int, int]] = list(categorical_dims or [])
++
++        # Initialize cube tree (avoid splitting/gradient on categorical-only dims)
++        cat_dim_indices = [i for i, _ in self._categorical_dims_only]
++        self.root = Cube(bounds=list(bounds), categorical_dims=cat_dim_indices)
+         self.leaves: List[Cube] = [self.root]
+         self._last_cube: Optional[Cube] = None
+ 
+@@ -195,13 +224,43 @@ class ALBA:
+         self.y_all: List[float] = []  # Always stored as "higher is better"
+         self.best_y_internal = -np.inf
+         self.best_x: Optional[np.ndarray] = None
++        self._seen_configs: set = set()
++
++        if self._all_discrete and self._discrete_dims:
++            self._discrete_counts = {
++                dim_idx: np.zeros(n_choices, dtype=int)
++                for dim_idx, n_choices in self._discrete_dims
++            }
++            self._discrete_good_counts = {
++                dim_idx: np.zeros(n_choices, dtype=int)
++                for dim_idx, n_choices in self._discrete_dims
++            }
++            self._discrete_score_sums = {
++                dim_idx: np.zeros(n_choices, dtype=float)
++                for dim_idx, n_choices in self._discrete_dims
++            }
++            if len(self._discrete_dims) > 1:
++                for i, n_i in self._discrete_dims:
++                    for j, n_j in self._discrete_dims:
++                        if j <= i:
++                            continue
++                        self._pair_counts[(i, j)] = np.zeros((n_i, n_j), dtype=int)
++                        self._pair_good_counts[(i, j)] = np.zeros((n_i, n_j), dtype=int)
++                        self._pair_score_sums[(i, j)] = np.zeros((n_i, n_j), dtype=float)
++            n_choices = [n for _, n in self._discrete_dims]
++            total = int(np.prod(n_choices))
++            if total <= 60000:
++                grids = np.meshgrid(*[np.arange(n) for n in n_choices], indexing="ij")
++                self._discrete_grid = np.stack([g.reshape(-1) for g in grids], axis=1)
++                self._discrete_grid_dims = [dim_idx for dim_idx, _ in self._discrete_dims]
+ 
+         # Global geometry
+         self._global_widths = np.array([hi - lo for lo, hi in bounds])
+ 
+-        # Initialize categorical sampler
++        # Initialize categorical sampler (categorical-only dims)
++        sampler_dims = list(self._categorical_dims_only)
+         self._cat_sampler = CategoricalSampler(
+-            categorical_dims=categorical_dims or [],
++            categorical_dims=sampler_dims,
+             elite_size=10,
+             curiosity_bonus=0.3,
+             crossover_rate=0.15,
+@@ -244,6 +303,9 @@ class ALBA:
+ 
+         # Iteration counter
+         self.iteration = 0
++        self._stagnation_queue: List[np.ndarray] = []
++        self._elite_size = 12
++        self._elite_pool: List[Tuple[np.ndarray, float]] = []
+ 
+     # -------------------------------------------------------------------------
+     # Properties
+@@ -264,6 +326,145 @@ class ALBA:
+         """Check if optimization is currently stagnating."""
+         return self.stagnation > self._stagnation_threshold
+ 
++    def _build_stagnation_queue(self) -> None:
++        """Build a small neighborhood search queue around the current best."""
++        if self.best_x is None:
++            self._stagnation_queue = []
++            return
++
++        if self._all_discrete and self._param_space_handler is not None:
++            base = self.best_x.copy()
++            scores_map = self._compute_discrete_value_scores() if self._discrete_counts else {}
++            ranked = bool(scores_map)
++            queue: List[np.ndarray] = []
++            for i, s in enumerate(self._param_space_handler.specs):
++                choices = s["choices"]
++                n_choices = len(choices)
++                if n_choices <= 1:
++                    continue
++                current = int(np.floor(float(base[i]) * n_choices))
++                if current < 0:
++                    current = 0
++                elif current >= n_choices:
++                    current = n_choices - 1
++                if s["type"] == "ordinal":
++                    if self.is_stagnating or self.iteration >= self.exploration_budget:
++                        neighbors = [v for v in range(n_choices) if v != current]
++                    else:
++                        neighbors = []
++                        if current - 1 >= 0:
++                            neighbors.append(current - 1)
++                        if current + 1 < n_choices:
++                            neighbors.append(current + 1)
++                else:
++                    neighbors = [v for v in range(n_choices) if v != current]
++                if ranked and i in scores_map:
++                    scores = scores_map[i]
++                    neighbors = sorted(neighbors, key=lambda v: scores[v], reverse=True)
++                for val_idx in neighbors:
++                    x = base.copy()
++                    x[i] = (val_idx + 0.5) / n_choices
++                    queue.append(x)
++            if queue and not ranked:
++                self.rng.shuffle(queue)
++            self._stagnation_queue = queue
++            return
++
++        if not self._cat_sampler.has_categoricals:
++            self._stagnation_queue = []
++            return
++
++        base = self.best_x.copy()
++        queue: List[np.ndarray] = []
++        for dim_idx, n_choices in self._cat_sampler.categorical_dims:
++            current = self._cat_sampler.discretize(base[dim_idx], n_choices)
++            for val_idx in range(n_choices):
++                if val_idx == current:
++                    continue
++                x = base.copy()
++                x[dim_idx] = self._cat_sampler.to_continuous(val_idx, n_choices)
++                queue.append(x)
++
++        if queue:
++            self.rng.shuffle(queue)
++        self._stagnation_queue = queue
++
++    def _build_sweep_queue(self) -> None:
++        """Build a deterministic coordinate sweep around the current best config."""
++        if self.best_x is None or not self._all_discrete or not self._discrete_dims:
++            self._sweep_queue = []
++            self._sweep_anchor_key = None
++            return
++
++        base = self.best_x.copy()
++        base_idx_map: Dict[int, int] = {}
++        for dim_idx, n_choices in self._discrete_dims:
++            idx = int(np.floor(float(base[dim_idx]) * n_choices))
++            if idx < 0:
++                idx = 0
++            elif idx >= n_choices:
++                idx = n_choices - 1
++            base_idx_map[dim_idx] = idx
++
++        base_key = self._config_key_from_x(base)
++        if base_key is None:
++            base_key = tuple(base_idx_map.get(dim_idx, 0) for dim_idx, _ in self._discrete_dims)
++        if base_key == self._sweep_anchor_key and self._sweep_queue:
++            return
++        self._sweep_anchor_key = base_key
++
++        scores_map = self._compute_discrete_value_scores()
++        queue: List[np.ndarray] = []
++        for dim_idx, n_choices in self._discrete_dims:
++            base_idx = base_idx_map[dim_idx]
++            scores = scores_map.get(dim_idx)
++            if scores is None or scores.shape[0] != n_choices:
++                scores = np.zeros(n_choices, dtype=float)
++            else:
++                scores = scores.copy()
++            if self._pair_counts:
++                scores = scores + self._pairwise_scores_for_dim(dim_idx, n_choices, base_idx_map)
++
++            distances = np.abs(np.arange(n_choices) - base_idx)
++            order = np.lexsort((distances, -scores))
++            top_k = min(3, n_choices)
++            for idx in order[:top_k]:
++                idx = int(idx)
++                if idx == base_idx:
++                    continue
++                x = base.copy()
++                x[dim_idx] = (idx + 0.5) / n_choices
++                x = self._clip_to_bounds(x)
++                if self._param_space_handler is not None:
++                    x = self._param_space_handler.snap_ordinal(x)
++                    x = self._clip_to_bounds(x)
++                key = self._config_key_from_x(x)
++                if key is not None and key in self._seen_configs:
++                    continue
++                queue.append(x)
++
++        refined = self._refine_pairwise_indices(base_idx_map, scores_map)
++        if refined and refined != base_idx_map:
++            x = base.copy()
++            for dim_idx, n_choices in self._discrete_dims:
++                idx = refined.get(dim_idx, base_idx_map[dim_idx])
++                x[dim_idx] = (idx + 0.5) / n_choices
++            x = self._clip_to_bounds(x)
++            if self._param_space_handler is not None:
++                x = self._param_space_handler.snap_ordinal(x)
++                x = self._clip_to_bounds(x)
++            key = self._config_key_from_x(x)
++            if key is None or key not in self._seen_configs:
++                queue.insert(0, x)
++
++        self._sweep_queue = queue
++
++    def _config_key_from_x(self, x: np.ndarray) -> Optional[tuple]:
++        if self._param_space_handler is None:
++            return None
++        cfg = self._param_space_handler.decode(x)
++        return tuple(cfg[name] for name in self._param_space_handler.param_order)
++
+     # -------------------------------------------------------------------------
+     # Internal score conversion
+     # -------------------------------------------------------------------------
+@@ -306,14 +507,149 @@ class ALBA:
+         """
+         self.iteration = len(self.X_all)
+ 
+-        # Global random for diversity
+-        if self.rng.random() < self._global_random_prob:
++        # Stagnation rescue: try discrete/categorical neighbors of the best config
++        if self.is_stagnating:
++            if not self._stagnation_queue:
++                self._build_stagnation_queue()
++            while self._stagnation_queue:
++                x = self._stagnation_queue.pop()
++                if self._all_discrete:
++                    key = self._config_key_from_x(x)
++                    if key is not None and key in self._seen_configs:
++                        continue
++                self._last_cube = self._find_containing_leaf(x)
++                return x
++
++        if self._param_space_handler is not None and self._all_discrete:
++            if self._discrete_counts and any((c == 0).any() for c in self._discrete_counts.values()):
++                cfg: Dict[str, Any] = {}
++                for i, s in enumerate(self._param_space_handler.specs):
++                    choices = s["choices"]
++                    counts = self._discrete_counts.get(i)
++                    if counts is None:
++                        idx = int(self.rng.integers(0, len(choices)))
++                    else:
++                        min_count = counts.min()
++                        candidates = np.flatnonzero(counts == min_count)
++                        idx = int(self.rng.choice(candidates))
++                    cfg[s["name"]] = choices[idx]
++                x = self._param_space_handler.encode(cfg)
++                key = self._config_key_from_x(x)
++                if key is None or key not in self._seen_configs:
++                    self._last_cube = None
++                    return x
++
++        if self._all_discrete and self.best_x is not None and (
++                self.is_stagnating or self.iteration >= self.exploration_budget):
++            if not self._sweep_queue:
++                self._build_sweep_queue()
++            while self._sweep_queue:
++                x = self._sweep_queue.pop(0)
++                if self._all_discrete:
++                    key = self._config_key_from_x(x)
++                    if key is not None and key in self._seen_configs:
++                        continue
++                self._last_cube = self._find_containing_leaf(x)
++                return x
++
++        if self._all_discrete:
++            beam_prob = 0.35 if (self.is_stagnating or self.iteration >= self.exploration_budget) else 0.15
++            if self.rng.random() < beam_prob:
++                x = self._sample_elite_beam_config()
++                if x is not None:
++                    x = self._clip_to_bounds(x)
++                    if self._param_space_handler is not None:
++                        x = self._param_space_handler.snap_ordinal(x)
++                        x = self._clip_to_bounds(x)
++                        key = self._config_key_from_x(x)
++                        if key is not None and key in self._seen_configs:
++                            x = None
++                    if x is not None:
++                        self._last_cube = self._find_containing_leaf(x)
++                        return x
++
++            global_prob = 0.2 if (self.is_stagnating or self.iteration >= self.exploration_budget) else 0.1
++            if self.rng.random() < global_prob:
++                x = self._sample_global_pairwise_config()
++                if x is not None:
++                    x = self._clip_to_bounds(x)
++                    if self._param_space_handler is not None:
++                        x = self._param_space_handler.snap_ordinal(x)
++                        x = self._clip_to_bounds(x)
++                        key = self._config_key_from_x(x)
++                        if key is not None and key in self._seen_configs:
++                            x = None
++                    if x is not None:
++                        self._last_cube = self._find_containing_leaf(x)
++                        return x
++
++        if self._all_discrete and self._elite_pool:
++            elite_prob = 0.5 if self.is_stagnating else 0.3
++            if self.rng.random() < elite_prob:
++                x = self._sample_elite_mutation()
++                if x is not None:
++                    x = self._clip_to_bounds(x)
++                    if self._param_space_handler is not None:
++                        x = self._param_space_handler.snap_ordinal(x)
++                        x = self._clip_to_bounds(x)
++                        key = self._config_key_from_x(x)
++                        if key is not None and key in self._seen_configs:
++                            x = None
++                    if x is not None:
++                        self._last_cube = self._find_containing_leaf(x)
++                        return x
++
++        if self._all_discrete:
++            progress = min(1.0, self.iteration / max(1, self.exploration_budget))
++            score_prob = 0.2 + 0.3 * progress
++            if self.is_stagnating:
++                score_prob = min(0.65, score_prob + 0.2)
++            if self.rng.random() < score_prob:
++                x = self._sample_value_score_config()
++                if x is not None:
++                    x = self._clip_to_bounds(x)
++                    if self._param_space_handler is not None:
++                        x = self._param_space_handler.snap_ordinal(x)
++                        x = self._clip_to_bounds(x)
++                        key = self._config_key_from_x(x)
++                        if key is not None and key in self._seen_configs:
++                            x = None
++                    if x is not None:
++                        self._last_cube = self._find_containing_leaf(x)
++                        return x
++
++        if (not self.is_stagnating and self.iteration >= self.exploration_budget
++                and self.best_x is not None):
++            queue_prob = 0.35 if self._all_discrete else 0.2
++            if self.rng.random() < queue_prob:
++                if not self._stagnation_queue:
++                    self._build_stagnation_queue()
++                while self._stagnation_queue:
++                    x = self._stagnation_queue.pop()
++                    if self._all_discrete:
++                        key = self._config_key_from_x(x)
++                        if key is not None and key in self._seen_configs:
++                            continue
++                    self._last_cube = self._find_containing_leaf(x)
++                    return x
++
++        # Global random for diversity (increase if stagnating)
++        random_prob = self._global_random_prob
++        if self._all_discrete and self.iteration >= self.exploration_budget:
++            random_prob *= 0.5
++        if self.is_stagnating:
++            random_prob = min(0.3, random_prob * 3.0)
++        if self.rng.random() < random_prob:
+             x = np.array([self.rng.uniform(lo, hi) for lo, hi in self.bounds])
+             self._last_cube = self._find_containing_leaf(x)
+             return x
+ 
+         if self.iteration < self.exploration_budget:
+             # Exploration phase
++            if self.is_stagnating and self.best_x is not None and self.rng.random() < 0.2:
++                x = self._local_search_sample(0.0)
++                self._last_cube = self._find_containing_leaf(x)
++                return x
+             self._update_gamma()
+             self._recount_good()
+ 
+@@ -365,32 +701,64 @@ class ALBA:
+             self.best_x = x.copy()
+             self.stagnation = 0
+             self.last_improvement_iter = self.iteration
++            self._stagnation_queue = []
++            self._sweep_queue = []
++            self._sweep_anchor_key = None
+         else:
+             self.stagnation += 1
+ 
+         # Record observation
+         self.X_all.append(x.copy())
+         self.y_all.append(y)
++        if self._param_space_handler is not None and self._all_discrete:
++            key = self._config_key_from_x(x)
++            if key is not None:
++                self._seen_configs.add(key)
++        if self._all_discrete:
++            if len(self._elite_pool) < self._elite_size:
++                self._elite_pool.append((x.copy(), y))
++                self._elite_pool.sort(key=lambda p: p[1], reverse=True)
++            elif y > self._elite_pool[-1][1]:
++                self._elite_pool[-1] = (x.copy(), y)
++                self._elite_pool.sort(key=lambda p: p[1], reverse=True)
++        is_good = y >= self.gamma
++        if self._all_discrete and self._discrete_counts:
++            idx_map: Dict[int, int] = {}
++            for dim_idx, n_choices in self._discrete_dims:
++                idx = int(np.floor(float(x[dim_idx]) * n_choices))
++                if idx < 0:
++                    idx = 0
++                elif idx >= n_choices:
++                    idx = n_choices - 1
++                idx_map[dim_idx] = idx
++                self._discrete_counts[dim_idx][idx] += 1
++                if is_good and dim_idx in self._discrete_good_counts:
++                    self._discrete_good_counts[dim_idx][idx] += 1
++                if dim_idx in self._discrete_score_sums:
++                    self._discrete_score_sums[dim_idx][idx] += y
++            if self._pair_counts and idx_map:
++                for (i, j), counts in self._pair_counts.items():
++                    idx_i = idx_map.get(i)
++                    idx_j = idx_map.get(j)
++                    if idx_i is None or idx_j is None:
++                        continue
++                    counts[idx_i, idx_j] += 1
++                    if is_good:
++                        self._pair_good_counts[(i, j)][idx_i, idx_j] += 1
++                    self._pair_score_sums[(i, j)][idx_i, idx_j] += y
++            if idx_map:
++                idx_tuple = tuple(idx_map[dim_idx] for dim_idx, _ in self._discrete_dims)
++                self._seen_discrete_idx.add(idx_tuple)
+ 
+         # Update categorical tracking
+-        self._cat_sampler.record_observation(x, y)
++        self._cat_sampler.record_observation(x, y, is_good)
+ 
+         # Update cube
+         if self._last_cube is not None:
+             cube = self._last_cube
+             cube.add_observation(x, y, self.gamma)
+ 
+-            # Update categorical stats in cube
+-            for dim_idx, n_choices in self._cat_sampler.categorical_dims:
+-                val_idx = self._cat_sampler.discretize(x[dim_idx], n_choices)
+-                if dim_idx not in cube.cat_stats:
+-                    cube.cat_stats[dim_idx] = {}
+-                n_g, n_t = cube.cat_stats[dim_idx].get(val_idx, (0, 0))
+-                is_good = y >= self.gamma
+-                cube.cat_stats[dim_idx][val_idx] = (
+-                    n_g + (1 if is_good else 0),
+-                    n_t + 1,
+-                )
++            self._cat_sampler.update_cube_stats(cube, x, is_good)
+ 
+             cube.fit_lgs_model(self.gamma, self.dim, self.rng)
+ 
+@@ -470,6 +838,7 @@ class ALBA:
+         for leaf in self.leaves:
+             leaf.n_good = sum(1 for _, s in leaf.tested_pairs if s >= self.gamma)
+             self._cat_sampler.recompute_cube_cat_stats(leaf, self.gamma)
++        self._cat_sampler.recompute_global_stats(self.X_all, self.y_all, self.gamma)
+ 
+     # -------------------------------------------------------------------------
+     # Leaf selection
+@@ -492,6 +861,415 @@ class ALBA:
+     # Sampling within cubes
+     # -------------------------------------------------------------------------
+ 
++    def _sample_elite_mutation(self) -> Optional[np.ndarray]:
++        """Sample a mutated elite configuration in discrete spaces."""
++        if not self._elite_pool or not self._discrete_dims:
++            return None
++
++        n = len(self._elite_pool)
++        weights = np.array([1.0 / (i + 1) for i in range(n)], dtype=float)
++        weights = weights / weights.sum()
++        idx = int(self.rng.choice(n, p=weights))
++        base = self._elite_pool[idx][0]
++        x = base.copy()
++
++        ordinal_indices = {dim_idx for dim_idx, _ in self._ordinal_dims}
++        step_prob = 0.35 if self.is_stagnating else 0.2
++        cat_prob = 0.25 if self.is_stagnating else 0.15
++
++        for dim_idx, n_choices in self._discrete_dims:
++            cur = int(np.floor(float(x[dim_idx]) * n_choices))
++            if cur < 0:
++                cur = 0
++            elif cur >= n_choices:
++                cur = n_choices - 1
++
++            if dim_idx in ordinal_indices:
++                if self.rng.random() < step_prob:
++                    step = int(self.rng.choice([-1, 1]))
++                    if self.is_stagnating and self.rng.random() < 0.3:
++                        step *= 2
++                    nxt = max(0, min(n_choices - 1, cur + step))
++                    x[dim_idx] = (nxt + 0.5) / n_choices
++            else:
++                if self.rng.random() < cat_prob and n_choices > 1:
++                    nxt = int(self.rng.integers(0, n_choices - 1))
++                    if nxt >= cur:
++                        nxt += 1
++                    x[dim_idx] = (nxt + 0.5) / n_choices
++
++        return x
++
++    def _sample_value_score_config(self) -> Optional[np.ndarray]:
++        """Sample a discrete configuration using per-value average scores."""
++        if (not self._discrete_dims or not self._discrete_score_sums
++                or not self._discrete_counts):
++            return None
++
++        scores_map = self._compute_discrete_value_scores()
++        if not scores_map:
++            return None
++
++        progress = min(1.0, self.iteration / max(1, self.exploration_budget))
++        greedy_prob = 0.25 + 0.45 * progress
++        if self.is_stagnating:
++            greedy_prob = min(0.75, greedy_prob + 0.1)
++        greedy = self.rng.random() < greedy_prob
++
++        x = np.zeros(self.dim, dtype=float)
++        chosen: Dict[int, int] = {}
++        ordered_dims = []
++        for dim_idx, n_choices in self._discrete_dims:
++            base_score = scores_map.get(dim_idx)
++            spread = float(base_score.max() - base_score.min()) if base_score is not None else 0.0
++            ordered_dims.append((spread, dim_idx, n_choices))
++        ordered_dims.sort(reverse=True)
++
++        for _, dim_idx, n_choices in ordered_dims:
++            base_score = scores_map.get(dim_idx)
++            if base_score is None or base_score.shape[0] != n_choices:
++                idx = int(self.rng.integers(0, n_choices))
++            else:
++                score = base_score.copy()
++                if chosen and self._pair_counts:
++                    score = score + self._pairwise_scores_for_dim(dim_idx, n_choices, chosen)
++
++                if np.allclose(score, score[0]) or n_choices <= 1:
++                    idx = int(self.rng.integers(0, n_choices))
++                elif greedy:
++                    idx = int(np.argmax(score))
++                else:
++                    score = score - score.max()
++                    probs = np.exp(score * 2.0)
++                    probs = probs / probs.sum()
++                    idx = int(self.rng.choice(n_choices, p=probs))
++
++            x[dim_idx] = (idx + 0.5) / n_choices
++            chosen[dim_idx] = idx
++
++        return x
++
++    def _compute_discrete_value_scores(self) -> Dict[int, np.ndarray]:
++        """Compute per-value scores for each discrete dimension."""
++        scores: Dict[int, np.ndarray] = {}
++        elite_counts: Dict[int, np.ndarray] = {}
++        if self._elite_pool and self._discrete_dims:
++            n = len(self._elite_pool)
++            weights = np.array([1.0 / (i + 1) for i in range(n)], dtype=float)
++            weights = weights / weights.sum()
++            for dim_idx, n_choices in self._discrete_dims:
++                elite_counts[dim_idx] = np.zeros(n_choices, dtype=float)
++            for w, (x, _) in zip(weights, self._elite_pool):
++                for dim_idx, n_choices in self._discrete_dims:
++                    idx = int(np.floor(float(x[dim_idx]) * n_choices))
++                    if idx < 0:
++                        idx = 0
++                    elif idx >= n_choices:
++                        idx = n_choices - 1
++                    elite_counts[dim_idx][idx] += w
++
++        ordinal_indices = {dim_idx for dim_idx, _ in self._ordinal_dims}
++        best_idx_map: Dict[int, int] = {}
++        if self.best_x is not None:
++            for dim_idx, n_choices in self._ordinal_dims:
++                idx = int(np.floor(float(self.best_x[dim_idx]) * n_choices))
++                if idx < 0:
++                    idx = 0
++                elif idx >= n_choices:
++                    idx = n_choices - 1
++                best_idx_map[dim_idx] = idx
++
++        for dim_idx, n_choices in self._discrete_dims:
++            sums = self._discrete_score_sums.get(dim_idx)
++            counts = self._discrete_counts.get(dim_idx)
++            if sums is None or counts is None:
++                continue
++
++            avg = sums / np.maximum(1, counts)
++            curiosity = 1.0 / (1.0 + counts)
++            score = avg - avg.mean()
++            good_counts = self._discrete_good_counts.get(dim_idx)
++            if good_counts is not None:
++                good_ratio = (good_counts + 1.0) / (counts + 2.0)
++                score = score + 0.5 * good_ratio
++            score = score + 0.2 * curiosity
++            if dim_idx in elite_counts:
++                elite = elite_counts[dim_idx]
++                elite_ratio = (elite + 1.0) / (elite.sum() + n_choices)
++                score = score + 0.3 * (elite_ratio - elite_ratio.mean())
++
++            if dim_idx in ordinal_indices and n_choices >= 3:
++                smooth = score.copy()
++                smooth[1:-1] = 0.2 * score[:-2] + 0.6 * score[1:-1] + 0.2 * score[2:]
++                smooth[0] = 0.7 * score[0] + 0.3 * score[1]
++                smooth[-1] = 0.7 * score[-1] + 0.3 * score[-2]
++                score = smooth
++                if dim_idx in best_idx_map:
++                    distances = np.abs(np.arange(n_choices) - best_idx_map[dim_idx])
++                    neighbor = 1.0 / (1.0 + distances)
++                    score = score + 0.2 * (neighbor - neighbor.mean())
++            if score.shape[0] == n_choices:
++                scores[dim_idx] = score
++
++        return scores
++
++    def _pairwise_scores_for_dim(
++        self,
++        dim_idx: int,
++        n_choices: int,
++        fixed: Dict[int, int],
++    ) -> np.ndarray:
++        """Compute pairwise co-occurrence bias for one dimension."""
++        if not self._pair_counts or not fixed:
++            return np.zeros(n_choices, dtype=float)
++
++        scores = np.zeros(n_choices, dtype=float)
++        n_pairs = 0
++
++        for other_dim, other_idx in fixed.items():
++            if other_dim == dim_idx:
++                continue
++            if dim_idx < other_dim:
++                key = (dim_idx, other_dim)
++                counts = self._pair_counts.get(key)
++                if counts is None:
++                    continue
++                count_vec = counts[:, other_idx]
++                good_vec = self._pair_good_counts[key][:, other_idx]
++                sum_vec = self._pair_score_sums[key][:, other_idx]
++            else:
++                key = (other_dim, dim_idx)
++                counts = self._pair_counts.get(key)
++                if counts is None:
++                    continue
++                count_vec = counts[other_idx, :]
++                good_vec = self._pair_good_counts[key][other_idx, :]
++                sum_vec = self._pair_score_sums[key][other_idx, :]
++
++            if count_vec.shape[0] != n_choices or count_vec.sum() == 0:
++                continue
++
++            avg = sum_vec / np.maximum(1, count_vec)
++            avg = avg - avg.mean()
++            good = (good_vec + 1.0) / (count_vec + 2.0)
++            good = good - good.mean()
++            conf = count_vec / (count_vec + 2.0)
++            scores += conf * (0.35 * good + 0.25 * avg)
++            n_pairs += 1
++
++        if n_pairs > 1:
++            scores = scores / n_pairs
++
++        return scores
++
++    def _compute_pairwise_score_matrices(self) -> Dict[Tuple[int, int], np.ndarray]:
++        """Compute pairwise score matrices from co-occurrence stats."""
++        matrices: Dict[Tuple[int, int], np.ndarray] = {}
++        if not self._pair_counts:
++            return matrices
++
++        for key, counts in self._pair_counts.items():
++            if counts.sum() == 0:
++                continue
++            good = self._pair_good_counts[key].astype(float)
++            sums = self._pair_score_sums[key].astype(float)
++            counts_f = counts.astype(float)
++            avg = sums / np.maximum(1.0, counts_f)
++            avg = avg - avg.mean()
++            good_ratio = (good + 1.0) / (counts_f + 2.0)
++            good_ratio = good_ratio - good_ratio.mean()
++            conf = counts_f / (counts_f + 2.0)
++            matrices[key] = conf * (0.35 * good_ratio + 0.25 * avg)
++
++        return matrices
++
++    def _sample_global_pairwise_config(self) -> Optional[np.ndarray]:
++        """Sample a global discrete configuration via unary + pairwise scores."""
++        if not self._all_discrete or not self._discrete_dims:
++            return None
++        if len(self.X_all) < max(10, self.dim * 2):
++            return None
++
++        dims = list(self._discrete_dims)
++        n_choices = [n for _, n in dims]
++        total = int(np.prod(n_choices))
++        if total > 60000:
++            return None
++
++        scores_map = self._compute_discrete_value_scores()
++        if not scores_map:
++            return None
++        pair_mats = self._compute_pairwise_score_matrices()
++
++        if self._discrete_grid is not None:
++            idx_mat = self._discrete_grid
++        else:
++            grids = np.meshgrid(*[np.arange(n) for n in n_choices], indexing="ij")
++            idx_mat = np.stack([g.reshape(-1) for g in grids], axis=1)
++        scores = np.zeros(idx_mat.shape[0], dtype=float)
++
++        dim_positions = {dim_idx: pos for pos, (dim_idx, _) in enumerate(dims)}
++        for pos, (dim_idx, _) in enumerate(dims):
++            base_score = scores_map.get(dim_idx)
++            if base_score is None:
++                continue
++            scores += base_score[idx_mat[:, pos]]
++
++        for (i, j), mat in pair_mats.items():
++            pos_i = dim_positions.get(i)
++            pos_j = dim_positions.get(j)
++            if pos_i is None or pos_j is None:
++                continue
++            scores += mat[idx_mat[:, pos_i], idx_mat[:, pos_j]]
++
++        if self._seen_discrete_idx:
++            mask = np.array([tuple(row) not in self._seen_discrete_idx for row in idx_mat])
++            if not mask.any():
++                return None
++            scores = scores[mask]
++            idx_mat = idx_mat[mask]
++
++        best_idx = int(np.argmax(scores))
++        best_tuple = tuple(int(v) for v in idx_mat[best_idx])
++
++        x = np.zeros(self.dim, dtype=float)
++        for pos, (dim_idx, n_ch) in enumerate(dims):
++            x[dim_idx] = (best_tuple[pos] + 0.5) / n_ch
++        return x
++
++    def _sample_elite_beam_config(self) -> Optional[np.ndarray]:
++        """Sample a config by recombining top values per dimension."""
++        if not self._all_discrete or not self._discrete_dims or not self._elite_pool:
++            return None
++
++        scores_map = self._compute_discrete_value_scores()
++        if not scores_map:
++            return None
++
++        dims = list(self._discrete_dims)
++        n_choices = [n for _, n in dims]
++        top_k = 3 if (self.is_stagnating or self.iteration >= self.exploration_budget) else 2
++
++        top_values: List[np.ndarray] = []
++        for (dim_idx, n_ch) in dims:
++            score = scores_map.get(dim_idx)
++            if score is None or score.shape[0] != n_ch:
++                counts = self._discrete_counts.get(dim_idx)
++                if counts is None:
++                    vals = np.arange(n_ch)
++                else:
++                    vals = np.argsort(counts)
++            else:
++                vals = np.argsort(score)[::-1]
++            top_values.append(vals[: min(top_k, n_ch)])
++
++        grids = np.meshgrid(*top_values, indexing="ij")
++        idx_mat = np.stack([g.reshape(-1) for g in grids], axis=1)
++        if idx_mat.size == 0:
++            return None
++
++        pair_mats = self._compute_pairwise_score_matrices()
++        dim_positions = {dim_idx: pos for pos, (dim_idx, _) in enumerate(dims)}
++        scores = np.zeros(idx_mat.shape[0], dtype=float)
++        for pos, (dim_idx, _) in enumerate(dims):
++            scores += scores_map[dim_idx][idx_mat[:, pos]]
++        for (i, j), mat in pair_mats.items():
++            pos_i = dim_positions.get(i)
++            pos_j = dim_positions.get(j)
++            if pos_i is None or pos_j is None:
++                continue
++            scores += mat[idx_mat[:, pos_i], idx_mat[:, pos_j]]
++
++        if self._seen_discrete_idx:
++            mask = np.array([tuple(row) not in self._seen_discrete_idx for row in idx_mat])
++            if not mask.any():
++                return None
++            scores = scores[mask]
++            idx_mat = idx_mat[mask]
++
++        best_idx = int(np.argmax(scores))
++        best_tuple = tuple(int(v) for v in idx_mat[best_idx])
++
++        x = np.zeros(self.dim, dtype=float)
++        for pos, (dim_idx, n_ch) in enumerate(dims):
++            x[dim_idx] = (best_tuple[pos] + 0.5) / n_ch
++        return x
++
++    def _refine_pairwise_indices(
++        self,
++        base_idx_map: Dict[int, int],
++        scores_map: Dict[int, np.ndarray],
++    ) -> Optional[Dict[int, int]]:
++        """Run a few coordinate-ascent steps using pairwise scores."""
++        if not self._pair_counts or not scores_map:
++            return None
++        cur = dict(base_idx_map)
++        for _ in range(2):
++            moved = False
++            for dim_idx, n_choices in self._discrete_dims:
++                base_score = scores_map.get(dim_idx)
++                if base_score is None or base_score.shape[0] != n_choices:
++                    continue
++                score = base_score.copy()
++                score = score + self._pairwise_scores_for_dim(dim_idx, n_choices, cur)
++                idx = int(np.argmax(score))
++                if cur.get(dim_idx) != idx:
++                    cur[dim_idx] = idx
++                    moved = True
++            if not moved:
++                break
++        return cur
++
++    def _apply_ordinal_bias(self, x: np.ndarray, cube: Cube) -> np.ndarray:
++        """Bias ordinal dimensions toward good and under-explored values."""
++        if not self._ordinal_dims or not self._discrete_counts or not self._discrete_good_counts:
++            return x
++
++        x = x.copy()
++        best_idx_map: Dict[int, int] = {}
++        if self.best_x is not None:
++            for dim_idx, n_choices in self._ordinal_dims:
++                idx = int(np.floor(float(self.best_x[dim_idx]) * n_choices))
++                if idx < 0:
++                    idx = 0
++                elif idx >= n_choices:
++                    idx = n_choices - 1
++                best_idx_map[dim_idx] = idx
++
++        curiosity_weight = 0.6 if self.is_stagnating else 0.3
++        neighbor_weight = 0.4 if self.is_stagnating else 0.2
++
++        for dim_idx, n_choices in self._ordinal_dims:
++            counts = self._discrete_counts.get(dim_idx)
++            good_counts = self._discrete_good_counts.get(dim_idx)
++            if counts is None or good_counts is None:
++                continue
++
++            lo, hi = cube.bounds[dim_idx]
++            centers = (np.arange(n_choices) + 0.5) / n_choices
++            allowed = np.where((centers >= lo - 1e-12) & (centers <= hi + 1e-12))[0]
++            if allowed.size == 0:
++                continue
++
++            good_rate = (good_counts + 1.0) / (counts + 2.0)
++            curiosity = 1.0 / (1.0 + counts)
++            score = good_rate + curiosity_weight * curiosity
++
++            if dim_idx in best_idx_map:
++                distances = np.abs(np.arange(n_choices) - best_idx_map[dim_idx])
++                neighbor = 1.0 / (1.0 + distances)
++                score = score + neighbor_weight * neighbor
++
++            score = score[allowed]
++            score = score - score.max()
++            probs = np.exp(score * 2.0)
++            probs = probs / probs.sum()
++
++            idx = int(self.rng.choice(allowed, p=probs))
++            x[dim_idx] = centers[idx]
++
++        return x
++
+     def _sample_in_cube(self, cube: Cube) -> np.ndarray:
+         """
+         Sample a point within the given cube.
+@@ -506,16 +1284,38 @@ class ALBA:
+         np.ndarray
+             Sampled point.
+         """
+-        if self.iteration < 15:
++        if self._all_categorical:
++            x = np.array([self.rng.uniform(lo, hi) for lo, hi in cube.bounds])
++        elif self.iteration < 15:
+             x = np.array([self.rng.uniform(lo, hi) for lo, hi in cube.bounds])
+         else:
+             x = self._sample_with_lgs(cube)
+ 
+         # Apply categorical sampling
+         x = self._cat_sampler.sample(x, cube, self.rng, self.is_stagnating)
++        if (self._ordinal_dims and not self._all_discrete
++                and (self.iteration >= self.exploration_budget or self.is_stagnating)):
++            x = self._apply_ordinal_bias(x, cube)
+ 
+         # Re-clip to cube bounds
+         x = self._clip_to_cube(x, cube)
++        if self._param_space_handler is not None:
++            x = self._param_space_handler.snap_ordinal(x)
++            x = self._clip_to_cube(x, cube)
++
++        if self._all_categorical:
++            key = self._config_key_from_x(x)
++            if key is not None and key in self._seen_configs:
++                for _ in range(10):
++                    x = np.array([self.rng.uniform(lo, hi) for lo, hi in cube.bounds])
++                    x = self._cat_sampler.sample(x, cube, self.rng, self.is_stagnating)
++                    x = self._clip_to_cube(x, cube)
++                    if self._param_space_handler is not None:
++                        x = self._param_space_handler.snap_ordinal(x)
++                        x = self._clip_to_cube(x, cube)
++                    key = self._config_key_from_x(x)
++                    if key is None or key not in self._seen_configs:
++                        break
+         return x
+ 
+     def _sample_with_lgs(self, cube: Cube) -> np.ndarray:
+@@ -536,6 +1336,15 @@ class ALBA:
+             return np.array([self.rng.uniform(lo, hi) for lo, hi in cube.bounds])
+ 
+         candidates = self._generate_candidates(cube, self.n_candidates)
++        if self._param_space_handler is not None:
++            candidates = [self._param_space_handler.snap_ordinal(c) for c in candidates]
++        if self._cat_sampler.has_categoricals:
++            candidates = [
++                self._clip_to_cube(self._cat_sampler.sample(c, cube, self.rng, self.is_stagnating), cube)
++                for c in candidates
++            ]
++            if self._param_space_handler is not None:
++                candidates = [self._param_space_handler.snap_ordinal(c) for c in candidates]
+         mu, sigma = cube.predict_bayesian(candidates)
+ 
+         idx = self._acquisition_selector.select(mu, sigma, self.rng, self._novelty_weight)
+@@ -586,7 +1395,30 @@ class ALBA:
+             float(progress),
+             self.rng,
+         )
+-        return self._clip_to_bounds(x)
++        if self.best_x is not None and self._categorical_dims_only:
++            if self._all_categorical:
++                mut_prob = 0.5 if self.is_stagnating else 0.3
++                for dim_idx, n_choices in self._categorical_dims_only:
++                    if self.rng.random() < mut_prob and n_choices > 1:
++                        cur = int(np.floor(float(self.best_x[dim_idx]) * n_choices))
++                        if cur < 0:
++                            cur = 0
++                        elif cur >= n_choices:
++                            cur = n_choices - 1
++                        nxt = int(self.rng.integers(0, n_choices - 1))
++                        if nxt >= cur:
++                            nxt += 1
++                        x[dim_idx] = (nxt + 0.5) / n_choices
++                    else:
++                        x[dim_idx] = self.best_x[dim_idx]
++            else:
++                for dim_idx, _ in self._categorical_dims_only:
++                    x[dim_idx] = self.best_x[dim_idx]
++        x = self._clip_to_bounds(x)
++        if self._param_space_handler is not None:
++            x = self._param_space_handler.snap_ordinal(x)
++            x = self._clip_to_bounds(x)
++        return x
+ 
+     # -------------------------------------------------------------------------
+     # Clipping helpers
+@@ -637,6 +1469,8 @@ class ALBA:
+ 
+     def _should_split(self, cube: Cube) -> bool:
+         """Check if a cube should be split."""
++        if self._all_categorical:
++            return False
+         return bool(self._split_decider.should_split(cube, self.dim))
+ 
+     def _update_all_models(self) -> None:
+diff --git a/thesis/alba_framework/param_space.py b/thesis/alba_framework/param_space.py
+index 81868afa..4598d7a0 100644
+--- a/thesis/alba_framework/param_space.py
++++ b/thesis/alba_framework/param_space.py
+@@ -101,6 +101,8 @@ class ParamSpaceHandler:
+         # Derived attributes
+         self.dim = len(self.specs)
+         self.categorical_dims = self._extract_categorical_dims()
++        self.ordinal_dims = self._extract_ordinal_dims()
++        self.discrete_dims = self._extract_discrete_dims()
+ 
+     def _parse_param_space(
+         self,
+@@ -111,6 +113,23 @@ class ParamSpaceHandler:
+         for name in param_order:
+             spec = param_space[name]
+ 
++            # Explicit dict specs (e.g., ordinal)
++            if isinstance(spec, dict) and "type" in spec:
++                kind = str(spec["type"]).lower()
++                if kind == "ordinal":
++                    choices = list(spec.get("choices", []))
++                    if len(choices) == 0:
++                        raise ValueError(f"Empty choices list for '{name}'")
++                    if len(choices) == 1:
++                        self.fixed[name] = choices[0]
++                        continue
++                    self.specs.append({
++                        "name": name,
++                        "type": "ordinal",
++                        "choices": choices,
++                    })
++                    continue
++
+             # Check if it's a choices list (categorical)
+             if self._is_choices_spec(spec):
+                 choices = list(spec)
+@@ -119,6 +138,20 @@ class ParamSpaceHandler:
+                 if len(choices) == 1:
+                     self.fixed[name] = choices[0]
+                     continue
++                is_numeric = all(
++                    isinstance(c, (int, float, np.integer, np.floating)) and not isinstance(c, bool)
++                    for c in choices
++                )
++                if is_numeric:
++                    asc = sorted(choices)
++                    desc = sorted(choices, reverse=True)
++                    if choices == asc or choices == desc:
++                        self.specs.append({
++                            "name": name,
++                            "type": "ordinal",
++                            "choices": choices,
++                        })
++                        continue
+                 self.specs.append({
+                     "name": name,
+                     "type": "categorical",
+@@ -190,6 +223,43 @@ class ParamSpaceHandler:
+                 categorical_dims.append((i, len(s["choices"])))
+         return categorical_dims
+ 
++    def _extract_ordinal_dims(self) -> List[Tuple[int, int]]:
++        """Extract list of (dim_index, n_choices) for ordinal parameters."""
++        ordinal_dims: List[Tuple[int, int]] = []
++        for i, s in enumerate(self.specs):
++            if s["type"] == "ordinal":
++                ordinal_dims.append((i, len(s["choices"])))
++        return ordinal_dims
++
++    def _extract_discrete_dims(self) -> List[Tuple[int, int]]:
++        """Extract list of (dim_index, n_choices) for discrete parameters."""
++        discrete_dims: List[Tuple[int, int]] = []
++        for i, s in enumerate(self.specs):
++            if s["type"] in ("categorical", "ordinal"):
++                discrete_dims.append((i, len(s["choices"])))
++        return discrete_dims
++
++    def snap_ordinal(self, x: np.ndarray) -> np.ndarray:
++        """Snap ordinal dimensions to bin centers in [0,1]."""
++        if not self.ordinal_dims:
++            return np.asarray(x, dtype=float)
++        x = np.asarray(x, dtype=float).copy()
++        for i, s in enumerate(self.specs):
++            if s["type"] != "ordinal":
++                continue
++            k = len(s["choices"])
++            if k <= 1:
++                x[i] = 0.5
++                continue
++            v = float(np.clip(x[i], 0.0, 1.0))
++            idx = int(np.floor(v * k))
++            if idx < 0:
++                idx = 0
++            elif idx >= k:
++                idx = k - 1
++            x[i] = (idx + 0.5) / k
++        return np.clip(x, 0.0, 1.0)
++
+     # -------------------------------------------------------------------------
+     # Encode / Decode
+     # -------------------------------------------------------------------------
+@@ -224,9 +294,9 @@ class ParamSpaceHandler:
+         for i, s in enumerate(self.specs):
+             v = float(np.clip(x[i], 0.0, 1.0))
+ 
+-            if s["type"] == "categorical":
++            if s["type"] in ("categorical", "ordinal"):
+                 choices = s["choices"]
+-                idx = int(round(v * (len(choices) - 1)))
++                idx = int(np.floor(v * len(choices)))
+                 idx = int(np.clip(idx, 0, len(choices) - 1))
+                 config[s["name"]] = choices[idx]
+ 
+@@ -284,7 +354,7 @@ class ParamSpaceHandler:
+ 
+             val = config[name]
+ 
+-            if s["type"] == "categorical":
++            if s["type"] in ("categorical", "ordinal"):
+                 choices = s["choices"]
+                 try:
+                     idx = choices.index(val)
+@@ -292,7 +362,10 @@ class ParamSpaceHandler:
+                     raise ValueError(
+                         f"Invalid value for '{name}': {val} (choices={choices})"
+                     )
+-                x[i] = idx / (len(choices) - 1) if len(choices) > 1 else 0.5
++                if len(choices) <= 1:
++                    x[i] = 0.5
++                else:
++                    x[i] = (idx + 0.5) / len(choices)
+ 
+             elif s["type"] == "int":
+                 low = float(s["low"])
+@@ -321,6 +394,18 @@ class ParamSpaceHandler:
+         """Return bounds for internal optimization (all [0, 1])."""
+         return [(0.0, 1.0)] * self.dim
+ 
++    def is_all_discrete(self) -> bool:
++        """Return True if all optimizable parameters are discrete choices."""
++        if not self.specs:
++            return False
++        return all(s["type"] in ("categorical", "ordinal") for s in self.specs)
++
++    def is_all_categorical(self) -> bool:
++        """Return True if all optimizable parameters are categorical."""
++        if not self.specs:
++            return False
++        return all(s["type"] == "categorical" for s in self.specs)
++
+     def get_parameter_names(self) -> List[str]:
+         """Return names of optimizable parameters in order."""
+         return [s["name"] for s in self.specs]
+diff --git a/thesis/alba_framework/splitting.py b/thesis/alba_framework/splitting.py
+index 1efa310f..264c7509 100644
+--- a/thesis/alba_framework/splitting.py
++++ b/thesis/alba_framework/splitting.py
+@@ -4,7 +4,7 @@ This module defines two independent aspects of splitting:
+ 1) When to split a cube (split decision)
+ 2) How to split a cube (split execution)
+ 
+-Default behavior matches ALBA_V1.
++Default policies include ALBA_V1-compatible and adaptive variants.
+ """
+ 
+ from __future__ import annotations
+@@ -44,6 +44,44 @@ class ThresholdSplitDecider:
+         return cube.n_trials >= self.split_trials_factor * dim + self.split_trials_offset
+ 
+ 
++@dataclass(frozen=True)
++class AdaptiveSplitDecider:
++    """Adaptive split decision using volume, good ratio, and model quality."""
++
++    split_trials_min: int = 15
++    split_depth_max: int = 16
++    split_trials_factor: float = 3.0
++    split_trials_offset: int = 6
++    min_volume: float = 1e-8
++    min_good_ratio: float = 0.02
++    min_good_points: int = 1
++    model_quality_min: float = 0.15
++    fallback_multiplier: float = 2.5
++
++    def should_split(self, cube: Cube, dim: int) -> bool:
++        if cube.n_trials < self.split_trials_min:
++            return False
++        if cube.depth >= self.split_depth_max:
++            return False
++        if cube.volume() <= self.min_volume:
++            return False
++
++        threshold = self.split_trials_factor * dim + self.split_trials_offset
++        if cube.n_trials < threshold:
++            return False
++
++        if cube.n_good >= self.min_good_points and cube.good_ratio() >= self.min_good_ratio:
++            return True
++
++        model = cube.lgs_model or {}
++        quality = float(model.get("quality", 0.0))
++        n_pts = len(model.get("all_pts", []))
++        if quality >= self.model_quality_min and n_pts >= dim + 2:
++            return True
++
++        return cube.n_trials >= threshold * self.fallback_multiplier
++
++
+ @dataclass(frozen=True)
+ class CubeIntrinsicSplitPolicy:
+     """Default split execution: delegates to Cube.split() (matches ALBA_V1)."""

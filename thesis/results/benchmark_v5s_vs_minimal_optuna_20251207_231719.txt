@@ -1,0 +1,211 @@
+SYNTHETIC BENCHMARK: v5s_more_novelty vs hpo_minimal vs optuna
+================================================================================
+Functions: ['sphere', 'rosenbrock', 'rastrigin', 'ackley', 'levy', 'griewank', 'schwefel', 'zakharov', 'styblinski_tang', 'michalewicz', 'dixon_price', 'alpine1']
+Dimensions: [6, 3]
+Budget: 150
+Seeds: [87]
+Methods: ['v5s_more_novelty', 'hpo_minimal', 'optuna']
+================================================================================
+
+SUMMARY STATISTICS
+================================================================================
+
+--- DIMENSION 6D ---
+
+sphere (6D):
+  v5s_more_novelty: best=1.505547 +/- 0.000000  time=0.15s +/- 0.00s
+  hpo_minimal     : best=0.000000 +/- 0.000000  time=0.15s +/- 0.00s
+  optuna          : best=0.498695 +/- 0.000000  time=0.27s +/- 0.00s
+
+rosenbrock (6D):
+  v5s_more_novelty: best=18.617181 +/- 0.000000  time=0.15s +/- 0.00s
+  hpo_minimal     : best=11.797301 +/- 0.000000  time=0.19s +/- 0.00s
+  optuna          : best=11.081568 +/- 0.000000  time=0.27s +/- 0.00s
+
+rastrigin (6D):
+  v5s_more_novelty: best=30.230494 +/- 0.000000  time=0.15s +/- 0.00s
+  hpo_minimal     : best=40.567764 +/- 0.000000  time=0.35s +/- 0.00s
+  optuna          : best=33.291835 +/- 0.000000  time=0.27s +/- 0.00s
+
+ackley (6D):
+  v5s_more_novelty: best=7.642282 +/- 0.000000  time=0.14s +/- 0.00s
+  hpo_minimal     : best=4.438060 +/- 0.000000  time=0.29s +/- 0.00s
+  optuna          : best=11.194987 +/- 0.000000  time=0.27s +/- 0.00s
+
+levy (6D):
+  v5s_more_novelty: best=1.095383 +/- 0.000000  time=0.16s +/- 0.00s
+  hpo_minimal     : best=0.799136 +/- 0.000000  time=0.31s +/- 0.00s
+  optuna          : best=1.070272 +/- 0.000000  time=0.32s +/- 0.00s
+
+griewank (6D):
+  v5s_more_novelty: best=2.992396 +/- 0.000000  time=0.18s +/- 0.00s
+  hpo_minimal     : best=0.282731 +/- 0.000000  time=0.15s +/- 0.00s
+  optuna          : best=2.712553 +/- 0.000000  time=0.29s +/- 0.00s
+
+schwefel (6D):
+  v5s_more_novelty: best=1314.957408 +/- 0.000000  time=0.15s +/- 0.00s
+  hpo_minimal     : best=994.721904 +/- 0.000000  time=0.29s +/- 0.00s
+  optuna          : best=838.485903 +/- 0.000000  time=0.27s +/- 0.00s
+
+zakharov (6D):
+  v5s_more_novelty: best=5.835295 +/- 0.000000  time=0.15s +/- 0.00s
+  hpo_minimal     : best=18.452381 +/- 0.000000  time=0.29s +/- 0.00s
+  optuna          : best=36.904714 +/- 0.000000  time=0.27s +/- 0.00s
+
+styblinski_tang (6D):
+  v5s_more_novelty: best=-189.039969 +/- 0.000000  time=0.15s +/- 0.00s
+  hpo_minimal     : best=-214.384767 +/- 0.000000  time=0.35s +/- 0.00s
+  optuna          : best=-185.710200 +/- 0.000000  time=0.27s +/- 0.00s
+
+michalewicz (6D):
+  v5s_more_novelty: best=-3.501638 +/- 0.000000  time=0.15s +/- 0.00s
+  hpo_minimal     : best=-1.808093 +/- 0.000000  time=0.33s +/- 0.00s
+  optuna          : best=-2.619999 +/- 0.000000  time=0.27s +/- 0.00s
+
+dixon_price (6D):
+  v5s_more_novelty: best=2.068139 +/- 0.000000  time=0.14s +/- 0.00s
+  hpo_minimal     : best=15.038115 +/- 0.000000  time=0.17s +/- 0.00s
+  optuna          : best=99.193547 +/- 0.000000  time=0.26s +/- 0.00s
+
+alpine1 (6D):
+  v5s_more_novelty: best=0.265781 +/- 0.000000  time=0.14s +/- 0.00s
+  hpo_minimal     : best=1.777396 +/- 0.000000  time=0.31s +/- 0.00s
+  optuna          : best=1.768357 +/- 0.000000  time=0.27s +/- 0.00s
+
+--- DIMENSION 3D ---
+
+sphere (3D):
+  v5s_more_novelty: best=0.080228 +/- 0.000000  time=0.10s +/- 0.00s
+  hpo_minimal     : best=0.000000 +/- 0.000000  time=0.10s +/- 0.00s
+  optuna          : best=0.067528 +/- 0.000000  time=0.18s +/- 0.00s
+
+rosenbrock (3D):
+  v5s_more_novelty: best=1.391171 +/- 0.000000  time=0.10s +/- 0.00s
+  hpo_minimal     : best=2.016224 +/- 0.000000  time=0.12s +/- 0.00s
+  optuna          : best=2.336528 +/- 0.000000  time=0.18s +/- 0.00s
+
+rastrigin (3D):
+  v5s_more_novelty: best=4.088182 +/- 0.000000  time=0.11s +/- 0.00s
+  hpo_minimal     : best=3.740258 +/- 0.000000  time=0.16s +/- 0.00s
+  optuna          : best=2.426570 +/- 0.000000  time=0.18s +/- 0.00s
+
+ackley (3D):
+  v5s_more_novelty: best=5.039601 +/- 0.000000  time=0.11s +/- 0.00s
+  hpo_minimal     : best=1.099899 +/- 0.000000  time=0.13s +/- 0.00s
+  optuna          : best=7.288476 +/- 0.000000  time=0.18s +/- 0.00s
+
+levy (3D):
+  v5s_more_novelty: best=0.328331 +/- 0.000000  time=0.10s +/- 0.00s
+  hpo_minimal     : best=0.099937 +/- 0.000000  time=0.11s +/- 0.00s
+  optuna          : best=0.084142 +/- 0.000000  time=0.19s +/- 0.00s
+
+griewank (3D):
+  v5s_more_novelty: best=1.055513 +/- 0.000000  time=0.11s +/- 0.00s
+  hpo_minimal     : best=0.187110 +/- 0.000000  time=0.09s +/- 0.00s
+  optuna          : best=1.193352 +/- 0.000000  time=0.18s +/- 0.00s
+
+schwefel (3D):
+  v5s_more_novelty: best=546.018185 +/- 0.000000  time=0.10s +/- 0.00s
+  hpo_minimal     : best=356.901982 +/- 0.000000  time=0.18s +/- 0.00s
+  optuna          : best=334.446605 +/- 0.000000  time=0.19s +/- 0.00s
+
+zakharov (3D):
+  v5s_more_novelty: best=0.002880 +/- 0.000000  time=0.10s +/- 0.00s
+  hpo_minimal     : best=3.031088 +/- 0.000000  time=0.11s +/- 0.00s
+  optuna          : best=0.089241 +/- 0.000000  time=0.18s +/- 0.00s
+
+styblinski_tang (3D):
+  v5s_more_novelty: best=-117.429758 +/- 0.000000  time=0.10s +/- 0.00s
+  hpo_minimal     : best=-117.469363 +/- 0.000000  time=0.14s +/- 0.00s
+  optuna          : best=-102.888741 +/- 0.000000  time=0.18s +/- 0.00s
+
+michalewicz (3D):
+  v5s_more_novelty: best=-1.671872 +/- 0.000000  time=0.10s +/- 0.00s
+  hpo_minimal     : best=-1.959078 +/- 0.000000  time=0.14s +/- 0.00s
+  optuna          : best=-1.918516 +/- 0.000000  time=0.18s +/- 0.00s
+
+dixon_price (3D):
+  v5s_more_novelty: best=0.748682 +/- 0.000000  time=0.10s +/- 0.00s
+  hpo_minimal     : best=0.839280 +/- 0.000000  time=0.10s +/- 0.00s
+  optuna          : best=0.554004 +/- 0.000000  time=0.18s +/- 0.00s
+
+alpine1 (3D):
+  v5s_more_novelty: best=0.115484 +/- 0.000000  time=0.10s +/- 0.00s
+  hpo_minimal     : best=0.223789 +/- 0.000000  time=0.15s +/- 0.00s
+  optuna          : best=0.475060 +/- 0.000000  time=0.18s +/- 0.00s
+
+
+DETAILED RESULTS
+================================================================================
+v5s_more_novelty | sphere | 6D | seed 87 | best=1.505547 | time=0.15s
+hpo_minimal | sphere | 6D | seed 87 | best=0.000000 | time=0.15s
+optuna | sphere | 6D | seed 87 | best=0.498695 | time=0.27s
+v5s_more_novelty | rosenbrock | 6D | seed 87 | best=18.617181 | time=0.15s
+hpo_minimal | rosenbrock | 6D | seed 87 | best=11.797301 | time=0.19s
+optuna | rosenbrock | 6D | seed 87 | best=11.081568 | time=0.27s
+v5s_more_novelty | rastrigin | 6D | seed 87 | best=30.230494 | time=0.15s
+hpo_minimal | rastrigin | 6D | seed 87 | best=40.567764 | time=0.35s
+optuna | rastrigin | 6D | seed 87 | best=33.291835 | time=0.27s
+v5s_more_novelty | ackley | 6D | seed 87 | best=7.642282 | time=0.14s
+hpo_minimal | ackley | 6D | seed 87 | best=4.438060 | time=0.29s
+optuna | ackley | 6D | seed 87 | best=11.194987 | time=0.27s
+v5s_more_novelty | levy | 6D | seed 87 | best=1.095383 | time=0.16s
+hpo_minimal | levy | 6D | seed 87 | best=0.799136 | time=0.31s
+optuna | levy | 6D | seed 87 | best=1.070272 | time=0.32s
+v5s_more_novelty | griewank | 6D | seed 87 | best=2.992396 | time=0.18s
+hpo_minimal | griewank | 6D | seed 87 | best=0.282731 | time=0.15s
+optuna | griewank | 6D | seed 87 | best=2.712553 | time=0.29s
+v5s_more_novelty | schwefel | 6D | seed 87 | best=1314.957408 | time=0.15s
+hpo_minimal | schwefel | 6D | seed 87 | best=994.721904 | time=0.29s
+optuna | schwefel | 6D | seed 87 | best=838.485903 | time=0.27s
+v5s_more_novelty | zakharov | 6D | seed 87 | best=5.835295 | time=0.15s
+hpo_minimal | zakharov | 6D | seed 87 | best=18.452381 | time=0.29s
+optuna | zakharov | 6D | seed 87 | best=36.904714 | time=0.27s
+v5s_more_novelty | styblinski_tang | 6D | seed 87 | best=-189.039969 | time=0.15s
+hpo_minimal | styblinski_tang | 6D | seed 87 | best=-214.384767 | time=0.35s
+optuna | styblinski_tang | 6D | seed 87 | best=-185.710200 | time=0.27s
+v5s_more_novelty | michalewicz | 6D | seed 87 | best=-3.501638 | time=0.15s
+hpo_minimal | michalewicz | 6D | seed 87 | best=-1.808093 | time=0.33s
+optuna | michalewicz | 6D | seed 87 | best=-2.619999 | time=0.27s
+v5s_more_novelty | dixon_price | 6D | seed 87 | best=2.068139 | time=0.14s
+hpo_minimal | dixon_price | 6D | seed 87 | best=15.038115 | time=0.17s
+optuna | dixon_price | 6D | seed 87 | best=99.193547 | time=0.26s
+v5s_more_novelty | alpine1 | 6D | seed 87 | best=0.265781 | time=0.14s
+hpo_minimal | alpine1 | 6D | seed 87 | best=1.777396 | time=0.31s
+optuna | alpine1 | 6D | seed 87 | best=1.768357 | time=0.27s
+v5s_more_novelty | sphere | 3D | seed 87 | best=0.080228 | time=0.10s
+hpo_minimal | sphere | 3D | seed 87 | best=0.000000 | time=0.10s
+optuna | sphere | 3D | seed 87 | best=0.067528 | time=0.18s
+v5s_more_novelty | rosenbrock | 3D | seed 87 | best=1.391171 | time=0.10s
+hpo_minimal | rosenbrock | 3D | seed 87 | best=2.016224 | time=0.12s
+optuna | rosenbrock | 3D | seed 87 | best=2.336528 | time=0.18s
+v5s_more_novelty | rastrigin | 3D | seed 87 | best=4.088182 | time=0.11s
+hpo_minimal | rastrigin | 3D | seed 87 | best=3.740258 | time=0.16s
+optuna | rastrigin | 3D | seed 87 | best=2.426570 | time=0.18s
+v5s_more_novelty | ackley | 3D | seed 87 | best=5.039601 | time=0.11s
+hpo_minimal | ackley | 3D | seed 87 | best=1.099899 | time=0.13s
+optuna | ackley | 3D | seed 87 | best=7.288476 | time=0.18s
+v5s_more_novelty | levy | 3D | seed 87 | best=0.328331 | time=0.10s
+hpo_minimal | levy | 3D | seed 87 | best=0.099937 | time=0.11s
+optuna | levy | 3D | seed 87 | best=0.084142 | time=0.19s
+v5s_more_novelty | griewank | 3D | seed 87 | best=1.055513 | time=0.11s
+hpo_minimal | griewank | 3D | seed 87 | best=0.187110 | time=0.09s
+optuna | griewank | 3D | seed 87 | best=1.193352 | time=0.18s
+v5s_more_novelty | schwefel | 3D | seed 87 | best=546.018185 | time=0.10s
+hpo_minimal | schwefel | 3D | seed 87 | best=356.901982 | time=0.18s
+optuna | schwefel | 3D | seed 87 | best=334.446605 | time=0.19s
+v5s_more_novelty | zakharov | 3D | seed 87 | best=0.002880 | time=0.10s
+hpo_minimal | zakharov | 3D | seed 87 | best=3.031088 | time=0.11s
+optuna | zakharov | 3D | seed 87 | best=0.089241 | time=0.18s
+v5s_more_novelty | styblinski_tang | 3D | seed 87 | best=-117.429758 | time=0.10s
+hpo_minimal | styblinski_tang | 3D | seed 87 | best=-117.469363 | time=0.14s
+optuna | styblinski_tang | 3D | seed 87 | best=-102.888741 | time=0.18s
+v5s_more_novelty | michalewicz | 3D | seed 87 | best=-1.671872 | time=0.10s
+hpo_minimal | michalewicz | 3D | seed 87 | best=-1.959078 | time=0.14s
+optuna | michalewicz | 3D | seed 87 | best=-1.918516 | time=0.18s
+v5s_more_novelty | dixon_price | 3D | seed 87 | best=0.748682 | time=0.10s
+hpo_minimal | dixon_price | 3D | seed 87 | best=0.839280 | time=0.10s
+optuna | dixon_price | 3D | seed 87 | best=0.554004 | time=0.18s
+v5s_more_novelty | alpine1 | 3D | seed 87 | best=0.115484 | time=0.10s
+hpo_minimal | alpine1 | 3D | seed 87 | best=0.223789 | time=0.15s
+optuna | alpine1 | 3D | seed 87 | best=0.475060 | time=0.18s

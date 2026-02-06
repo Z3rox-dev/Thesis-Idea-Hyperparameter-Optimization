@@ -1,0 +1,108 @@
+Benchmark tasks: ['cifar10', 'fashion_mnist', 'colorectal_histology'] | budget=400 | seeds=[70, 71, 72, 73, 74, 75, 76, 77, 78, 79]
+Checkpoints: [100, 200, 400]
+Framework config: grid_bins=8 grid_batch_size=512 grid_batches=4 grid_sampling=grid_random grid_jitter=True grid_penalty_lambda=0.1
+Saving to: /mnt/workspace/thesis/benchmark_results/jahs_framework_vs_experimental_alltasks_20260106_211229.json
+Logging to: /mnt/workspace/thesis/benchmark_results/jahs_framework_vs_experimental_alltasks_20260106_211229.log
+
+=== TASK cifar10 ===
+
+Task cifar10 | Seed 70...
+  ERROR: __init__() got an unexpected keyword argument 'grid_bins'
+
+Task cifar10 | Seed 71...
+  ERROR: __init__() got an unexpected keyword argument 'grid_bins'
+
+Task cifar10 | Seed 72...
+  ERROR: __init__() got an unexpected keyword argument 'grid_bins'
+
+Task cifar10 | Seed 73...
+  ERROR: __init__() got an unexpected keyword argument 'grid_bins'
+
+Task cifar10 | Seed 74...
+  ERROR: __init__() got an unexpected keyword argument 'grid_bins'
+
+Task cifar10 | Seed 75...
+  ERROR: __init__() got an unexpected keyword argument 'grid_bins'
+
+Task cifar10 | Seed 76...
+  ERROR: __init__() got an unexpected keyword argument 'grid_bins'
+
+Task cifar10 | Seed 77...
+  ERROR: __init__() got an unexpected keyword argument 'grid_bins'
+
+Task cifar10 | Seed 78...
+  ERROR: __init__() got an unexpected keyword argument 'grid_bins'
+
+Task cifar10 | Seed 79...
+  ERROR: __init__() got an unexpected keyword argument 'grid_bins'
+
+=== TASK fashion_mnist ===
+
+Task fashion_mnist | Seed 70...
+  ERROR: __init__() got an unexpected keyword argument 'grid_bins'
+
+Task fashion_mnist | Seed 71...
+  ERROR: __init__() got an unexpected keyword argument 'grid_bins'
+
+Task fashion_mnist | Seed 72...
+  ERROR: __init__() got an unexpected keyword argument 'grid_bins'
+
+Task fashion_mnist | Seed 73...
+  ERROR: __init__() got an unexpected keyword argument 'grid_bins'
+
+Task fashion_mnist | Seed 74...
+  ERROR: __init__() got an unexpected keyword argument 'grid_bins'
+
+Task fashion_mnist | Seed 75...
+  ERROR: __init__() got an unexpected keyword argument 'grid_bins'
+
+Task fashion_mnist | Seed 76...
+  ERROR: __init__() got an unexpected keyword argument 'grid_bins'
+
+Task fashion_mnist | Seed 77...
+  ERROR: __init__() got an unexpected keyword argument 'grid_bins'
+
+Task fashion_mnist | Seed 78...
+  ERROR: __init__() got an unexpected keyword argument 'grid_bins'
+
+Task fashion_mnist | Seed 79...
+  ERROR: __init__() got an unexpected keyword argument 'grid_bins'
+
+=== TASK colorectal_histology ===
+
+Task colorectal_histology | Seed 70...
+  ERROR: __init__() got an unexpected keyword argument 'grid_bins'
+
+Task colorectal_histology | Seed 71...
+  ERROR: __init__() got an unexpected keyword argument 'grid_bins'
+
+Task colorectal_histology | Seed 72...
+  ERROR: __init__() got an unexpected keyword argument 'grid_bins'
+
+Task colorectal_histology | Seed 73...
+  ERROR: __init__() got an unexpected keyword argument 'grid_bins'
+
+Task colorectal_histology | Seed 74...
+  ERROR: __init__() got an unexpected keyword argument 'grid_bins'
+
+Task colorectal_histology | Seed 75...
+  ERROR: __init__() got an unexpected keyword argument 'grid_bins'
+
+Task colorectal_histology | Seed 76...
+  ERROR: __init__() got an unexpected keyword argument 'grid_bins'
+
+Task colorectal_histology | Seed 77...
+  ERROR: __init__() got an unexpected keyword argument 'grid_bins'
+
+Task colorectal_histology | Seed 78...
+  ERROR: __init__() got an unexpected keyword argument 'grid_bins'
+
+Task colorectal_histology | Seed 79...
+  ERROR: __init__() got an unexpected keyword argument 'grid_bins'
+
+=== SUMMARY (final checkpoint) ===
+cifar10: n/a (missing finals)
+fashion_mnist: n/a (missing finals)
+colorectal_histology: n/a (missing finals)
+
+Saved: /mnt/workspace/thesis/benchmark_results/jahs_framework_vs_experimental_alltasks_20260106_211229.json

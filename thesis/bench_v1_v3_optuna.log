@@ -1,0 +1,164 @@
+================================================================================
+JAHS-BENCH-201 BENCHMARK: ALBA_V1 vs ALBA_V3 vs Optuna
+================================================================================
+Budget: 2000
+Seeds: [100, 101, 102, 103, 104, 105, 106, 107, 108, 109]
+Tasks: ['cifar10', 'fashion_mnist', 'colorectal_histology']
+================================================================================
+
+>>> TASK: cifar10 <<<
+
+  Running Optuna...
+    Seed 100: acc=91.87%, time=52.8s
+    Seed 101: acc=91.95%, time=52.8s
+    Seed 102: acc=91.85%, time=53.1s
+    Seed 103: acc=91.76%, time=52.6s
+    Seed 104: acc=91.90%, time=52.7s
+    Seed 105: acc=91.88%, time=52.7s
+    Seed 106: acc=91.67%, time=52.9s
+    Seed 107: acc=91.91%, time=53.5s
+    Seed 108: acc=91.85%, time=54.2s
+    Seed 109: acc=91.96%, time=53.6s
+  Optuna: 91.86% +/- 0.08%
+
+  Running ALBA_V1...
+    Seed 100: acc=91.56%, time=33.9s
+    Seed 101: acc=91.46%, time=34.4s
+    Seed 102: acc=91.72%, time=34.0s
+    Seed 103: acc=91.90%, time=34.4s
+    Seed 104: acc=91.58%, time=35.2s
+    Seed 105: acc=91.89%, time=34.4s
+    Seed 106: acc=91.85%, time=34.1s
+    Seed 107: acc=91.46%, time=34.8s
+    Seed 108: acc=91.80%, time=33.9s
+    Seed 109: acc=91.89%, time=33.8s
+  ALBA_V1: 91.71% +/- 0.17%
+
+  Running ALBA_V3...
+    Seed 100: acc=91.74%, time=34.3s
+    Seed 101: acc=91.92%, time=33.7s
+    Seed 102: acc=91.92%, time=34.4s
+    Seed 103: acc=91.81%, time=34.5s
+    Seed 104: acc=91.58%, time=34.5s
+    Seed 105: acc=91.89%, time=34.4s
+    Seed 106: acc=91.59%, time=33.9s
+    Seed 107: acc=91.51%, time=34.4s
+    Seed 108: acc=91.26%, time=34.6s
+    Seed 109: acc=91.53%, time=33.9s
+  ALBA_V3: 91.67% +/- 0.21%
+
+>>> TASK: fashion_mnist <<<
+
+  Running Optuna...
+    Seed 100: acc=95.47%, time=54.4s
+    Seed 101: acc=95.42%, time=54.8s
+    Seed 102: acc=95.36%, time=54.7s
+    Seed 103: acc=95.37%, time=54.1s
+    Seed 104: acc=95.43%, time=54.1s
+    Seed 105: acc=95.41%, time=54.1s
+    Seed 106: acc=95.44%, time=54.1s
+    Seed 107: acc=95.39%, time=54.3s
+    Seed 108: acc=95.43%, time=54.2s
+    Seed 109: acc=95.39%, time=53.8s
+  Optuna: 95.41% +/- 0.03%
+
+  Running ALBA_V1...
+    Seed 100: acc=95.42%, time=35.1s
+    Seed 101: acc=95.31%, time=34.2s
+    Seed 102: acc=95.47%, time=35.0s
+    Seed 103: acc=95.35%, time=33.2s
+    Seed 104: acc=95.31%, time=34.5s
+    Seed 105: acc=95.48%, time=34.3s
+    Seed 106: acc=95.48%, time=34.7s
+    Seed 107: acc=95.38%, time=34.3s
+    Seed 108: acc=95.43%, time=34.8s
+    Seed 109: acc=95.40%, time=34.6s
+  ALBA_V1: 95.40% +/- 0.06%
+
+  Running ALBA_V3...
+    Seed 100: acc=95.24%, time=34.4s
+    Seed 101: acc=95.43%, time=34.5s
+    Seed 102: acc=95.46%, time=33.9s
+    Seed 103: acc=95.32%, time=34.1s
+    Seed 104: acc=95.40%, time=34.7s
+    Seed 105: acc=95.33%, time=32.7s
+    Seed 106: acc=95.32%, time=33.4s
+    Seed 107: acc=95.38%, time=33.1s
+    Seed 108: acc=95.37%, time=33.3s
+    Seed 109: acc=95.36%, time=32.7s
+  ALBA_V3: 95.36% +/- 0.06%
+
+>>> TASK: colorectal_histology <<<
+
+  Running Optuna...
+    Seed 100: acc=96.38%, time=54.2s
+    Seed 101: acc=96.23%, time=53.9s
+    Seed 102: acc=96.72%, time=54.2s
+    Seed 103: acc=96.28%, time=54.6s
+    Seed 104: acc=96.63%, time=54.5s
+    Seed 105: acc=96.21%, time=54.3s
+    Seed 106: acc=96.35%, time=54.2s
+    Seed 107: acc=96.33%, time=53.9s
+    Seed 108: acc=96.11%, time=54.1s
+    Seed 109: acc=96.28%, time=54.3s
+  Optuna: 96.35% +/- 0.18%
+
+  Running ALBA_V1...
+    Seed 100: acc=96.06%, time=37.2s
+    Seed 101: acc=95.91%, time=35.4s
+    Seed 102: acc=96.29%, time=34.7s
+    Seed 103: acc=96.24%, time=34.8s
+    Seed 104: acc=96.29%, time=35.3s
+    Seed 105: acc=96.03%, time=34.6s
+    Seed 106: acc=96.13%, time=35.6s
+    Seed 107: acc=96.04%, time=34.0s
+    Seed 108: acc=96.15%, time=35.0s
+    Seed 109: acc=96.10%, time=34.5s
+  ALBA_V1: 96.13% +/- 0.12%
+
+  Running ALBA_V3...
+    Seed 100: acc=96.09%, time=34.7s
+    Seed 101: acc=96.24%, time=34.4s
+    Seed 102: acc=96.09%, time=34.4s
+    Seed 103: acc=96.18%, time=34.4s
+    Seed 104: acc=96.09%, time=35.2s
+    Seed 105: acc=95.97%, time=34.2s
+    Seed 106: acc=96.09%, time=35.1s
+    Seed 107: acc=96.06%, time=34.0s
+    Seed 108: acc=96.15%, time=35.0s
+    Seed 109: acc=96.22%, time=34.2s
+  ALBA_V3: 96.12% +/- 0.08%
+
+================================================================================
+FINAL SUMMARY
+================================================================================
+
+cifar10:
+  1. Optuna      : 91.86% +/- 0.08%
+  2. ALBA_V1     : 91.71% +/- 0.17%
+  3. ALBA_V3     : 91.67% +/- 0.21%
+
+fashion_mnist:
+  1. Optuna      : 95.41% +/- 0.03%
+  2. ALBA_V1     : 95.40% +/- 0.06%
+  3. ALBA_V3     : 95.36% +/- 0.06%
+
+colorectal_histology:
+  1. Optuna      : 96.35% +/- 0.18%
+  2. ALBA_V1     : 96.13% +/- 0.12%
+  3. ALBA_V3     : 96.12% +/- 0.08%
+
+OVERALL (average across tasks):
+  1. Optuna      : 94.54% +/- 0.10%
+  2. ALBA_V1     : 94.41% +/- 0.12%
+  3. ALBA_V3     : 94.38% +/- 0.11%
+
+------------------------------------------------------------
+HEAD-TO-HEAD WINS (across all tasks and seeds):
+------------------------------------------------------------
+  ALBA_V1 vs Optuna: 9-21-0
+  ALBA_V1 vs ALBA_V3: 18-12-0
+  ALBA_V3 vs Optuna: 7-23-0
+
+================================================================================
+DONE!

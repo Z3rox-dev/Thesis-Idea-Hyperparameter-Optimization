@@ -1,0 +1,23 @@
+{
+  "config": {
+    "budget": 400,
+    "checkpoints": [
+      100,
+      200,
+      400
+    ],
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "task": "XGBoost tabular classification (20D continuous)",
+    "timestamp": "20260122_081934"
+  },
+  "runs": {
+    "coherence": {},
+    "optuna": {}
+  }
+}

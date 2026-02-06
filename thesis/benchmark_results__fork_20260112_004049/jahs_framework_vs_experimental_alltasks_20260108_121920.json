@@ -1,0 +1,72 @@
+{
+  "config": {
+    "tasks": [
+      "cifar10",
+      "colorectal_histology"
+    ],
+    "budget": 400,
+    "checkpoints": [
+      100,
+      200,
+      400
+    ],
+    "nepochs": 200,
+    "seeds": [
+      70
+    ],
+    "framework": {
+      "grid_bins": 8,
+      "grid_batch_size": 512,
+      "grid_batches": 4,
+      "grid_sampling": "grid_random",
+      "grid_jitter": true,
+      "grid_penalty_lambda": 0.06,
+      "heatmap_ucb": {
+        "beta": 1.0,
+        "explore_prob": 0.25,
+        "temperature": 1.0
+      },
+      "heatmap_blend_tau": 3.0,
+      "heatmap_soft_assignment": true,
+      "heatmap_multi_resolution": true,
+      "categorical_stage": "auto"
+    },
+    "timestamp": "20260108_121920"
+  },
+  "tasks": {
+    "cifar10": {
+      "framework": {
+        "70": {
+          "100": 0.10261734008789059,
+          "200": 0.09812942504882816,
+          "400": 0.08771575927734376
+        }
+      },
+      "experimental": {
+        "70": {
+          "100": 0.09316154479980465,
+          "200": 0.09316154479980465,
+          "400": 0.08549575805664067
+        }
+      },
+      "errors": {}
+    },
+    "colorectal_histology": {
+      "framework": {
+        "70": {
+          "100": 0.04221397399902349,
+          "200": 0.040179443359374956,
+          "400": 0.039736099243164014
+        }
+      },
+      "experimental": {
+        "70": {
+          "100": 0.03960571289062498,
+          "200": 0.038976364135742236,
+          "400": 0.03889656066894531
+        }
+      },
+      "errors": {}
+    }
+  }
+}

@@ -1,0 +1,136 @@
+{
+  "benchmark": "jahs_cifar10",
+  "methods": {
+    "alba_framework": {
+      "kind": "alba_framework"
+    },
+    "alba_experimental": {
+      "kind": "ALBA_V1_experimental"
+    }
+  },
+  "config": {
+    "budget": 400,
+    "seeds": [
+      70,
+      71,
+      72,
+      73,
+      74,
+      75,
+      76,
+      77,
+      78,
+      79
+    ],
+    "task": "cifar10",
+    "nepochs": 200
+  },
+  "tasks": {
+    "cifar10": {
+      "seeds": [
+        {
+          "seed": 70,
+          "alba_framework": 0.08233421325683599,
+          "alba_experimental": 0.08592559814453127,
+          "uniq_framework": 318,
+          "uniq_exp": 309,
+          "time_framework": 3.7749738693237305,
+          "time_exp": 3.554574489593506
+        },
+        {
+          "seed": 71,
+          "alba_framework": 0.08694213867187495,
+          "alba_experimental": 0.08691627502441401,
+          "uniq_framework": 345,
+          "uniq_exp": 318,
+          "time_framework": 3.503938913345337,
+          "time_exp": 3.617158889770508
+        },
+        {
+          "seed": 72,
+          "alba_framework": 0.08271446228027346,
+          "alba_experimental": 0.08386756896972658,
+          "uniq_framework": 332,
+          "uniq_exp": 295,
+          "time_framework": 3.7402007579803467,
+          "time_exp": 3.5627079010009766
+        },
+        {
+          "seed": 73,
+          "alba_framework": 0.08535392761230465,
+          "alba_experimental": 0.08089935302734375,
+          "uniq_framework": 340,
+          "uniq_exp": 349,
+          "time_framework": 4.099698781967163,
+          "time_exp": 4.073804616928101
+        },
+        {
+          "seed": 74,
+          "alba_framework": 0.08673263549804688,
+          "alba_experimental": 0.0885542297363281,
+          "uniq_framework": 343,
+          "uniq_exp": 352,
+          "time_framework": 4.260832071304321,
+          "time_exp": 4.32203221321106
+        },
+        {
+          "seed": 75,
+          "alba_framework": 0.08345558166503908,
+          "alba_experimental": 0.08587066650390629,
+          "uniq_framework": 341,
+          "uniq_exp": 315,
+          "time_framework": 3.604227304458618,
+          "time_exp": 3.4236373901367188
+        },
+        {
+          "seed": 76,
+          "alba_framework": 0.08469726562500002,
+          "alba_experimental": 0.08462944030761721,
+          "uniq_framework": 313,
+          "uniq_exp": 333,
+          "time_framework": 3.4953789710998535,
+          "time_exp": 3.5609805583953857
+        },
+        {
+          "seed": 77,
+          "alba_framework": 0.08098678588867192,
+          "alba_experimental": 0.08252578735351568,
+          "uniq_framework": 293,
+          "uniq_exp": 328,
+          "time_framework": 3.6444103717803955,
+          "time_exp": 3.394979238510132
+        },
+        {
+          "seed": 78,
+          "alba_framework": 0.08366470336914067,
+          "alba_experimental": 0.0817465209960937,
+          "uniq_framework": 339,
+          "uniq_exp": 316,
+          "time_framework": 3.6221065521240234,
+          "time_exp": 3.6871039867401123
+        },
+        {
+          "seed": 79,
+          "alba_framework": 0.08385116577148433,
+          "alba_experimental": 0.08305076599121097,
+          "uniq_framework": 330,
+          "uniq_exp": 339,
+          "time_framework": 3.407402992248535,
+          "time_exp": 3.4532811641693115
+        }
+      ],
+      "summary": {
+        "alba_framework": {
+          "mean": 0.08407328796386719,
+          "std": 0.0017979695094564342,
+          "wins": 5
+        },
+        "alba_experimental": {
+          "mean": 0.08439862060546875,
+          "std": 0.0023031340929374903,
+          "wins": 5
+        }
+      }
+    }
+  }
+}

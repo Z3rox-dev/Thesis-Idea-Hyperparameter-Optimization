@@ -1,0 +1,30 @@
+{
+  "config": {
+    "budget": 400,
+    "checkpoints": [
+      100,
+      200,
+      400
+    ],
+    "seeds": [
+      70,
+      71,
+      72,
+      73
+    ],
+    "task_ids": [
+      31,
+      146818
+    ],
+    "timestamp": "20260108_101356"
+  },
+  "tasks": {
+    "31": {
+      "framework": {},
+      "experimental": {},
+      "errors": {},
+      "meta": {
+        "dim": 5,
+        "fast_lookup": true,
+        "max_fidelity": {
+          "iter": 

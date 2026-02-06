@@ -1,0 +1,107 @@
+Benchmark tasks: ['cifar10', 'fashion_mnist', 'colorectal_histology'] | budget=400 | seeds=[70, 71, 72, 73, 74, 75, 76, 77, 78, 79]
+Checkpoints: [100, 200, 400]
+Saving to: /mnt/workspace/thesis/benchmark_results/jahs_framework_vs_experimental_alltasks_20260106_120535.json
+Logging to: /mnt/workspace/thesis/benchmark_results/jahs_framework_vs_experimental_alltasks_20260106_120535.log
+
+=== TASK cifar10 ===
+
+Task cifar10 | Seed 70...
+  ERROR: select() got multiple values for argument 'novelty_weight'
+
+Task cifar10 | Seed 71...
+  ERROR: select() got multiple values for argument 'novelty_weight'
+
+Task cifar10 | Seed 72...
+  ERROR: select() got multiple values for argument 'novelty_weight'
+
+Task cifar10 | Seed 73...
+  ERROR: select() got multiple values for argument 'novelty_weight'
+
+Task cifar10 | Seed 74...
+  ERROR: select() got multiple values for argument 'novelty_weight'
+
+Task cifar10 | Seed 75...
+  ERROR: select() got multiple values for argument 'novelty_weight'
+
+Task cifar10 | Seed 76...
+  ERROR: select() got multiple values for argument 'novelty_weight'
+
+Task cifar10 | Seed 77...
+  ERROR: select() got multiple values for argument 'novelty_weight'
+
+Task cifar10 | Seed 78...
+  ERROR: select() got multiple values for argument 'novelty_weight'
+
+Task cifar10 | Seed 79...
+  ERROR: select() got multiple values for argument 'novelty_weight'
+
+=== TASK fashion_mnist ===
+
+Task fashion_mnist | Seed 70...
+  ERROR: select() got multiple values for argument 'novelty_weight'
+
+Task fashion_mnist | Seed 71...
+  ERROR: select() got multiple values for argument 'novelty_weight'
+
+Task fashion_mnist | Seed 72...
+  ERROR: select() got multiple values for argument 'novelty_weight'
+
+Task fashion_mnist | Seed 73...
+  ERROR: select() got multiple values for argument 'novelty_weight'
+
+Task fashion_mnist | Seed 74...
+  ERROR: select() got multiple values for argument 'novelty_weight'
+
+Task fashion_mnist | Seed 75...
+  ERROR: select() got multiple values for argument 'novelty_weight'
+
+Task fashion_mnist | Seed 76...
+  ERROR: select() got multiple values for argument 'novelty_weight'
+
+Task fashion_mnist | Seed 77...
+  ERROR: select() got multiple values for argument 'novelty_weight'
+
+Task fashion_mnist | Seed 78...
+  ERROR: select() got multiple values for argument 'novelty_weight'
+
+Task fashion_mnist | Seed 79...
+  ERROR: select() got multiple values for argument 'novelty_weight'
+
+=== TASK colorectal_histology ===
+
+Task colorectal_histology | Seed 70...
+  ERROR: select() got multiple values for argument 'novelty_weight'
+
+Task colorectal_histology | Seed 71...
+  ERROR: select() got multiple values for argument 'novelty_weight'
+
+Task colorectal_histology | Seed 72...
+  ERROR: select() got multiple values for argument 'novelty_weight'
+
+Task colorectal_histology | Seed 73...
+  ERROR: select() got multiple values for argument 'novelty_weight'
+
+Task colorectal_histology | Seed 74...
+  ERROR: select() got multiple values for argument 'novelty_weight'
+
+Task colorectal_histology | Seed 75...
+  ERROR: select() got multiple values for argument 'novelty_weight'
+
+Task colorectal_histology | Seed 76...
+  ERROR: select() got multiple values for argument 'novelty_weight'
+
+Task colorectal_histology | Seed 77...
+  ERROR: select() got multiple values for argument 'novelty_weight'
+
+Task colorectal_histology | Seed 78...
+  ERROR: select() got multiple values for argument 'novelty_weight'
+
+Task colorectal_histology | Seed 79...
+  ERROR: select() got multiple values for argument 'novelty_weight'
+
+=== SUMMARY (final checkpoint) ===
+cifar10: n/a (missing finals)
+fashion_mnist: n/a (missing finals)
+colorectal_histology: n/a (missing finals)
+
+Saved: /mnt/workspace/thesis/benchmark_results/jahs_framework_vs_experimental_alltasks_20260106_120535.json

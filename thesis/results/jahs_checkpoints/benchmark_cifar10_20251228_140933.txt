@@ -1,0 +1,13 @@
+================================================================================
+JAHS-BENCH-201 BENCHMARK WITH CHECKPOINTS
+================================================================================
+Task: cifar10
+Max Budget: 20
+Checkpoints: [10, 20]
+Seeds: 2 (starting from 0)
+Optimizers: ['Random', 'Optuna_TPE', 'TuRBO_M', 'ALBA']
+Smoke Test: True
+Output: /mnt/workspace/thesis/results/jahs_checkpoints/benchmark_cifar10_20251228_140933.txt
+================================================================================
+
+Initializing JAHS-Bench-201...

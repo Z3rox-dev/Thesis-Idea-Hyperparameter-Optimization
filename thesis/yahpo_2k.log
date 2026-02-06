@@ -1,0 +1,100 @@
+nohup: ignoring input
+============================================================
+YAHPO Gym Benchmark: ALBA vs Optuna TPE
+============================================================
+
+============================================================
+Scenario: rbv2_xgboost
+============================================================
+Please make sure to also cite:
+Binder M., Pfisterer F. & Bischl B. (2020). Collecting Empirical Data About Hyperparameters for Data Driven AutoML. 7th ICML Workshop on Automated Machine Learning.
+Parameters: 14 (2 categorical)
+Instances available: 119
+Testing on 3 instances with 3 seeds each
+  16/seed0: ALBA=0.9786, Optuna=0.9779 ✓
+  16/seed1: ALBA=0.9786, Optuna=0.9785 ✓
+  16/seed2: ALBA=0.9786, Optuna=0.9786 ✓
+  40923/seed0: ALBA=1.0000, Optuna=1.0000 =
+  40923/seed1: ALBA=1.0000, Optuna=1.0000 =
+  40923/seed2: ALBA=1.0000, Optuna=1.0000 =
+  41143/seed0: ALBA=0.7914, Optuna=0.7894 ✓
+  41143/seed1: ALBA=0.7915, Optuna=0.7913 ✓
+  41143/seed2: ALBA=0.7873, Optuna=0.7873 ✓
+
+Results for rbv2_xgboost:
+  ALBA mean: 0.9229 ± 0.0943
+  Optuna mean: 0.9226 ± 0.0946
+  ALBA vs Optuna: 6 - 0 (ties: 3)
+
+============================================================
+Scenario: rbv2_ranger
+============================================================
+Please make sure to also cite:
+Binder M., Pfisterer F. & Bischl B. (2020). Collecting Empirical Data About Hyperparameters for Data Driven AutoML. 7th ICML Workshop on Automated Machine Learning.
+Parameters: 8 (3 categorical)
+Instances available: 119
+Testing on 3 instances with 3 seeds each
+  4135/seed0: ALBA=0.9793, Optuna=0.9777 ✓
+  4135/seed1: ALBA=0.9859, Optuna=0.9764 ✓
+  4135/seed2: ALBA=0.9788, Optuna=0.9858 ✗
+  40981/seed0: ALBA=0.9140, Optuna=0.8926 ✓
+  40981/seed1: ALBA=0.9141, Optuna=0.8924 ✓
+  40981/seed2: ALBA=0.9141, Optuna=0.9132 ✓
+  4134/seed0: ALBA=0.9104, Optuna=0.9087 ✓
+  4134/seed1: ALBA=0.9104, Optuna=0.9029 ✓
+  4134/seed2: ALBA=0.9104, Optuna=0.9051 ✓
+
+Results for rbv2_ranger:
+  ALBA mean: 0.9353 ± 0.0327
+  Optuna mean: 0.9283 ± 0.0372
+  ALBA vs Optuna: 8 - 1 (ties: 0)
+
+============================================================
+Scenario: rbv2_svm
+============================================================
+Please make sure to also cite:
+Binder M., Pfisterer F. & Bischl B. (2020). Collecting Empirical Data About Hyperparameters for Data Driven AutoML. 7th ICML Workshop on Automated Machine Learning.
+Parameters: 6 (2 categorical)
+Instances available: 106
+Testing on 3 instances with 3 seeds each
+  40981/seed0: ALBA=0.8703, Optuna=0.8703 ✗
+  40981/seed1: ALBA=0.8779, Optuna=0.8779 ✗
+  40981/seed2: ALBA=0.8779, Optuna=0.8735 ✓
+  4134/seed0: ALBA=0.7795, Optuna=0.7766 ✓
+  4134/seed1: ALBA=0.7796, Optuna=0.7766 ✓
+  4134/seed2: ALBA=0.7796, Optuna=0.7766 ✓
+  1220/seed0: ALBA=0.8609, Optuna=0.8610 ✗
+  1220/seed1: ALBA=0.8608, Optuna=0.8610 ✗
+  1220/seed2: ALBA=0.8609, Optuna=0.8610 ✗
+
+Results for rbv2_svm:
+  ALBA mean: 0.8386 ± 0.0422
+  Optuna mean: 0.8372 ± 0.0432
+  ALBA vs Optuna: 4 - 5 (ties: 0)
+
+============================================================
+Scenario: iaml_xgboost
+============================================================
+Parameters: 13 (1 categorical)
+Instances available: 4
+Testing on 3 instances with 3 seeds each
+  40981/seed0: ALBA=0.4624, Optuna=0.4606 ✓
+  40981/seed1: ALBA=0.4618, Optuna=0.4622 ✗
+  40981/seed2: ALBA=0.4624, Optuna=0.4624 ✓
+  41146/seed0: ALBA=0.5125, Optuna=0.5110 ✓
+  41146/seed1: ALBA=0.5125, Optuna=0.5098 ✓
+  41146/seed2: ALBA=0.5125, Optuna=0.5125 ✓
+  1489/seed0: ALBA=0.3015, Optuna=0.2994 ✓
+  1489/seed1: ALBA=0.3017, Optuna=0.2973 ✓
+  1489/seed2: ALBA=0.2998, Optuna=0.2996 ✓
+
+Results for iaml_xgboost:
+  ALBA mean: 0.4252 ± 0.0902
+  Optuna mean: 0.4239 ± 0.0907
+  ALBA vs Optuna: 8 - 1 (ties: 0)
+
+============================================================
+FINAL RESULTS
+============================================================
+ALBA vs Optuna: 26 - 7 (ties: 3)
+Winner: ALBA! 🏆
