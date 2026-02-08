@@ -16,17 +16,8 @@ authors = [
 dependencies = [
     "numpy>=1.21",
     "scipy>=1.7",
-]
-
-[project.optional-dependencies]
-benchmarks = [
     "optuna>=3.0",
     "nevergrad>=0.6",
-]
-all = [
-    "optuna>=3.0",
-    "nevergrad>=0.6",
-    "matplotlib>=3.4",
 ]
 
 [tool.setuptools.packages.find]
