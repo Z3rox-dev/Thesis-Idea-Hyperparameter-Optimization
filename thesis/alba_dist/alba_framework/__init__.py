@@ -13,7 +13,7 @@ ALBA is a novel optimization algorithm combining:
 
 Installation
 ------------
-The framework is self-contained and requires only numpy.
+The framework is self-contained and requires only numpy and scipy.
 
 Quick Start
 -----------

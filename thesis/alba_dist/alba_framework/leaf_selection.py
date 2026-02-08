@@ -94,7 +94,7 @@ class ThompsonSamplingLeafSelector(UCBSoftmaxLeafSelector):
     - YAHPO XGBoost (tie 2-2)
     """
     
-    def select(self, leaves: list, dim: int, stagnating: bool, rng) -> "HierarchicalCell":
+    def select(self, leaves: list, dim: int, stagnating: bool, rng) -> Cube:
         """Select leaf using Thompson Sampling from Beta posterior."""
         if len(leaves) == 1:
             return leaves[0]

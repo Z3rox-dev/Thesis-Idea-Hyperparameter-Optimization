@@ -14,7 +14,6 @@ hyperparameter optimization in mixed continuous-categorical spaces.
 
 from __future__ import annotations
 
-import warnings
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 import numpy as np
@@ -34,53 +33,6 @@ from .splitting import (
     SplitPolicy,
     ThresholdSplitDecider,
 )
-
-warnings.filterwarnings("ignore")
-
-
-class ALBA:
-    """
-    ALBA (Adaptive Local Bayesian Allocator) for Hyperparameter Optimization.
-    """
-    # ... (skipping unchanged parts)
-    
-    def __init__(
-        self,
-        # ... (skipping unchanged args)
-        coherence_update_interval: int = 5,
-        use_potential_field: bool = False,
-    ) -> None:
-        # ... (skipping unchanged init parts)
-
-        # Coherence tracking for exploit/explore gating
-        self._use_coherence_gating = use_coherence_gating
-        self._use_potential_field = use_potential_field
-        self._coherence_tracker: Optional[CoherenceTracker] = None
-        if use_coherence_gating or use_potential_field:
-            self._coherence_tracker = CoherenceTracker(
-                categorical_dims=categorical_dims or [],
-                k_neighbors=6,
-                update_interval=coherence_update_interval,
-                min_leaves_for_coherence=5,
-            )
-
-        # ... (skipping)
-
-        # Strategy components
-        # Use ThompsonSamplingLeafSelector by default (won vs Base on synthetic, ParamNet, YAHPO)
-        # Use PotentialAwareLeafSelector if potential field is enabled
-        self._leaf_selector: LeafSelector = (
-            leaf_selector 
-            if leaf_selector is not None 
-            else (PotentialAwareLeafSelector() if self._use_potential_field else ThompsonSamplingLeafSelector())
-        )
-        
-        # Inject tracker if selector supports it
-        if hasattr(self._leaf_selector, "set_tracker") and self._coherence_tracker is not None:
-             self._leaf_selector.set_tracker(self._coherence_tracker)
-
-        # ... (rest unchanged)
-warnings.filterwarnings("ignore")
 
 
 class ALBA:

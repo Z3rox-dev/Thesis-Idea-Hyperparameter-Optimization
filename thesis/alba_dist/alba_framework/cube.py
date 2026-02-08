@@ -211,9 +211,6 @@ class Cube:
         # Fallback: widest dimension
         return widest_axis
 
-        # Fallback: widest dimension
-        return widest_axis
-
     def split(
         self,
         gamma: float,

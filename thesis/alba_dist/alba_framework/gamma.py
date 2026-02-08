@@ -1,4 +1,4 @@
-"""ALBA Framework - Gamma Scheduler
+r"""ALBA Framework - Gamma Scheduler
 
 Gamma ($\gamma$) is the dynamic threshold used to label points as "good".
 
