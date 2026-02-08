@@ -1,124 +1,100 @@
-# ALBA Framework — Guida rapida all'installazione e all'uso
+# ALBA Framework — Installation & Usage Guide
 
-## Prerequisiti
+## Prerequisites
 
-- **Python ≥ 3.9** (testato con 3.9, 3.10, 3.11, 3.12)
-- `pip` (incluso in qualsiasi installazione Python moderna)
+- **Python >= 3.9** (tested with 3.9, 3.10, 3.11, 3.12)
+- `pip` (included in any modern Python installation)
 
-> Non servono CUDA, GPU, né dataset esterni: il framework è self-contained.
+> No CUDA, GPU, or external datasets needed: the framework is self-contained.
 
 ---
 
-## Opzione 1 — Installazione da archivio (consigliata)
+## Option 1 — Install from wheel (recommended)
 
-Se hai ricevuto un file **`alba_framework-1.0.0.tar.gz`** oppure **`alba_framework-1.0.0-py3-none-any.whl`**:
+If you have **`alba_framework-1.0.0-py3-none-any.whl`** or **`alba_framework-1.0.0.tar.gz`**:
 
 ```bash
 pip install alba_framework-1.0.0-py3-none-any.whl
-# oppure
+# or
 pip install alba_framework-1.0.0.tar.gz
 ```
 
-Fatto! Tutte le dipendenze (numpy, scipy) vengono installate automaticamente.
+All dependencies (numpy, scipy, optuna, nevergrad) are installed automatically.
 
 ---
 
-## Opzione 2 — Installazione dalla cartella sorgente
+## Option 2 — Install from source folder
 
-Se hai la cartella `alba_framework_potential/`:
+From the `alba_dist/` directory:
 
 ```bash
-cd alba_framework_potential
 pip install .
 ```
 
-Per avere anche `matplotlib` (serve solo per i grafici dell'esempio):
-
-```bash
-pip install ".[examples]"
-```
-
 ---
 
-## Opzione 3 — Senza installazione (solo import diretto)
-
-Se non vuoi installare nulla, basta avere numpy e scipy:
+## Option 3 — Direct import (no install)
 
 ```bash
-pip install numpy scipy
+pip install numpy scipy optuna nevergrad
 ```
 
-Poi dal livello superiore alla cartella `alba_framework_potential/`:
+Then point your Python path:
 
 ```python
 import sys
-sys.path.insert(0, "/percorso/alla/cartella/che/contiene/alba_framework_potential")
+sys.path.insert(0, "/path/to/alba_dist")
 
-from alba_framework_potential import ALBA
+from alba_framework import ALBA
 ```
 
 ---
 
-## Eseguire il demo
+## Running the Demo
 
 ```bash
-# Dopo l'installazione (Opzione 1 o 2):
-python -m alba_framework_potential.examples.quick_demo
+# After installation (Option 1 or 2):
+python -m alba_framework.examples.quick_demo
 
-# Oppure direttamente:
-python examples/quick_demo.py
+# Or directly:
+python alba_framework/examples/quick_demo.py
 ```
 
-L'output atteso è qualcosa come:
-
-```
-==============================================================================
-  ALBA Framework — Quick Demo
-==============================================================================
-
-  Benchmark             |  Details
-  ------------------------------------------------------------------------
-  Sphere 5-D            |  dim=5  budget=200  best_y=    0.000123  leaves=  8  time=0.45s
-  Rosenbrock 5-D        |  dim=5  budget=200  best_y=    0.234567  leaves= 10  time=0.52s
-  ...
-
-  Done!  All benchmarks completed successfully.
-==============================================================================
-```
+The demo compares ALBA vs Optuna (TPE), Random Search, and CMA-ES (nevergrad)
+on 10 continuous and 3 mixed continuous+categorical benchmarks.
 
 ---
 
-## Uso rapido nel proprio codice
+## Quick Usage
 
-### Minimizzare una funzione con bounds continui
+### Minimize a function with continuous bounds
 
 ```python
-from alba_framework_potential import ALBA
+from alba_framework import ALBA
 
-bounds = [(-5, 5)] * 10  # 10 dimensioni
+bounds = [(-5, 5)] * 10  # 10 dimensions
 
 opt = ALBA(bounds=bounds, maximize=False, seed=42, total_budget=300)
 best_x, best_y = opt.optimize(my_objective, budget=300)
 print(f"Best: {best_y:.6f}")
 ```
 
-### Ottimizzare iperparametri (spazio misto continuo + categoriale)
+### Mixed continuous + categorical hyperparameter space
 
 ```python
-from alba_framework_potential import ALBA
+from alba_framework import ALBA
 
 param_space = {
-    "learning_rate": (1e-4, 1e-1, "log"),   # continuo, scala log
-    "n_layers":      (1, 8, "int"),          # intero
-    "hidden_size":   (32, 512, "int"),       # intero
-    "activation":    ["relu", "tanh", "gelu"],  # categoriale
-    "dropout":       (0.0, 0.5),             # continuo
+    "learning_rate": (1e-4, 1e-1),
+    "hidden_size":   (32.0, 512.0),
+    "activation":    ["relu", "tanh", "gelu"],
+    "dropout":       (0.0, 0.5),
 }
 
 opt = ALBA(param_space=param_space, maximize=False, seed=42, total_budget=200)
 
 for i in range(200):
-    config = opt.ask()       # → dict {"learning_rate": 0.003, ...}
+    config = opt.ask()       # -> dict {"learning_rate": 0.003, ...}
     loss = train_model(**config)
     opt.tell(config, loss)
 
@@ -127,7 +103,7 @@ print(f"Best config: {best_config}")
 print(f"Best loss:   {best_loss:.6f}")
 ```
 
-### Loop ask/tell (più controllo)
+### Ask/tell loop (more control)
 
 ```python
 opt = ALBA(bounds=bounds, maximize=False, total_budget=200)
@@ -143,37 +119,35 @@ print(f"Stats: {opt.get_statistics()}")
 
 ---
 
-## Struttura del pacchetto
+## Package Structure
 
 ```
-alba_framework_potential/
-├── __init__.py          # Esporta ALBA e componenti
-├── optimizer.py         # Classe principale ALBA
-├── cube.py              # Partizionamento adattivo dello spazio
-├── param_space.py       # Gestione spazi misti (log, int, cat)
-├── categorical.py       # Sampling categoriale
+alba_framework/
+├── __init__.py          # Exports ALBA and components
+├── optimizer.py         # Main ALBA class
+├── cube.py              # Adaptive space partitioning
+├── param_space.py       # Mixed space handling (continuous, categorical)
+├── categorical.py       # Categorical sampling
 ├── lgs.py               # Local Gradient Surrogate
-├── gamma.py             # Soglia dinamica gamma
-├── leaf_selection.py    # Selezione foglie (Thompson, UCB, Potential)
-├── candidates.py        # Generazione candidati
-├── acquisition.py       # Funzione di acquisizione UCB
-├── splitting.py         # Politiche di split
-├── local_search.py      # Ricerca locale (Gaussian, Covariance)
-├── coherence.py         # Coerenza geometrica dei gradienti
-├── drilling.py          # Drilling locale
-├── lgs_fixed.py         # Variante LGS stabilizzata
+├── gamma.py             # Dynamic gamma threshold
+├── leaf_selection.py    # Leaf selection (Thompson Sampling, UCB)
+├── candidates.py        # Candidate generation
+├── acquisition.py       # UCB acquisition function
+├── splitting.py         # Split policies
+├── local_search.py      # Local search (Gaussian, Covariance)
+├── coherence.py         # Geometric gradient coherence
 ├── examples/
-│   └── quick_demo.py    # Demo pronta all'uso
-└── pyproject.toml       # Metadata per pip install
+│   └── quick_demo.py    # Ready-to-run demo with baselines
+└── pyproject.toml       # Metadata for pip install
 ```
 
 ---
 
 ## Troubleshooting
 
-| Problema | Soluzione |
-|----------|-----------|
-| `ModuleNotFoundError: No module named 'alba_framework_potential'` | Assicurati di aver fatto `pip install .` dalla cartella corretta, oppure usa `sys.path.insert()` |
+| Problem | Solution |
+|---------|----------|
+| `ModuleNotFoundError: No module named 'alba_framework'` | Make sure you ran `pip install .` from the `alba_dist/` folder, or use `sys.path.insert()` |
 | `ImportError: numpy` | `pip install numpy scipy` |
-| Il plot non appare | Installa matplotlib: `pip install matplotlib` |
-| Python < 3.9 | Aggiorna Python (3.9+ richiesto) |
+| `ImportError: optuna` | `pip install optuna nevergrad` |
+| Python < 3.9 | Upgrade Python (3.9+ required) |
