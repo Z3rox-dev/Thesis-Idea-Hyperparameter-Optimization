@@ -325,7 +325,7 @@ class ALBA:
             split_policy if split_policy is not None else CubeIntrinsicSplitPolicy()
         )
         self._local_search_sampler: LocalSearchSampler = (
-            local_search_sampler if local_search_sampler is not None else GaussianLocalSearchSampler()
+            local_search_sampler if local_search_sampler is not None else CovarianceLocalSearchSampler()
         )
         
         # Iteration counter

@@ -19,10 +19,16 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-examples = [
+benchmarks = [
+    "optuna>=3.0",
+    "nevergrad>=0.6",
+]
+all = [
+    "optuna>=3.0",
+    "nevergrad>=0.6",
     "matplotlib>=3.4",
 ]
 
 [tool.setuptools.packages.find]
-include = ["alba_framework_potential*"]
+include = ["alba_framework*"]
 exclude = ["tests*"]
