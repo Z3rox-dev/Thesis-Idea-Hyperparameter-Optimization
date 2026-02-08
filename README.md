@@ -9,23 +9,32 @@ ALBA avoids building a single expensive global surrogate and instead:
 - Uses **geometric coherence** to gate exploit/explore decisions
 - Handles **categorical + continuous** parameters natively
 
-## Quick Start
+## Installation
 
-### Install
-
-```bash
-pip install .
-```
-
-> Only requires **Python ≥ 3.9**. Dependencies (numpy, scipy) are installed automatically.
-
-### Run the demo
+**Requirements:** Python >= 3.9
 
 ```bash
-python examples/quick_demo.py
+# 1. Clone the repository
+git clone https://github.com/Z3rox-dev/Thesis-Idea-Hyperparameter-Optimization.git
+cd Thesis-Idea-Hyperparameter-Optimization
+
+# 2. Create a virtual environment
+python3 -m venv .venv
+source .venv/bin/activate   # Linux/macOS
+# .venv\Scripts\activate    # Windows
+
+# 3. Install ALBA in editable mode (installs all dependencies automatically)
+pip install -U pip
+pip install -e thesis/alba_dist
+
+# 4. Verify the installation
+python -m alba_framework.examples.quick_demo
 ```
 
-### Use in your code
+The demo compares ALBA vs Optuna (TPE), Random Search, and CMA-ES on
+10 continuous and 3 mixed continuous+categorical benchmarks.
+
+## Usage
 
 ```python
 from alba_framework import ALBA
@@ -76,5 +85,3 @@ alba_framework/
  local_search.py    # Local refinement (Gaussian, Covariance)
  coherence.py       # Geometric coherence tracking
 ```
-
-See [INSTALL.md](thesis/alba_dist/INSTALL.md) for detailed installation instructions.
