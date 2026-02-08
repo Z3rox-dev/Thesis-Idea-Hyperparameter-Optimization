@@ -28,7 +28,7 @@ python examples/quick_demo.py
 ### Use in your code
 
 ```python
-from alba_framework_potential import ALBA
+from alba_framework import ALBA
 
 # Define a mixed parameter space
 param_space = {
@@ -53,7 +53,7 @@ print(f"Best: {best_config}  loss={opt.best_y:.6f}")
 Or with simple bounds:
 
 ```python
-from alba_framework_potential import ALBA
+from alba_framework import ALBA
 
 opt = ALBA(bounds=[(-5, 5)] * 10, maximize=False, total_budget=300)
 best_x, best_y = opt.optimize(objective, budget=300)
@@ -62,7 +62,7 @@ best_x, best_y = opt.optimize(objective, budget=300)
 ## Package Structure
 
 ```
-alba_framework_potential/
+alba_framework/
  optimizer.py       # Main ALBA class (ask/tell/optimize)
  cube.py            # Adaptive space partitioning
  lgs.py             # Local Gradient Surrogate models
@@ -75,7 +75,6 @@ alba_framework_potential/
  splitting.py       # Split policies
  local_search.py    # Local refinement (Gaussian, Covariance)
  coherence.py       # Geometric coherence tracking
- drilling.py        # Drilling-based local optimization
 ```
 
-See [INSTALL.md](alba_framework_potential/INSTALL.md) for detailed installation instructions.
+See [INSTALL.md](thesis/alba_dist/INSTALL.md) for detailed installation instructions.
